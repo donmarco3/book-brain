@@ -1,3 +1,130 @@
 * {
     box-sizing: border-box;
 }
+
+:root {
+    /* Colours */
+    --color-cream: #FFF8F0;
+    --color-cream-dark: #F5EDE0;
+    --color-warm-brown: #5C4033;
+    --color-warm-brown-light: #7A6652;
+    --color-accent: #8B6914;
+    --color-accent-hover: #A37D1A;
+    --color-muted: #7A6F5D;
+    --color-muted-light: #B0A692;
+    --color-border: #E0D5C5;
+    --color-white: #FFFFFF;
+    --color-danger: #A63D2F;
+    --color-danger-hover: #8B3226;
+    --color-success: #4A7C4F;
+    --color-shadow: rgba(92, 64, 51, 0.08);
+    --color-shadow-md: rgba(92, 64, 51, 0.12);
+    --color-overlay: rgba(92, 64, 51, 0.4);
+
+    /* Fonts */
+    --font-heading: Georgia, 'Times New Roman', serif;
+    --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+html, body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    padding: 0;
+    background-color: var(--color-cream);
+    color: var(--color-warm-brown);
+    font-family: var(--font-body);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+}
+
+div.site-wrapper {
+    min-height: 100vh;
+}
+
+header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding-block: 10px;
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px var(--color-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header > .site-logo {
+    color: var(--color-warm-brown);
+    font-weight: 900;
+    font-size: 2rem;
+}
+
+header a {
+    color: var(--color-warm-brown);
+    font-weight: 600;
+    padding: 5px 15px;
+}
+
+footer {
+    background-color: var(--color-white);
+    border-top: 1px solid var(--color-border);
+    padding-block: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    bottom: 0;
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 30px 0;
+}
+
+div.home-stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+div.card {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 30px var(--color-shadow);
+    border-radius: 8px;
+    margin-block: 10px;
+}
+
+div.card > button {
+    display: block;
+    margin-top: 10px;
+}
+
+div.currently-reading {
+    display: flex;
+    justify-content: space-between;
+}
+
+form.add-book-form > * {
+    display: block;
+}
+
+form.log-note-form {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 30px var(--color-shadow);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+form.log-note-form > textarea {
+    display: block;
+    width: 100%;
+}
