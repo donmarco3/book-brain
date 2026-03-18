@@ -13,8 +13,9 @@ export async function action({ request, params }) {
   const context = formData.get("note-context");
   const capture = formData.get("note-capture");
   const spark = formData.get("note-spark");
-  addNote({ title, page, context, capture, spark }, params.id);
-  redirect(`/book/${params.id}/inbox`);
+  const book = await getBook(params.id);
+  addNote({ title, page, context, capture, spark }, book);
+  return redirect(`/book/${book.id}/inbox`);
 }
 
 export default function Log() {

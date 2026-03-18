@@ -45,10 +45,11 @@ export async function getBook(id) {
 
 // NOTES
 
-export async function addNote(note, bookId) {
+export async function addNote(note, book) {
     const docRef = await addDoc(collection(db, "notes"), {
-        title: note.title,
-        bookId,
+        noteTitle: note.title,
+        bookId: book.id,
+        bookTitle: book.title,
         page: note.page,
         context: note.context,
         capture: note.capture,
@@ -82,9 +83,9 @@ export async function updateNoteStatus(id) {
 
 // BUCKETS
 
-export async function addBuckets(bucketName) {
+export async function addBucket(bucket) {
     const docRef = await addDoc(collection(db, "buckets"), {
-        name: bucketName
+        name: bucket
     })
 }
 
@@ -102,9 +103,20 @@ export async function getBuckets() {
 export async function addCard(note, response1, response2, buckets) {
     const docRef = await addDoc(collection(db, "cards"), {
         ...note,
+        noteId: note.id,
+        status: "Promoted",
         question1: response1,
         question2: response2,
         buckets,
         createdAt: serverTimestamp()
     })
+}
+
+export async function getCards() {
+    const querySnapshot = await getDocs(collection(db, "cards"))
+    const dataArr = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+    }))
+    return dataArr
 }

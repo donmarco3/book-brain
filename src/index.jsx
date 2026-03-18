@@ -12,7 +12,7 @@ import AddBook, { action as addBookAction } from "./components/AddBook";
 import Error from "./components/Error";
 import Bookshelf, { loader as bookshelfLoader } from "./pages/Bookshelf";
 import Log, { loader as logLoader, action as logAction } from "./pages/Log";
-import Library from "./pages/Library";
+import Library, { loader as libraryLoader } from "./pages/Library";
 import Inbox, { loader as inboxLoader } from "./pages/Inbox";
 import Distillation, {
   loader as distillationLoader,
@@ -34,6 +34,7 @@ const router = createBrowserRouter(
       <Route
         path="library"
         element={<Library />}
+        loader={libraryLoader}
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route
