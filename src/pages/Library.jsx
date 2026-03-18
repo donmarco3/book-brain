@@ -1,6 +1,6 @@
 import React from "react";
 import { getBuckets, getCards } from "../api";
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 export async function loader() {
   const cards = await getCards();
@@ -21,40 +21,52 @@ export default function Library() {
     }
   }
 
-  // const filteredCards = cards.filter((card) => {
-  //   console.log(card.buckets);
-  //   const filteredBuckets = card.buckets.some((bucket) =>
-  //     selectedBuckets.includes(bucket),
-  //   );
+  const filteredCards = cards.filter((card) => {
+    const filteredBuckets = selectedBuckets.every((bucket) =>
+      card.buckets.includes(bucket),
+    );
 
-  //   if (searchQuery.toLowerCase() === "" && selectedBuckets.length === 0) {
-  //     return card;
-  //   } else if (searchQuery.toLowerCase()) {
-  //     return (
-  //       card.noteTitle.toLowerCase().includes(searchQuery) ||
-  //       card.bookTitle.toLowerCase().includes(searchQuery) ||
-  //       card.context.toLowerCase().includes(searchQuery) ||
-  //       card.capture.toLowerCase().includes(searchQuery) ||
-  //       card.spark.toLowerCase().includes(searchQuery) ||
-  //       card.question1.toLowerCase().includes(searchQuery) ||
-  //       card.question2.toLowerCase().includes(searchQuery)
-  //     );
-  //   } else if (selectedBuckets.length > 0) {
-  //     return card.filteredBuckets
-  //   }
-  // });
+    if (searchQuery.toLowerCase() === "" && selectedBuckets.length === 0) {
+      return card;
+    } else if (searchQuery.toLowerCase() && selectedBuckets.length > 0) {
+      return (
+        (card.noteTitle.toLowerCase().includes(searchQuery) ||
+          card.bookTitle.toLowerCase().includes(searchQuery) ||
+          card.context.toLowerCase().includes(searchQuery) ||
+          card.capture.toLowerCase().includes(searchQuery) ||
+          card.spark.toLowerCase().includes(searchQuery) ||
+          card.question1.toLowerCase().includes(searchQuery) ||
+          card.question2.toLowerCase().includes(searchQuery)) &&
+        filteredBuckets
+      );
+    } else if (searchQuery.toLowerCase()) {
+      return (
+        card.noteTitle.toLowerCase().includes(searchQuery) ||
+        card.bookTitle.toLowerCase().includes(searchQuery) ||
+        card.context.toLowerCase().includes(searchQuery) ||
+        card.capture.toLowerCase().includes(searchQuery) ||
+        card.spark.toLowerCase().includes(searchQuery) ||
+        card.question1.toLowerCase().includes(searchQuery) ||
+        card.question2.toLowerCase().includes(searchQuery)
+      );
+    } else if (filteredBuckets) {
+      return filteredBuckets;
+    }
+  });
 
   const cardElements = filteredCards.map((card) => {
     return (
       <div className="card" key={card.id}>
-        <p>{card.noteTitle}</p>
-        <p>{card.bookTitle}</p>
-        <p>{card.page}</p>
-        <p>{card.context}</p>
-        <p>{card.capture}</p>
-        <p>{card.spark}</p>
-        <p>{card.question1}</p>
-        <p>{card.question2}</p>
+        <Link to={`/card/${card.id}`}>
+          <p>{card.noteTitle}</p>
+          <p>{card.bookTitle}</p>
+          <p>{card.buckets}</p>
+          {card.spark ? (
+            <p>{card.spark.slice(0, 300)}</p>
+          ) : (
+            <p>{card.capture.slice(0, 300)}</p>
+          )}
+        </Link>
       </div>
     );
   });

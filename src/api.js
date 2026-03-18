@@ -54,12 +54,31 @@ export async function addNote(note, book) {
         context: note.context,
         capture: note.capture,
         spark: note.spark,
-        status: "Inbox"
+        status: "Inbox",
+        createdAt: serverTimestamp()
     })
 }
 
 export async function deleteNote(id) {
     await deleteDoc(doc(db, "notes", id))
+}
+
+export async function getAllNotes() {
+    const querySnapshot = await getDocs(collection(db, "notes"))
+    const dataArr = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+    }))
+    return dataArr
+}
+
+export async function getNote(id) {
+    const docRef = doc(db, "notes", id)
+    const noteSnap = await getDoc(docRef)
+    return {
+        ...noteSnap.data(),
+        id: noteSnap.id
+    }
 }
 
 export async function getNotes(id) {
@@ -73,6 +92,16 @@ export async function getNotes(id) {
         id: doc.id
     }))
     return dataArr
+}
+
+export async function updateNote(id, noteTitle, page, context, capture, spark) {
+    const docRef = await updateDoc(doc(db, "notes", id), {
+        noteTitle,
+        page,
+        context,
+        capture,
+        spark
+    })
 }
 
 export async function updateNoteStatus(id) {
@@ -105,8 +134,10 @@ export async function addCard(note, response1, response2, buckets) {
         ...note,
         noteId: note.id,
         status: "Promoted",
-        question1: response1,
-        question2: response2,
+        question1: "Why did this stop you?",
+        response1,
+        question2: "What does this connect to in your life or other reading?",
+        response2,
         buckets,
         createdAt: serverTimestamp()
     })
@@ -119,4 +150,38 @@ export async function getCards() {
         id: doc.id
     }))
     return dataArr
+}
+
+export async function getCard(id) {
+    const docRef = doc(db, "cards", id)
+    const cardSnap = await getDoc(docRef)
+    return {
+        ...cardSnap.data(),
+        id: cardSnap.id
+    }
+}
+
+export async function updateCard(id,
+      noteTitle,
+      page,
+      context,
+      capture,
+      spark,
+      response1,
+      response2,
+      selectedBuckets,) {
+    const docRef = await updateDoc(doc(db, "cards", id), {
+        noteTitle,
+        page,
+        context,
+        capture,
+        spark,
+        response1,
+        response2,
+        buckets: selectedBuckets
+    })
+}
+
+export async function deleteCard(id) {
+    await deleteDoc(doc(db, "cards", id))
 }

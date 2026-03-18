@@ -94,7 +94,7 @@ div.home-stats {
     justify-content: space-between;
 }
 
-div.card {
+.card {
     background-color: var(--color-white);
     border: 1px solid var(--color-border);
     box-shadow: 0 8px 30px var(--color-shadow);
@@ -102,12 +102,12 @@ div.card {
     margin-block: 10px;
 }
 
-div.card > button {
+.card > button {
     display: block;
     margin-top: 10px;
 }
 
-div.currently-reading {
+.currently-reading {
     display: flex;
     justify-content: space-between;
 }
@@ -178,4 +178,21 @@ div.distillation-stats {
     display: flex;
     text-align: center;
     gap: 2em;
+}
+
+div.card-content,
+div.note-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+div.card-content label,
+div.card-content input,
+div.card-content textarea,
+div.note-content label,
+div.note-content input,
+div.note-content textarea {
+    display: block;
+    width: 100%;
 }

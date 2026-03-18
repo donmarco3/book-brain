@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import Home from "./components/Home";
+import Home, { loader as homeLoader } from "./components/Home";
 import Layout from "./components/Layout";
 import AddBook, { action as addBookAction } from "./components/AddBook";
 import Error from "./components/Error";
@@ -18,11 +18,18 @@ import Distillation, {
   loader as distillationLoader,
 } from "./pages/Distillation";
 import NotFound from "./pages/NotFound";
+import Card, { loader as cardLoader } from "./pages/Card";
+import Note, { loader as noteLoader } from "./pages/Note";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-      <Route index element={<Home />} />
+      <Route
+        index
+        element={<Home />}
+        loader={homeLoader}
+        hydrateFallbackElement={<h1>Loading...</h1>}
+      />
       <Route
         path="bookshelf"
         element={<Bookshelf />}
@@ -38,6 +45,12 @@ const router = createBrowserRouter(
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route
+        path="card/:id"
+        element={<Card />}
+        loader={cardLoader}
+        hydrateFallbackElement={<h1>Loading...</h1>}
+      />
+      <Route
         path="book/:id/log"
         element={<Log />}
         loader={logLoader}
@@ -50,6 +63,12 @@ const router = createBrowserRouter(
         element={<Inbox />}
         loader={inboxLoader}
         errorElement={<Error />}
+        hydrateFallbackElement={<h1>Loading...</h1>}
+      />
+      <Route
+        path="note/:id"
+        element={<Note />}
+        loader={noteLoader}
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route

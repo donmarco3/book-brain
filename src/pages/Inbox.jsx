@@ -1,6 +1,6 @@
 import React from "react";
-import { useLoaderData, useRevalidator, Link } from "react-router";
-import { getNotes, deleteNote, getBook } from "../api";
+import { useLoaderData, Link } from "react-router";
+import { getNotes, getBook } from "../api";
 
 export async function loader({ params }) {
   const notes = await getNotes(params.id);
@@ -10,20 +10,19 @@ export async function loader({ params }) {
 
 export default function Inbox() {
   const { notes, book } = useLoaderData();
-  const revalidator = useRevalidator();
-
-  function updateNote(id) {
-    deleteNote(id);
-    revalidator.revalidate();
-  }
 
   const noteElements = notes.map((note) => {
     return (
       <div className="card" key={note.id}>
-        <p>{note.title}</p>
-        <p>{note.capture}</p>
-        <p>{note.spark}</p>
-        <button onClick={() => updateNote(note.id)}>Delete</button>
+        <Link to={`/note/${note.id}`}>
+          <p>{note.noteTitle}</p>
+          <p>{note.bookTitle}</p>
+          {note.spark ? (
+            <p>{note.spark.slice(0, 300)}</p>
+          ) : (
+            <p>{note.capture.slice(0, 300)}</p>
+          )}
+        </Link>
       </div>
     );
   });

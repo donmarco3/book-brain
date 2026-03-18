@@ -103,7 +103,7 @@ export default function Distillation() {
       {notes[currentIndex] ? (
         <div>
           <div className="card" key={notes[currentIndex].id}>
-            <p>{notes[currentIndex].title}</p>
+            <p>{notes[currentIndex].noteTitle}</p>
             <p>{notes[currentIndex].page}</p>
             <p>{notes[currentIndex].context}</p>
             <p>{notes[currentIndex].capture}</p>

@@ -26,6 +26,7 @@ export default function Bookshelf() {
       <div className="card" key={book.id}>
         <p>{book.title}</p>
         <p>{book.author}</p>
+        <p>{book.status}</p>
         <Link to={`/book/${book.id}/log`}>Log Notes</Link>
         <Link to={`/book/${book.id}/inbox`}>Inbox</Link>
         <button onClick={() => updateBookStatus(book.id)}>{book.status}</button>
