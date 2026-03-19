@@ -1,4 +1,4 @@
-* {
+*, ::before, ::after {
     box-sizing: border-box;
 }
 
@@ -37,31 +37,69 @@ html, body {
     line-height: 1.6;
 }
 
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+
+h1, h2 {
+    font-family: var(--font-heading);
+    margin: 0;
+}
+
+h1 {
+    margin-block: 20px;
+}
+
+
 a {
     text-decoration: none;
 }
 
-div.site-wrapper {
-    min-height: 100vh;
+p {
+    margin: 0;
 }
+
+.text-sm {
+    font-size: 14px;
+    color: var(--color-warm-brown-light);
+    font-weight: 400;
+}
+
+.nice-font {
+    font-family: var(--font-heading);
+}
+
+.italic {
+    font-style: italic;
+}
+
+.required-field {
+    color: var(--color-danger);
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
 
 header {
     height: 100px;
     display: flex;
     align-items: center;
-    padding-block: 10px;
+    padding: 10px 20px;
     background-color: var(--color-white);
     border-bottom: 1px solid var(--color-border);
     box-shadow: 0 1px 3px var(--color-shadow);
     position: sticky;
     top: 0;
-    z-index: 100;
 }
 
 header > .site-logo {
+    font-family: var(--font-heading);
     color: var(--color-warm-brown);
     font-weight: 900;
     font-size: 2rem;
+    margin-right: 20px;
 }
 
 header a {
@@ -79,27 +117,197 @@ footer {
     align-items: center;
     width: 100%;
     height: 100px;
-    position: fixed;
-    bottom: 0;
 }
 
 main {
+    min-height: 100vh;
     max-width: 960px;
     margin: 0 auto;
-    padding: 30px 0;
+    margin-bottom: 40px;
 }
 
-div.home-stats {
-    display: flex;
-    justify-content: space-between;
+
+/* ============================================
+   RESUABLE ELEMENTS / COMPONENTS
+   ============================================ */
+
+button {
+    border-radius: 5px;
+    border: 1px solid var(--color-border);
+    padding: 4px 10px;
+    background-color: var(--color-white);
+    color: var(--color-warm-brown);
+    letter-spacing: .3px;
+    cursor: pointer;
+}
+
+button:hover,
+a.link:hover {
+    filter: opacity(.8);
+}
+
+button.btn-lg {
+    padding: 8px 16px;
+}
+
+button.btn-dark {
+    background-color: var(--color-warm-brown);
+    color: var(--color-cream);
+}
+
+button.btn-delete {
+    background-color: var(--color-danger);
+    color: var(--color-white);
+    border: 1px solid var(--color-danger);
+}
+
+a.link-button {
+    border-radius: 5px;
+    border: 1px solid var(--color-warm-brown);
+    padding: 6px 16px;
+    background-color: var(--color-warm-brown);
+    color: var(--color-cream);
+    letter-spacing: .3px;
+    cursor: pointer;
+}
+
+a.link {
+    color: var(--color-warm-brown);
+}
+
+.pill {
+    border-radius: 5px;
+    padding: 6px 12px;
+    background-color: var(--color-cream-dark);
+    letter-spacing: .3px;
+    font-size: 12px;
 }
 
 .card {
     background-color: var(--color-white);
     border: 1px solid var(--color-border);
     box-shadow: 0 8px 30px var(--color-shadow);
-    border-radius: 8px;
-    margin-block: 10px;
+    border-radius: 10px;
+    padding: 10px 20px;
+}
+
+.card-title {
+    font-weight: 800;
+    font-family: var(--font-heading);
+}
+
+.main-card {
+    padding: 20px;
+}
+
+.main-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.main-card-header > p {
+    font-weight: 800;
+    font-size: 20px;
+}
+
+.main-card-header > div {
+    color: var(--color-warm-brown-light);
+    font-weight: 400;
+    display: flex;
+    gap: 10px;
+}
+
+.main-card-buckets {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.main-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.main-card-text span {
+    font-weight: 800;
+    color: var(--color-warm-brown-light);
+}
+
+.main-card-text > .capture {
+    border-left: 5px solid var(--color-cream-dark);
+    padding-left: 20px;
+}
+
+.main-card-text > .pill {
+    font-size: 1em;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 6px 12px;
+  color: var(--color-warm-brown);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(139, 105, 20, 0.15);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-muted-light);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+}
+
+
+/* ============================================
+   HOME
+   ============================================ */
+
+.home-heading {
+    margin-block: 20px;
+}
+
+div.home-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+div.home-stats > .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 150px;
+}
+
+div.home-stats > .card > p.nice-font {
+    color: var(--color-accent);
+    font-size: 2em;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+div.home-stats > .card > div {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .card > button {
@@ -107,14 +315,129 @@ div.home-stats {
     margin-top: 10px;
 }
 
-.currently-reading {
+div.currently-reading {
     display: flex;
-    justify-content: space-between;
+    gap: 20px;
 }
 
-form.add-book-form > * {
-    display: block;
+div.currently-reading > .card {
+    padding-bottom: 25px;
+    min-width: 200px;
 }
+
+div.currently-reading p:nth-of-type(1) {
+    font-weight: 800;
+    margin: 10px 0 5px;
+}
+
+div.currently-reading p:nth-of-type(2) {
+    margin: 0 0 20px;
+}
+
+
+/* ============================================
+   ADD BOOK MODAL
+   ============================================ */
+
+div.add-book-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 36, 22, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+div.add-book-modal {
+  background-color: var(--color-white);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+}
+
+div.add-book-modal-inputs {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+div.add-book-modal-inputs > label {
+    margin: 10px 0 5px;
+}
+
+div.add-book-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+/* ============================================
+   BOOKSHELF
+   ============================================ */
+
+
+div.bookshelf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block: 20px;
+}
+
+div.books-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+div.books-list > .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 48.5%;
+    padding-top: 20px;
+}
+
+.card > .book-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card > .book-card-links {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.card > .book-card-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 form.log-note-form {
     background-color: var(--color-white);

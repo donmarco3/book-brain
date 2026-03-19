@@ -11,6 +11,8 @@ export default function Bookshelf() {
   const books = useLoaderData();
   const revalidator = useRevalidator();
 
+  const [showModal, setShowModal] = React.useState(false);
+
   function updateBook(id) {
     deleteBook(id);
     revalidator.revalidate();
@@ -24,13 +26,30 @@ export default function Bookshelf() {
   const bookElements = books.map((book) => {
     return (
       <div className="card" key={book.id}>
-        <p>{book.title}</p>
-        <p>{book.author}</p>
-        <p>{book.status}</p>
-        <Link to={`/book/${book.id}/log`}>Log Notes</Link>
-        <Link to={`/book/${book.id}/inbox`}>Inbox</Link>
-        <button onClick={() => updateBookStatus(book.id)}>{book.status}</button>
-        <button onClick={() => updateBook(book.id)}>Delete</button>
+        <div className="book-card-header">
+          <p className="nice-font card-title">{book.title}</p>
+          <p className="pill">{book.status}</p>
+        </div>
+        <p className="text-sm">by {book.author}</p>
+        <div className="book-card-links">
+          <Link className="link-button" to={`/book/${book.id}/log`}>
+            Log Notes
+          </Link>
+          <Link className="link-button" to={`/book/${book.id}/inbox`}>
+            Inbox
+          </Link>
+          <Link className="link-button" to={`/book/${book.id}/cards`}>
+            View Cards
+          </Link>
+        </div>
+        <div className="book-card-buttons">
+          <button onClick={() => updateBookStatus(book.id)}>
+            {book.status}
+          </button>
+          <button className="btn-delete" onClick={() => updateBook(book.id)}>
+            Delete
+          </button>
+        </div>
       </div>
     );
   });
@@ -38,8 +57,24 @@ export default function Bookshelf() {
   return (
     <>
       <h1>Bookshelf</h1>
-      <AddBook action={"/bookshelf"} />
-      <div className="books-list">{bookElements}</div>
+      <div className="bookshelf-header">
+        <p className="text-sm">
+          {books.length} {books.length === 1 ? "book" : "books"}
+        </p>
+        <button className="btn-dark btn-lg" onClick={() => setShowModal(true)}>
+          + Add Book
+        </button>
+      </div>
+      <AddBook
+        action={"/bookshelf"}
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
+      {books.length > 0 ? (
+        <div className="books-list">{bookElements}</div>
+      ) : (
+        <p>You have no books. Click add book to add your first.</p>
+      )}
     </>
   );
 }

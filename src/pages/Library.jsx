@@ -56,7 +56,7 @@ export default function Library() {
 
   const cardElements = filteredCards.map((card) => {
     return (
-      <div className="card" key={card.id}>
+      <div className="card main-card" key={card.id}>
         <Link to={`/card/${card.id}`}>
           <p>{card.noteTitle}</p>
           <p>{card.bookTitle}</p>

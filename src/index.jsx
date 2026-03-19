@@ -28,6 +28,7 @@ const router = createBrowserRouter(
         index
         element={<Home />}
         loader={homeLoader}
+        errorElement={<Error />}
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route
@@ -48,6 +49,7 @@ const router = createBrowserRouter(
         path="card/:id"
         element={<Card />}
         loader={cardLoader}
+        errorElement={<Error />}
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route
@@ -69,6 +71,7 @@ const router = createBrowserRouter(
         path="note/:id"
         element={<Note />}
         loader={noteLoader}
+        errorElement={<Error />}
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route

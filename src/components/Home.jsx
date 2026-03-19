@@ -11,7 +11,7 @@ export async function loader() {
 
 export default function Home() {
   const { books, cards, notes } = useLoaderData();
-  const [selectedPeriod, setSelectedPeriod] = React.useState("week");
+  const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
 
   let streak = 0;
 
@@ -52,13 +52,13 @@ export default function Home() {
     const now = new Date();
     let cutoffDate;
 
-    if (selectedPeriod === "week") {
+    if (selectedPeriod === "Week") {
       cutoffDate = new Date(now);
       cutoffDate.setDate(now.getDate() - 7);
-    } else if (selectedPeriod === "month") {
+    } else if (selectedPeriod === "Month") {
       cutoffDate = new Date(now);
       cutoffDate.setDate(now.getDate() - 30);
-    } else if (selectedPeriod === "year") {
+    } else if (selectedPeriod === "Year") {
       cutoffDate = new Date(now);
       cutoffDate.setDate(now.getDate() - 365);
     }
@@ -69,9 +69,11 @@ export default function Home() {
     if (book.status === "Reading") {
       return (
         <div className="card" key={book.id}>
-          <p>{book.title}</p>
-          <Link to={`/book/${book.id}/log`}>Log Notes</Link>
-          <Link to={`/book/${book.id}/inbox`}>Inbox</Link>
+          <p className="nice-font card-title">{book.title}</p>
+          <p className="text-sm">by {book.author}</p>
+          <Link to={`/book/${book.id}/log`} className="link-button">
+            Log Notes
+          </Link>
         </div>
       );
     }
@@ -84,17 +86,38 @@ export default function Home() {
     }
 
     const randomIndex = sum % cards.length;
+    const bucketElements = cards[randomIndex].buckets.map((bucket) => (
+      <p key={bucket} className="pill">
+        {bucket}
+      </p>
+    ));
+
     return (
-      <div className="card" key={cards[randomIndex].id}>
-        <Link to={`/card/${cards[randomIndex].id}`}>
-          <p>{cards[randomIndex].noteTitle}</p>
-          <p>{cards[randomIndex].bookTitle}</p>
-          <p>{cards[randomIndex].buckets}</p>
-          {cards[randomIndex].spark ? (
-            <p>{cards[randomIndex].spark.slice(0, 300)}</p>
-          ) : (
-            <p>{cards[randomIndex].capture.slice(0, 300)}</p>
-          )}
+      <div className="card main-card" key={cards[randomIndex].id}>
+        <Link to={`/card/${cards[randomIndex].id}`} className="link">
+          <div className="main-card-header">
+            <p className="nice-font card-title">
+              {cards[randomIndex].noteTitle}
+            </p>
+            <div>
+              <p>{cards[randomIndex].bookTitle}</p>
+              <p>p. {cards[randomIndex].page}</p>
+            </div>
+          </div>
+
+          <div className="main-card-buckets">{bucketElements}</div>
+
+          <div className="main-card-text">
+            <p>
+              <span>Context:</span> {cards[randomIndex].context.slice(0, 300)}
+            </p>
+            <p className="italic capture">
+              {cards[randomIndex].capture.slice(0, 300)}
+            </p>
+            <div className="pill">
+              <p>{cards[randomIndex].spark.slice(0, 300)}</p>
+            </div>
+          </div>
         </Link>
       </div>
     );
@@ -102,53 +125,57 @@ export default function Home() {
 
   return (
     <>
-      <h1>Home</h1>
+      <h1 className="home-heading">Home</h1>
       <div className="home-stats">
         <div className="card">
-          <p>{books.length}</p>
-          <p>total books</p>
+          <p className="nice-font">{books.length}</p>
+          <p>Total Books</p>
         </div>
         <div className="card">
-          <p>{cards.length}</p>
-          <p>total cards</p>
+          <p className="nice-font">{cards.length}</p>
+          <p>Total Cards</p>
         </div>
         <div className="card">
-          <p>{getStreak()}</p>
-          <p>streak</p>
+          <p className="nice-font">{getStreak()}</p>
+          <p>Day Streak</p>
         </div>
         <div className="card">
-          <p>{getNumberOfCards()}</p>
-          <button
-            className={selectedPeriod === "week" ? "selected" : null}
-            onClick={() => setSelectedPeriod("week")}
-          >
-            Week
-          </button>
-          <button
-            className={selectedPeriod === "month" ? "selected" : null}
-            onClick={() => setSelectedPeriod("month")}
-          >
-            Month
-          </button>
-          <button
-            className={selectedPeriod === "year" ? "selected" : null}
-            onClick={() => setSelectedPeriod("year")}
-          >
-            Year
-          </button>
-          <p>cards this week</p>
+          <p className="nice-font">{getNumberOfCards()}</p>
+          <div>
+            <button
+              className={selectedPeriod === "Week" ? "selected" : null}
+              onClick={() => setSelectedPeriod("Week")}
+            >
+              Week
+            </button>
+            <button
+              className={selectedPeriod === "Month" ? "selected" : null}
+              onClick={() => setSelectedPeriod("Month")}
+            >
+              Month
+            </button>
+            <button
+              className={selectedPeriod === "Year" ? "selected" : null}
+              onClick={() => setSelectedPeriod("Year")}
+            >
+              Year
+            </button>
+          </div>
+          <p>
+            {getNumberOfCards() === 1 ? "Card" : "Cards"} This {selectedPeriod}
+          </p>
         </div>
       </div>
 
-      <h2>Currently Reading</h2>
+      <h2 className="home-heading">Currently Reading</h2>
       <div className="currently-reading">{bookElements}</div>
 
+      <h2 className="home-heading">Daily Random Card</h2>
       {cards.length > 0 ? (
-        <div>
-          <h2>Daily random card</h2>
-          {getRandomCard()}
-        </div>
-      ) : null}
+        <div>{getRandomCard()}</div>
+      ) : (
+        <p>No cards yet. Distill some notes to see your daily card.</p>
+      )}
     </>
   );
 }
