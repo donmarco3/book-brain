@@ -8,8 +8,18 @@ export default function Header() {
         BookBrain
       </Link>
       <nav>
-        <NavLink to="bookshelf">Bookshelf</NavLink>
-        <NavLink to="library">Library</NavLink>
+        <NavLink
+          to="bookshelf"
+          className={({ isActive }) => (isActive ? "active" : null)}
+        >
+          Bookshelf
+        </NavLink>
+        <NavLink
+          to="library"
+          className={({ isActive }) => (isActive ? "active" : null)}
+        >
+          Library
+        </NavLink>
       </nav>
     </header>
   );

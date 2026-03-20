@@ -13,15 +13,25 @@ export default function Inbox() {
 
   const noteElements = notes.map((note) => {
     return (
-      <div className="card" key={note.id}>
-        <Link to={`/note/${note.id}`}>
-          <p>{note.noteTitle}</p>
-          <p>{note.bookTitle}</p>
-          {note.spark ? (
-            <p>{note.spark.slice(0, 300)}</p>
-          ) : (
-            <p>{note.capture.slice(0, 300)}</p>
-          )}
+      <div className="card main-card" key={note.id}>
+        <Link to={`/note/${note.id}`} className="link">
+          <div className="main-card-header">
+            <p className="nice-font card-title">{note.noteTitle}</p>
+            <div>
+              <p>p. {note.page}</p>
+            </div>
+          </div>
+
+          <div className="main-card-text">
+            <p>
+              <span className="bold">Context:</span>{" "}
+              {note.context.slice(0, 300)}
+            </p>
+            <p className="italic capture">{note.capture.slice(0, 300)}</p>
+            <div className="pill">
+              <p>{note.spark.slice(0, 300)}</p>
+            </div>
+          </div>
         </Link>
       </div>
     );
@@ -29,13 +39,35 @@ export default function Inbox() {
 
   return (
     <>
-      <Link to="/bookshelf">&larr; Back to bookshelf</Link>
-      <h1>Inbox</h1>
-      <p>
-        {book.title} by {book.author}
-      </p>
-      <Link to={`/book/${book.id}/log`}>New Note</Link>
-      <Link to={`/book/${book.id}/distillation`}>Begin Distillation</Link>
+      <div className="log-header">
+        <Link to="/bookshelf" className="link-btn">
+          &larr; Back to Bookshelf
+        </Link>
+        <h1>Log Notes</h1>
+        <p>
+          {book.title} by {book.author}
+        </p>
+      </div>
+
+      <div className="inbox-sub-header">
+        <p className="text-sm">
+          {notes.length > 0
+            ? `${notes.length} notes ready for review`
+            : "You have no notes to review"}
+        </p>
+        <div>
+          <Link to={`/book/${book.id}/log`} className="link-btn">
+            New Note
+          </Link>
+          <Link
+            to={`/book/${book.id}/distillation`}
+            className="link-btn link-btn-dark"
+          >
+            Begin Distillation
+          </Link>
+        </div>
+      </div>
+
       <div className="notes-list">{noteElements}</div>
     </>
   );

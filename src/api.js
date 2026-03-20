@@ -15,9 +15,10 @@ export async function addBook(bookTitle, bookAuthor) {
     })
 }
 
-export async function updateBookStatus(id) {
+export async function updateBookStatus(id, currentStatus) {
+    const newStatus = currentStatus === "Reading" ? "Finished" : "Reading" 
     const docRef = await updateDoc(doc(db, "books", id), {
-        status: "Finished"
+        status: newStatus
     })
 }
 

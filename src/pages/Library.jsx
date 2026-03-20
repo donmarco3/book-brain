@@ -11,6 +11,7 @@ export async function loader() {
 export default function Library() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedBuckets, setSelectedBuckets] = React.useState([]);
+  const [showFilters, setShowFilters] = React.useState(false);
   const { cards, buckets } = useLoaderData();
 
   function toggleBucket(name) {
@@ -19,6 +20,10 @@ export default function Library() {
     } else {
       setSelectedBuckets([...selectedBuckets, name]);
     }
+  }
+
+  function clearFilters() {
+    setSelectedBuckets([]);
   }
 
   const filteredCards = cards.filter((card) => {
@@ -55,23 +60,41 @@ export default function Library() {
   });
 
   const cardElements = filteredCards.map((card) => {
+    const bucketElements = card.buckets.map((bucket) => (
+      <p key={bucket} className="pill">
+        {bucket}
+      </p>
+    ));
+
     return (
       <div className="card main-card" key={card.id}>
-        <Link to={`/card/${card.id}`}>
-          <p>{card.noteTitle}</p>
-          <p>{card.bookTitle}</p>
-          <p>{card.buckets}</p>
-          {card.spark ? (
-            <p>{card.spark.slice(0, 300)}</p>
-          ) : (
-            <p>{card.capture.slice(0, 300)}</p>
-          )}
+        <Link to={`/card/${card.id}`} className="link">
+          <div className="main-card-header">
+            <p className="nice-font card-title">{card.noteTitle}</p>
+            <div>
+              <p>{card.bookTitle}</p>
+              <p>p. {card.page}</p>
+            </div>
+          </div>
+
+          <div className="main-card-buckets">{bucketElements}</div>
+
+          <div className="main-card-text">
+            <p>
+              <span className="bold">Context:</span>{" "}
+              {card.context.slice(0, 300)}
+            </p>
+            <p className="italic capture">{card.capture.slice(0, 300)}</p>
+            <div className="pill">
+              <p>{card.spark.slice(0, 300)}</p>
+            </div>
+          </div>
         </Link>
       </div>
     );
   });
 
-  const bucketElements = buckets.map((bucket) => {
+  const bucketButtonElements = buckets.map((bucket) => {
     return (
       <button
         className={
@@ -88,14 +111,36 @@ export default function Library() {
   return (
     <>
       <h1>Library</h1>
-      <label htmlFor="search-query">Search</label>
-      <input
-        id="search-query"
-        name="search-query"
-        onChange={(e) => setSearchQuery(e.currentTarget.value)}
-      />
-      {bucketElements}
-      {cardElements}
+      <div className="library-header">
+        <input
+          name="search-query"
+          placeholder="Search cards..."
+          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+        />
+
+        <div className="filter-container">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="btn-dark"
+          >
+            Filter
+            {selectedBuckets.length > 0 && ` (${selectedBuckets.length})`}
+          </button>
+          {selectedBuckets.length > 0 && (
+            <button onClick={clearFilters}>Clear</button>
+          )}
+          {showFilters && (
+            <div className="filter-dropdown">{bucketButtonElements}</div>
+          )}
+        </div>
+      </div>
+      {cards.length > 0 ? (
+        cardElements
+      ) : (
+        <p>
+          Your library is empty. Start by adding books and distilling notes.
+        </p>
+      )}
     </>
   );
 }

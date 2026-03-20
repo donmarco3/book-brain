@@ -18,8 +18,8 @@ export default function Bookshelf() {
     revalidator.revalidate();
   }
 
-  function updateBookStatus(id) {
-    updateBookStatus(id);
+  function changeBookStatus(id, currentStatus) {
+    updateBookStatus(id, currentStatus);
     revalidator.revalidate();
   }
 
@@ -28,23 +28,25 @@ export default function Bookshelf() {
       <div className="card" key={book.id}>
         <div className="book-card-header">
           <p className="nice-font card-title">{book.title}</p>
-          <p className="pill">{book.status}</p>
+          <p className={book.status === "Finished" ? "pill success" : "pill"}>
+            {book.status}
+          </p>
         </div>
         <p className="text-sm">by {book.author}</p>
         <div className="book-card-links">
-          <Link className="link-button" to={`/book/${book.id}/log`}>
+          <Link className="link-btn link-btn-dark" to={`/book/${book.id}/log`}>
             Log Notes
           </Link>
-          <Link className="link-button" to={`/book/${book.id}/inbox`}>
+          <Link className="link-btn" to={`/book/${book.id}/inbox`}>
             Inbox
           </Link>
-          <Link className="link-button" to={`/book/${book.id}/cards`}>
+          <Link className="link-btn" to={`/book/${book.id}/cards`}>
             View Cards
           </Link>
         </div>
         <div className="book-card-buttons">
-          <button onClick={() => updateBookStatus(book.id)}>
-            {book.status}
+          <button onClick={() => changeBookStatus(book.id, book.status)}>
+            Mark as {book.status === "Reading" ? "Finished" : "Reading"}
           </button>
           <button className="btn-delete" onClick={() => updateBook(book.id)}>
             Delete

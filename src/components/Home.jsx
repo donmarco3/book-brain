@@ -71,7 +71,7 @@ export default function Home() {
         <div className="card" key={book.id}>
           <p className="nice-font card-title">{book.title}</p>
           <p className="text-sm">by {book.author}</p>
-          <Link to={`/book/${book.id}/log`} className="link-button">
+          <Link to={`/book/${book.id}/log`} className="link-btn link-btn-dark">
             Log Notes
           </Link>
         </div>
@@ -109,7 +109,8 @@ export default function Home() {
 
           <div className="main-card-text">
             <p>
-              <span>Context:</span> {cards[randomIndex].context.slice(0, 300)}
+              <span className="bold">Context:</span>{" "}
+              {cards[randomIndex].context.slice(0, 300)}
             </p>
             <p className="italic capture">
               {cards[randomIndex].capture.slice(0, 300)}

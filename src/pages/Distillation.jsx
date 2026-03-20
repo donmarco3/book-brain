@@ -25,6 +25,8 @@ export default function Distillation() {
   const [promoted, setPromoted] = React.useState(0);
   const [discarded, setDiscarded] = React.useState(0);
   const [skipped, setSkipped] = React.useState(0);
+  const [showBuckets, setShowBuckets] = React.useState(false);
+
   const { notes, buckets } = useLoaderData();
   const revalidator = useRevalidator();
 
@@ -99,55 +101,85 @@ export default function Distillation() {
   return (
     <>
       <h1>Distillation</h1>
+      <p className="text-sm">
+        Card {currentIndex + 1} of {notes.length}
+      </p>
 
       {notes[currentIndex] ? (
-        <div>
-          <div className="card" key={notes[currentIndex].id}>
-            <p>{notes[currentIndex].noteTitle}</p>
-            <p>{notes[currentIndex].page}</p>
-            <p>{notes[currentIndex].context}</p>
-            <p>{notes[currentIndex].capture}</p>
-            <p>{notes[currentIndex].spark}</p>
-          </div>
+        <div className="distillation-card">
+          <div className="card main-card" key={notes[currentIndex].id}>
+            <div className="main-card-header">
+              <p className="nice-font card-title">
+                {notes[currentIndex].noteTitle}
+              </p>
+              <div>
+                <p>{notes[currentIndex].bookTitle}</p>
+                <p>p. {notes[currentIndex].page}</p>
+              </div>
+            </div>
 
-          <div className="retention-questions">
-            <label htmlFor="question1">Why did this stop you?</label>
-            <textarea
-              id="question1"
-              name="response1"
-              onChange={updateUserResponses}
-              value={userResponses.response1}
-            ></textarea>
-            <label htmlFor="question2">
-              What does this connect to in your life or other reading?
-            </label>
-            <textarea
-              id="question2"
-              name="response2"
-              onChange={updateUserResponses}
-              value={userResponses.response2}
-            ></textarea>
-          </div>
+            <div className="main-card-text">
+              <p>
+                <span className="bold">Context:</span>{" "}
+                {notes[currentIndex].context.slice(0, 300)}
+              </p>
+              <p className="italic capture">
+                {notes[currentIndex].capture.slice(0, 300)}
+              </p>
+              <div className="pill">
+                <p>{notes[currentIndex].spark.slice(0, 300)}</p>
+              </div>
+            </div>
 
-          <div className="buckets">
-            <p>Buckets</p>
-            {bucketElements}
-            <div className="add-bucket-container">
-              <label htmlFor="add-bucket">Add Bucket</label>
-              <input
-                id="add-bucket"
-                name="bucket-name"
-                placeholder="e.g. Mindset"
-                onChange={updateUserBucket}
-              />
-              <button onClick={updateSelectedBuckets}>Add Bucket</button>
+            <div className="retention-questions">
+              <label htmlFor="question1">Why did this stop you?</label>
+              <textarea
+                id="question1"
+                name="response1"
+                onChange={updateUserResponses}
+                value={userResponses.response1}
+              ></textarea>
+              <label htmlFor="question2">
+                What does this connect to in your life or other reading?
+              </label>
+              <textarea
+                id="question2"
+                name="response2"
+                onChange={updateUserResponses}
+                value={userResponses.response2}
+              ></textarea>
+            </div>
+
+            <div className="buckets">
+              <button
+                onClick={() => setShowBuckets(!showBuckets)}
+                className="btn-dark btn-lg"
+              >
+                Select Buckets
+              </button>
+
+              {showBuckets && (
+                <div className="buckets-expanded">
+                  <div className="bucket-buttons">{bucketElements}</div>
+                  <div className="add-bucket">
+                    <input placeholder="e.g. Mindset" />
+                    <button className="btn-dark">Add</button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="distillation-buttons">
-            <button onClick={promoteNote}>Promote</button>
-            <button onClick={discardNote}>Discard</button>
-            <button onClick={skipNote}>Skip</button>
+            <button onClick={promoteNote} className="btn-lg success">
+              Promote
+            </button>
+            <button onClick={discardNote} className="btn-lg btn-delete">
+              Discard
+            </button>
+            <button onClick={skipNote} className="btn-lg">
+              Skip
+            </button>
           </div>
         </div>
       ) : (

@@ -1,6 +1,6 @@
 import React from "react";
 import { deleteNote, getNote, updateNote } from "../api";
-import { useLoaderData, useRevalidator } from "react-router";
+import { Link, useLoaderData, useRevalidator } from "react-router";
 
 export function loader({ params }) {
   return getNote(params.id);
@@ -26,63 +26,114 @@ export default function Note() {
   function handleDeletion() {
     if (window.confirm("Are you sure you want to delete this note?")) {
       deleteNote(note.id);
-      return navigate(`/book/${note.bookId}`);
+      return navigate(`/book/${note.bookId}/inbox`);
     }
   }
 
   return (
     <>
-      <h1>Note</h1>
-      <div className="card note-content" key={note.id}>
+      <div className="log-header">
+        <Link to={`/book/${note.bookId}/inbox`} className="link-btn">
+          &larr; Back to Inbox
+        </Link>
+        <h1>Note</h1>
+      </div>
+
+      <div className="card main-card" key={note.id}>
         {!isEditing ? (
-          <div>
-            <h2>{note.noteTitle}</h2>
-            <p>{note.bookTitle}</p>
-            <p>{note.page}</p>
-            <p>{note.context}</p>
-            <p>{note.capture}</p>
-            <p>{note.spark}</p>
-          </div>
+          <>
+            <div className="main-card-header">
+              <p className="nice-font card-title">{note.noteTitle}</p>
+              <div>
+                <p>{note.bookTitle}</p>
+                <p>p. {note.page}</p>
+              </div>
+            </div>
+
+            <div className="main-card-text">
+              <p>
+                <span>Context:</span> {note.context.slice(0, 300)}
+              </p>
+              <p className="italic capture">{note.capture.slice(0, 300)}</p>
+              <div className="pill">
+                <p>{note.spark.slice(0, 300)}</p>
+              </div>
+            </div>
+          </>
         ) : (
-          <div>
-            <label htmlFor="note-note-title">Title</label>
-            <input
-              id="note-note-title"
-              defaultValue={note.noteTitle}
-              onChange={(e) => setNoteTitle(e.currentTarget.value)}
-            />
-            <p>{note.bookTitle}</p>
-            <label htmlFor="note-page">Page</label>
-            <input
-              id="note-page"
-              defaultValue={note.page}
-              onChange={(e) => setPage(e.currentTarget.value)}
-            />
-            <label htmlFor="note-context">Context</label>
+          <div className="note-editing">
+            <p>
+              <span className="bold">Book:</span>{" "}
+              <span className="nice-font">{note.bookTitle}</span>
+            </p>
+            <div className="note-editing-header">
+              <div>
+                <label htmlFor="note-note-title">
+                  Title <span className="required-field">*</span>
+                </label>
+                <input
+                  id="note-note-title"
+                  defaultValue={note.noteTitle}
+                  onChange={(e) => setNoteTitle(e.currentTarget.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="note-page">
+                  Page <span className="required-field">*</span>
+                </label>
+                <input
+                  id="note-page"
+                  defaultValue={note.page}
+                  onChange={(e) => setPage(e.currentTarget.value)}
+                />
+              </div>
+            </div>
+            <label htmlFor="note-context">
+              Context <span className="required-field">*</span>
+            </label>
             <textarea
               id="note-context"
               defaultValue={note.context}
               onChange={(e) => setContext(e.currentTarget.value)}
+              rows={3}
             ></textarea>
-            <label htmlFor="note-capture">Capture</label>
+            <label htmlFor="note-capture">
+              Capture (passage from the book){" "}
+              <span className="required-field">*</span>
+            </label>
             <textarea
               id="note-capture"
               defaultValue={note.capture}
               onChange={(e) => setCapture(e.currentTarget.value)}
+              rows={3}
             ></textarea>
-            <label htmlFor="note-spark">Spark</label>
+            <label htmlFor="note-spark">
+              Spark (your thought/reaction){" "}
+              <span className="required-field">*</span>
+            </label>
             <textarea
               id="note-spark"
               defaultValue={note.spark}
               onChange={(e) => setSpark(e.currentTarget.value)}
+              rows={3}
             ></textarea>
           </div>
         )}
-        <button onClick={handleClick}>{isEditing ? "Save" : "Edit"}</button>
-        {isEditing ? (
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
-        ) : null}
-        {!isEditing ? <button onClick={handleDeletion}>Delete</button> : null}
+        <div className="note-buttons">
+          <button onClick={handleClick} className="btn-dark btn-lg">
+            {isEditing ? "Save" : "Edit"}
+          </button>
+          {isEditing ? (
+            <button onClick={() => setIsEditing(false)} className="btn-lg">
+              Cancel
+            </button>
+          ) : null}
+          {!isEditing ? (
+            <button onClick={handleDeletion} className="btn-delete btn-lg">
+              Delete
+            </button>
+          ) : null}
+        </div>
       </div>
     </>
   );
