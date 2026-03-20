@@ -101,9 +101,11 @@ export default function Distillation() {
   return (
     <>
       <h1>Distillation</h1>
-      <p className="text-sm">
-        Card {currentIndex + 1} of {notes.length}
-      </p>
+      {currentIndex < notes.length ? (
+        <p className="text-sm">
+          Card {currentIndex + 1} of {notes.length}
+        </p>
+      ) : null}
 
       {notes[currentIndex] ? (
         <div className="distillation-card">
@@ -162,8 +164,16 @@ export default function Distillation() {
                 <div className="buckets-expanded">
                   <div className="bucket-buttons">{bucketElements}</div>
                   <div className="add-bucket">
-                    <input placeholder="e.g. Mindset" />
-                    <button className="btn-dark">Add</button>
+                    <input
+                      onChange={updateUserBucket}
+                      placeholder="e.g. Mindset"
+                    />
+                    <button
+                      className="btn-dark"
+                      onClick={updateSelectedBuckets}
+                    >
+                      Add
+                    </button>
                   </div>
                 </div>
               )}
@@ -183,24 +193,28 @@ export default function Distillation() {
           </div>
         </div>
       ) : (
-        <div className="distillation-complete-container">
+        <div className="card distillation-complete-container">
           <h2>Distillation Complete</h2>
-          <p>You reviewed {notes.length} notes in this session.</p>
+          <p className="text-sm">
+            You reviewed {notes.length} notes in this session.
+          </p>
           <div className="distillation-stats">
             <div className="stat promoted">
-              <p>{promoted}</p>
-              <p>Promoted</p>
+              <p className="nice-font green text-lg">{promoted}</p>
+              <p className="text-sm">Promoted</p>
             </div>
             <div className="stat discarded">
-              <p>{discarded}</p>
-              <p>Discarded</p>
+              <p className="nice-font red text-lg">{discarded}</p>
+              <p className="text-sm">Discarded</p>
             </div>
             <div className="stat skipped">
-              <p>{skipped}</p>
-              <p>skipped</p>
+              <p className="nice-font accent text-lg">{skipped}</p>
+              <p className="text-sm">Skipped</p>
             </div>
           </div>
-          <Link to="/bookshelf">Done</Link>
+          <Link to="/bookshelf" className="link-btn link-btn-dark">
+            Done
+          </Link>
         </div>
       )}
     </>

@@ -40,7 +40,7 @@ export default function Bookshelf() {
           <Link className="link-btn" to={`/book/${book.id}/inbox`}>
             Inbox
           </Link>
-          <Link className="link-btn" to={`/book/${book.id}/cards`}>
+          <Link className="link-btn" to={`/library?book=${book.id}`}>
             View Cards
           </Link>
         </div>

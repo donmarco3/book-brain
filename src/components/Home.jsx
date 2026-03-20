@@ -1,6 +1,7 @@
 import React from "react";
 import { getAllNotes, getBooks, getCards } from "../api";
 import { Link, useLoaderData } from "react-router";
+import AddBook from "../components/AddBook";
 
 export async function loader() {
   const books = await getBooks();
@@ -11,7 +12,9 @@ export async function loader() {
 
 export default function Home() {
   const { books, cards, notes } = useLoaderData();
+
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
+  const [showModal, setShowModal] = React.useState(false);
 
   let streak = 0;
 
@@ -129,34 +132,34 @@ export default function Home() {
       <h1 className="home-heading">Home</h1>
       <div className="home-stats">
         <div className="card">
-          <p className="nice-font">{books.length}</p>
+          <p className="nice-font text-lg">{books.length}</p>
           <p>Total Books</p>
         </div>
         <div className="card">
-          <p className="nice-font">{cards.length}</p>
+          <p className="nice-font text-lg">{cards.length}</p>
           <p>Total Cards</p>
         </div>
         <div className="card">
-          <p className="nice-font">{getStreak()}</p>
+          <p className="nice-font text-lg">{getStreak()}</p>
           <p>Day Streak</p>
         </div>
         <div className="card">
-          <p className="nice-font">{getNumberOfCards()}</p>
+          <p className="nice-font text-lg">{getNumberOfCards()}</p>
           <div>
             <button
-              className={selectedPeriod === "Week" ? "selected" : null}
+              className={selectedPeriod === "Week" ? "btn-dark" : null}
               onClick={() => setSelectedPeriod("Week")}
             >
               Week
             </button>
             <button
-              className={selectedPeriod === "Month" ? "selected" : null}
+              className={selectedPeriod === "Month" ? "btn-dark" : null}
               onClick={() => setSelectedPeriod("Month")}
             >
               Month
             </button>
             <button
-              className={selectedPeriod === "Year" ? "selected" : null}
+              className={selectedPeriod === "Year" ? "btn-dark" : null}
               onClick={() => setSelectedPeriod("Year")}
             >
               Year
@@ -169,13 +172,34 @@ export default function Home() {
       </div>
 
       <h2 className="home-heading">Currently Reading</h2>
-      <div className="currently-reading">{bookElements}</div>
+      <div className="currently-reading">
+        {bookElements.length > 0 ? (
+          <div>{bookElements}</div>
+        ) : (
+          <div className="no-items-container">
+            <p className="text-sm">You are currently reading no books.</p>
+            <button
+              className="btn-dark btn-lg"
+              onClick={() => setShowModal(true)}
+            >
+              + Add Book
+            </button>
+            <AddBook
+              action={"/bookshelf"}
+              showModal={showModal}
+              setShowModal={setShowModal}
+            />
+          </div>
+        )}
+      </div>
 
       <h2 className="home-heading">Daily Random Card</h2>
       {cards.length > 0 ? (
         <div>{getRandomCard()}</div>
       ) : (
-        <p>No cards yet. Distill some notes to see your daily card.</p>
+        <p className="text-sm">
+          No cards yet. Distill some notes to see your daily card.
+        </p>
       )}
     </>
   );

@@ -1,10 +1,13 @@
 import React from "react";
 import { addBucket, deleteCard, getBuckets, getCard, updateCard } from "../api";
-import { useLoaderData, useNavigate, useRevalidator } from "react-router";
+import { Link, useLoaderData, useNavigate, useRevalidator } from "react-router";
 
 export async function loader({ params }) {
   const card = await getCard(params.id);
   const buckets = await getBuckets();
+  if (!card) {
+    return { card: null, buckets: [] };
+  }
   return { card, buckets };
 }
 
@@ -14,15 +17,28 @@ export default function Card() {
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = React.useState(false);
-  const [noteTitle, setNoteTitle] = React.useState(card.noteTitle);
-  const [page, setPage] = React.useState(card.page);
-  const [context, setContext] = React.useState(card.context);
-  const [capture, setCapture] = React.useState(card.capture);
-  const [spark, setSpark] = React.useState(card.spark);
-  const [response1, setResponse1] = React.useState(card.response1);
-  const [response2, setResponse2] = React.useState(card.response2);
+  const [noteTitle, setNoteTitle] = React.useState(card?.noteTitle) || "";
+  const [page, setPage] = React.useState(card?.page || null);
+  const [context, setContext] = React.useState(card?.context || "");
+  const [capture, setCapture] = React.useState(card?.capture || "");
+  const [spark, setSpark] = React.useState(card?.spark || "");
+  const [response1, setResponse1] = React.useState(card?.response1 || "");
+  const [response2, setResponse2] = React.useState(card?.response2 || "");
   const [userBucket, setUserBucket] = React.useState("");
-  const [selectedBuckets, setSelectedBuckets] = React.useState(card.buckets);
+  const [selectedBuckets, setSelectedBuckets] = React.useState(
+    card?.buckets || [],
+  );
+
+  if (!card) {
+    return (
+      <>
+        <h1>Card not found.</h1>
+        <Link to="/library" className="link-btn link-btn-dark">
+          Back to Library
+        </Link>
+      </>
+    );
+  }
 
   function handleClick() {
     updateCard(
@@ -65,11 +81,17 @@ export default function Card() {
     }
   }
 
-  const bucketElements = buckets.map((bucket) => {
+  const bucketElements = card.buckets.map((bucket) => (
+    <p key={bucket} className="pill">
+      {bucket}
+    </p>
+  ));
+
+  const allBucketElements = buckets.map((bucket) => {
     return (
       <button
         className={
-          selectedBuckets.includes(bucket.name) ? "bucket selected" : "bucket"
+          selectedBuckets.includes(bucket.name) ? "bucket btn-dark" : "bucket"
         }
         key={bucket.id}
         onClick={() => toggleBucket(bucket.name)}
@@ -81,62 +103,101 @@ export default function Card() {
 
   return (
     <>
-      <h1>Card</h1>
-      <div className="card card-content" key={card.id}>
+      <div className="log-header">
+        <Link to={"/library"} className="link-btn">
+          &larr; Back to Library
+        </Link>
+        <h1>{card.noteTitle}</h1>
+      </div>
+      <div className="card main-card card-content" key={card.id}>
         {!isEditing ? (
-          <div>
-            <h2>{card.noteTitle}</h2>
-            <p>{card.bookTitle}</p>
-            <p>{card.page}</p>
-            <p>{card.context}</p>
-            <p>{card.capture}</p>
-            <p>{card.spark}</p>
-            <p>{card.question1}</p>
-            <p>{card.response1}</p>
-            <p>{card.question2}</p>
-            <p>{card.response2}</p>
-            <p>{card.buckets}</p>
-          </div>
+          <>
+            <div className="main-card-header">
+              <p className="nice-font card-title">{card.noteTitle}</p>
+              <div>
+                <p>p. {card.page}</p>
+              </div>
+            </div>
+
+            <div className="main-card-buckets">{bucketElements}</div>
+
+            <div className="main-card-text">
+              <p>
+                <span className="bold">Context:</span> {card.context}
+              </p>
+              <p className="italic capture">{card.capture}</p>
+              <div className="pill">
+                <p>{card.spark}</p>
+              </div>
+              <p className="bold">{card.question1}</p>
+              <p>{card.response1}</p>
+              <p className="bold">{card.question2}</p>
+              <p>{card.response2}</p>
+            </div>
+          </>
         ) : (
-          <div>
-            <label htmlFor="card-note-title">Title</label>
-            <input
-              id="card-note-title"
-              defaultValue={card.noteTitle}
-              onChange={(e) => setNoteTitle(e.currentTarget.value)}
-            />
-            <p>{card.bookTitle}</p>
-            <label htmlFor="card-page">Page</label>
-            <input
-              id="card-page"
-              defaultValue={card.page}
-              onChange={(e) => setPage(e.currentTarget.value)}
-            />
-            <label htmlFor="card-context">Context</label>
+          <div className="note-editing">
+            <p>
+              <span className="bold">Book:</span>{" "}
+              <span className="nice-font">{card.bookTitle}</span>
+            </p>
+            <div className="note-editing-header">
+              <div>
+                <label htmlFor="card-note-title">
+                  Card Title <span className="required-field">*</span>
+                </label>
+                <input
+                  id="card-note-title"
+                  defaultValue={card.noteTitle}
+                  onChange={(e) => setNoteTitle(e.currentTarget.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="card-page">
+                  Page <span className="required-field">*</span>
+                </label>
+                <input
+                  id="card-page"
+                  defaultValue={card.page}
+                  onChange={(e) => setPage(e.currentTarget.value)}
+                />
+              </div>
+            </div>
+            <label htmlFor="card-context">
+              Context <span className="required-field">*</span>
+            </label>
             <textarea
               id="card-context"
               defaultValue={card.context}
               onChange={(e) => setContext(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-capture">Capture</label>
+            <label htmlFor="card-capture">
+              Capture <span className="required-field">*</span>
+            </label>
             <textarea
               id="card-capture"
               defaultValue={card.capture}
               onChange={(e) => setCapture(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-spark">Spark</label>
+            <label htmlFor="card-spark">
+              Spark <span className="required-field">*</span>
+            </label>
             <textarea
               id="card-spark"
               defaultValue={card.spark}
               onChange={(e) => setSpark(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-question1">{card.question1}</label>
+            <label htmlFor="card-question1">
+              {card.question1} <span className="required-field">*</span>
+            </label>
             <textarea
               id="card-question1"
               defaultValue={card.response1}
               onChange={(e) => setResponse1(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-question2">{card.question2}</label>
+            <label htmlFor="card-question2">
+              {card.question2} <span className="required-field">*</span>
+            </label>
             <textarea
               id="card-question2"
               defaultValue={card.response2}
@@ -144,26 +205,39 @@ export default function Card() {
             ></textarea>
 
             <div className="buckets">
-              <p>Buckets</p>
-              {bucketElements}
-              <div className="add-bucket-container">
-                <label htmlFor="add-bucket">Add Bucket</label>
-                <input
-                  id="add-bucket"
-                  name="bucket-name"
-                  placeholder="e.g. Mindset"
-                  onChange={updateUserBucket}
-                />
-                <button onClick={updateSelectedBuckets}>Add Bucket</button>
+              <p>
+                Select Buckets <span className="required-field">*</span>
+              </p>
+              <div className="buckets-expanded">
+                <div className="bucket-buttons">{allBucketElements}</div>
+                <div className="add-bucket">
+                  <input
+                    onChange={updateUserBucket}
+                    placeholder="e.g. Mindset"
+                  />
+                  <button className="btn-dark" onClick={updateSelectedBuckets}>
+                    Add
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
-        <button onClick={handleClick}>{isEditing ? "Save" : "Edit"}</button>
-        {isEditing ? (
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
-        ) : null}
-        {!isEditing ? <button onClick={handleDeletion}>Delete</button> : null}
+        <div className="note-buttons">
+          <button className="btn-dark btn-lg" onClick={handleClick}>
+            {isEditing ? "Save" : "Edit"}
+          </button>
+          {isEditing ? (
+            <button className="btn-lg" onClick={() => setIsEditing(false)}>
+              Cancel
+            </button>
+          ) : null}
+          {!isEditing ? (
+            <button className="btn-delete" onClick={handleDeletion}>
+              Delete
+            </button>
+          ) : null}
+        </div>
       </div>
     </>
   );

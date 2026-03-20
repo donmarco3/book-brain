@@ -36,7 +36,7 @@ export default function Note() {
         <Link to={`/book/${note.bookId}/inbox`} className="link-btn">
           &larr; Back to Inbox
         </Link>
-        <h1>Note</h1>
+        <h1>{note.noteTitle}</h1>
       </div>
 
       <div className="card main-card" key={note.id}>
@@ -69,7 +69,7 @@ export default function Note() {
             <div className="note-editing-header">
               <div>
                 <label htmlFor="note-note-title">
-                  Title <span className="required-field">*</span>
+                  Note Title <span className="required-field">*</span>
                 </label>
                 <input
                   id="note-note-title"
