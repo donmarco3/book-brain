@@ -8,6 +8,9 @@ const db = getFirestore(app)
 // BOOKS
 
 export async function addBook(bookTitle, bookAuthor) {
+    if (!bookTitle || bookTitle.trim() === "" || !bookAuthor || bookAuthor.trim() === "") {
+        throw new Error("Must include Title and Author")
+    }
     const docRef = await addDoc(collection(db, "books"), {
         title: bookTitle,
         author: bookAuthor,
@@ -38,6 +41,9 @@ export async function getBooks() {
 export async function getBook(id) {
     const docRef = doc(db, "books", id)
     const bookSnap = await getDoc(docRef)
+    if (!bookSnap.exists()) {
+        return null
+    }
     return {
         ...bookSnap.data(),
         id: bookSnap.id
@@ -76,6 +82,9 @@ export async function getAllNotes() {
 export async function getNote(id) {
     const docRef = doc(db, "notes", id)
     const noteSnap = await getDoc(docRef)
+    if (!noteSnap.exists()) {
+        return null
+    }
     return {
         ...noteSnap.data(),
         id: noteSnap.id
@@ -156,6 +165,9 @@ export async function getCards() {
 export async function getCard(id) {
     const docRef = doc(db, "cards", id)
     const cardSnap = await getDoc(docRef)
+    if (!cardSnap.exists()) {
+        return null
+    }
     return {
         ...cardSnap.data(),
         id: cardSnap.id

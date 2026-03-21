@@ -2,6 +2,7 @@ import React from "react";
 import { getAllNotes, getBooks, getCards } from "../api";
 import { Link, useLoaderData } from "react-router";
 import AddBook from "../components/AddBook";
+import { sliceString } from "../utils";
 
 export async function loader() {
   const books = await getBooks();
@@ -113,13 +114,13 @@ export default function Home() {
           <div className="main-card-text">
             <p>
               <span className="bold">Context:</span>{" "}
-              {cards[randomIndex].context.slice(0, 300)}
+              {sliceString(cards[randomIndex].context)}
             </p>
             <p className="italic capture">
-              {cards[randomIndex].capture.slice(0, 300)}
+              {sliceString(cards[randomIndex].capture)}
             </p>
             <div className="pill">
-              <p>{cards[randomIndex].spark.slice(0, 300)}</p>
+              <p>{sliceString(cards[randomIndex].spark)}</p>
             </div>
           </div>
         </Link>
@@ -177,7 +178,9 @@ export default function Home() {
           <div>{bookElements}</div>
         ) : (
           <div className="no-items-container">
-            <p className="text-sm">You are currently reading no books.</p>
+            <p className="text-sm no-items-text">
+              You are currently reading no books.
+            </p>
             <button
               className="btn-dark btn-lg"
               onClick={() => setShowModal(true)}

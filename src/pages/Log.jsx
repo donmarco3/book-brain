@@ -46,12 +46,7 @@ export default function Log() {
             <label htmlFor="book-page">
               Page <span className="required-field">*</span>
             </label>
-            <input
-              id="book-page"
-              name="book-page"
-              type="number"
-              placeholder="e.g. 42"
-            />
+            <input id="book-page" name="book-page" placeholder="e.g. 42" />
           </div>
         </div>
         <label htmlFor="note-context">

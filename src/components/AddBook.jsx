@@ -1,13 +1,30 @@
 import React from "react";
-import { Form } from "react-router";
+import { Form, useActionData } from "react-router";
 import { addBook } from "../api";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  addBook(formData.get("book-title"), formData.get("book-author"));
+  const title = formData.get("book-title");
+  const author = formData.get("book-author");
+
+  try {
+    await addBook(title, author);
+    return { success: true };
+  } catch (error) {
+    return { error: error.message };
+  }
 }
 
 export default function AddBook({ action, showModal, setShowModal }) {
+  const actionData = useActionData();
+  const [errorMessage, setErrorMessage] = React.useState("");
+
+  React.useEffect(() => {
+    if (actionData?.error) {
+      setErrorMessage(actionData.error);
+    }
+  }, [actionData]);
+
   return (
     <>
       {showModal ? (
@@ -20,6 +37,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
               replace
             >
               <h2>Add a Book</h2>
+              {errorMessage && <p className="red">{errorMessage}</p>}
               <div className="add-book-modal-inputs">
                 <label htmlFor="book-title">
                   Title <span className="required-field">*</span>
@@ -41,7 +59,13 @@ export default function AddBook({ action, showModal, setShowModal }) {
               </div>
 
               <div className="add-book-modal-buttons">
-                <button className="btn-lg" onClick={() => setShowModal(false)}>
+                <button
+                  className="btn-lg"
+                  onClick={() => {
+                    setShowModal(false);
+                    setErrorMessage("");
+                  }}
+                >
                   Cancel
                 </button>
                 <button className="btn-dark btn-lg">Add Book</button>

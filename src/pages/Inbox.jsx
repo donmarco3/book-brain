@@ -1,6 +1,7 @@
 import React from "react";
 import { useLoaderData, Link } from "react-router";
 import { getNotes, getBook } from "../api";
+import { sliceString } from "../utils";
 
 export async function loader({ params }) {
   const notes = await getNotes(params.id);
@@ -24,12 +25,11 @@ export default function Inbox() {
 
           <div className="main-card-text">
             <p>
-              <span className="bold">Context:</span>{" "}
-              {note.context.slice(0, 300)}
+              <span className="bold">Context:</span> {sliceString(note.context)}
             </p>
-            <p className="italic capture">{note.capture.slice(0, 300)}</p>
+            <p className="italic capture">{sliceString(note.capture)}</p>
             <div className="pill">
-              <p>{note.spark.slice(0, 300)}</p>
+              <p>{sliceString(note.spark)}</p>
             </div>
           </div>
         </Link>

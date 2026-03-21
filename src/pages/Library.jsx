@@ -1,12 +1,8 @@
 import React from "react";
-import { getBooks, getBuckets, getCards } from "../api";
-import {
-  Link,
-  useLoaderData,
-  useLocation,
-  useSearchParams,
-} from "react-router";
+import { getBuckets, getCards } from "../api";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import AddBook from "../components/AddBook";
+import { sliceString } from "../utils";
 
 export async function loader() {
   const cards = await getCards();
@@ -93,12 +89,11 @@ export default function Library() {
 
           <div className="main-card-text">
             <p>
-              <span className="bold">Context:</span>{" "}
-              {card.context.slice(0, 300)}
+              <span className="bold">Context:</span> {sliceString(card.context)}
             </p>
-            <p className="italic capture">{card.capture.slice(0, 300)}</p>
+            <p className="italic capture">{sliceString(card.capture)}</p>
             <div className="pill">
-              <p>{card.spark.slice(0, 300)}</p>
+              <p>{sliceString(card.spark)}</p>
             </div>
           </div>
         </Link>

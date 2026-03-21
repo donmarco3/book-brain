@@ -311,6 +311,17 @@ textarea {
     line-height: 1.6;
 }
 
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+input:-webkit-autofill:hover,
+textarea:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+}
+
+
 
 /* ============================================
    HOME
@@ -356,7 +367,7 @@ div.currently-reading {
     gap: 20px;
 }
 
-div.currently-reading > .card {
+div.currently-reading .card {
     padding-bottom: 25px;
     min-width: 200px;
 }
@@ -365,14 +376,18 @@ div.no-items-container > button {
     margin-top: 10px;
 }
 
-/* div.currently-reading p:nth-of-type(1) {
+div.currently-reading p:nth-of-type(1) {
     font-weight: 800;
     margin: 10px 0 5px;
 }
 
+div.currently-reading p.no-items-text {
+    margin-top: 0;
+}
+
 div.currently-reading p:nth-of-type(2) {
     margin: 0 0 20px;
-} */
+}
 
 
 /* ============================================
@@ -397,6 +412,10 @@ div.add-book-modal {
   border-radius: 12px;
   max-width: 400px;
   width: 100%;
+}
+
+div.add-book-modal p.red {
+    margin-top: 10px;
 }
 
 div.add-book-modal-inputs {

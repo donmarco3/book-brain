@@ -13,9 +13,11 @@ export default function Bookshelf() {
 
   const [showModal, setShowModal] = React.useState(false);
 
-  function updateBook(id) {
-    deleteBook(id);
-    revalidator.revalidate();
+  function handleDeletion(id) {
+    if (window.confirm("Are you sure you want to delete this book?")) {
+      deleteBook(id);
+      revalidator.revalidate();
+    }
   }
 
   function changeBookStatus(id, currentStatus) {
@@ -48,7 +50,10 @@ export default function Bookshelf() {
           <button onClick={() => changeBookStatus(book.id, book.status)}>
             Mark as {book.status === "Reading" ? "Finished" : "Reading"}
           </button>
-          <button className="btn-delete" onClick={() => updateBook(book.id)}>
+          <button
+            className="btn-delete"
+            onClick={() => handleDeletion(book.id)}
+          >
             Delete
           </button>
         </div>

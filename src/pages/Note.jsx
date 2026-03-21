@@ -2,20 +2,35 @@ import React from "react";
 import { deleteNote, getNote, updateNote } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
 
-export function loader({ params }) {
-  return getNote(params.id);
+export async function loader({ params }) {
+  const note = await getNote(params.id);
+  if (!note) {
+    return { note: null };
+  }
+  return { note };
 }
 
 export default function Note() {
-  const note = useLoaderData();
+  const { note } = useLoaderData();
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);
-  const [noteTitle, setNoteTitle] = React.useState(note.noteTitle);
-  const [page, setPage] = React.useState(note.page);
-  const [context, setContext] = React.useState(note.context);
-  const [capture, setCapture] = React.useState(note.capture);
-  const [spark, setSpark] = React.useState(note.spark);
+  const [noteTitle, setNoteTitle] = React.useState(note?.noteTitle);
+  const [page, setPage] = React.useState(note?.page);
+  const [context, setContext] = React.useState(note?.context);
+  const [capture, setCapture] = React.useState(note?.capture);
+  const [spark, setSpark] = React.useState(note?.spark);
+
+  if (!note) {
+    return (
+      <>
+        <h1>Note not found.</h1>
+        <Link to="/bookshelf" className="link-btn link-btn-dark">
+          Back to Bookshelf
+        </Link>
+      </>
+    );
+  }
 
   function handleClick() {
     updateNote(note.id, noteTitle, page, context, capture, spark);
