@@ -1,5 +1,8 @@
 page ranges rather than only 1 page
 
-when adding a bucket on distillation it should automatically be selected
-cant select buckets
-if bucket is not selected, error message shows but still procedes to next note
+back to bookshelf button needs to be dynamic depending on where the user is coming from
+
+fix filter styles
+option to filter by date created
+
+need to reset textarea input values when distilling

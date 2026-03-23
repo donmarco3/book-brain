@@ -1,5 +1,5 @@
 import React from "react";
-import { getBuckets, getCards } from "../api";
+import { getBooks, getBuckets, getCards } from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import AddBook from "../components/AddBook";
 import { sliceString } from "../utils";
@@ -7,11 +7,12 @@ import { sliceString } from "../utils";
 export async function loader() {
   const cards = await getCards();
   const buckets = await getBuckets();
-  return { cards, buckets };
+  const books = await getBooks();
+  return { cards, buckets, books };
 }
 
 export default function Library() {
-  const { cards, buckets } = useLoaderData();
+  const { cards, buckets, books } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const bookParam = searchParams.get("book");
@@ -20,22 +21,37 @@ export default function Library() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedBuckets, setSelectedBuckets] = React.useState([]);
   const [selectedBooks, setSelectedBooks] = React.useState(initialBooks);
+  const [selectedValue, setSelectedValue] = React.useState("newest");
   const [showFilters, setShowFilters] = React.useState(false);
+  const [bookFilter, setBookFilter] = React.useState(false);
+  const [bucketFilter, setBucketFilter] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
 
-  function toggleBucket(name) {
-    if (selectedBuckets.includes(name)) {
-      setSelectedBuckets(selectedBuckets.filter((bucket) => bucket !== name));
-    } else {
-      setSelectedBuckets([...selectedBuckets, name]);
+  function toggle(bucketName, bookId) {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (!bookId) {
+      if (selectedBuckets.includes(bucketName)) {
+        setSelectedBuckets(
+          selectedBuckets.filter((bucket) => bucket !== bucketName),
+        );
+        newParams.delete("bucket", bucketName);
+      } else {
+        setSelectedBuckets([...selectedBuckets, bucketName]);
+        newParams.append("bucket", bucketName);
+      }
     }
 
-    const newParams = new URLSearchParams(searchParams);
-    if (selectedBuckets.includes(name)) {
-      newParams.delete("bucket", name);
-    } else {
-      newParams.append("bucket", name);
+    if (!bucketName) {
+      if (selectedBooks.includes(bookId)) {
+        setSelectedBooks(selectedBooks.filter((book) => book !== bookId));
+        newParams.delete("book", bookId);
+      } else {
+        setSelectedBooks([...selectedBooks, bookId]);
+        newParams.append("book", bookId);
+      }
     }
+
     setSearchParams(newParams);
   }
 
@@ -49,7 +65,7 @@ export default function Library() {
     const matchesSearch =
       searchQuery.toLowerCase() === "" ||
       card.noteTitle.toLowerCase().includes(searchQuery) ||
-      card.bookTitle.toLowerCase().includes(searchQuery) ||
+      card.bookId.toLowerCase().includes(searchQuery) ||
       card.context.toLowerCase().includes(searchQuery) ||
       card.capture.toLowerCase().includes(searchQuery) ||
       card.spark.toLowerCase().includes(searchQuery) ||
@@ -67,7 +83,15 @@ export default function Library() {
     return matchesSearch && matchesBuckets && matchesBooks;
   });
 
-  const cardElements = filteredCards.map((card) => {
+  const sortedCards = [...filteredCards].sort((a, b) => {
+    if (selectedValue === "newest") {
+      return b.createdAt.seconds - a.createdAt.seconds;
+    } else if (selectedValue === "oldest") {
+      return a.createdAt.seconds - b.createdAt.seconds;
+    }
+  });
+
+  const cardElements = sortedCards.map((card) => {
     const bucketElements = card.buckets.map((bucket) => (
       <button key={bucket} className="pill">
         {bucket}
@@ -105,26 +129,77 @@ export default function Library() {
     return (
       <button
         className={
-          selectedBuckets.includes(bucket.name) ? "bucket btn-dark" : "bucket"
+          selectedBuckets.includes(bucket.name)
+            ? "filter-item-btn"
+            : "filter-item-btn btn-dark"
         }
         key={bucket.id}
-        onClick={() => toggleBucket(bucket.name)}
+        onClick={() => toggle(bucket.name, null)}
       >
         {bucket.name}
       </button>
     );
   });
 
+  const bookButtonElements = books.map((book) => {
+    return (
+      <button
+        className={
+          selectedBooks.includes(book.id)
+            ? "filter-item-btn"
+            : "filter-item-btn btn-dark"
+        }
+        key={book.id}
+        onClick={() => toggle(null, book.id)}
+      >
+        {book.title}
+      </button>
+    );
+  });
+
   return (
     <>
-      <h1>Library</h1>
-      <div className="library-header">
-        <input
-          name="search-query"
-          placeholder="Search cards..."
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
-        />
+      <aside
+        className="sidebar"
+        style={{
+          transform: showFilters ? "translateX(0)" : "translateX(-100%",
+        }}
+      >
+        <div className="sidebar-header">
+          <h2>Filter</h2>
+          <button onClick={() => setShowFilters((prev) => !prev)}>X</button>
+        </div>
 
+        <div className="filter-option-container">
+          <div
+            className="filter-option"
+            onClick={() => setBookFilter((prev) => !prev)}
+          >
+            <p>Books</p>
+            <p>{!bookFilter ? "+" : "-"}</p>
+          </div>
+          {bookFilter && (
+            <div className="filter-options">{bookButtonElements}</div>
+          )}
+        </div>
+
+        <div className="filter-option-container">
+          <div
+            className="filter-option"
+            onClick={() => setBucketFilter((prev) => !prev)}
+          >
+            <p>Buckets</p>
+            <p>{!bucketFilter ? "+" : "-"}</p>
+          </div>
+          {bucketFilter && (
+            <div className="filter-options">{bucketButtonElements}</div>
+          )}
+        </div>
+      </aside>
+
+      <h1>Library</h1>
+      <p className="text-sm">{cardElements.length} cards</p>
+      <div className="library-header">
         <div className="filter-container">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -138,10 +213,22 @@ export default function Library() {
               Clear
             </button>
           ) : null}
-          {showFilters ? (
-            <div className="filter-dropdown">{bucketButtonElements}</div>
-          ) : null}
         </div>
+      </div>
+
+      <div className="library-subheader">
+        <input
+          name="search-query"
+          placeholder="Search cards..."
+          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+        />
+        <select
+          className="btn-lg"
+          onChange={(e) => setSelectedValue(e.target.value)}
+        >
+          <option value="newest">Sort by: Newest</option>
+          <option value="oldest">Sort by: Oldest</option>
+        </select>
       </div>
       {cards.length > 0 ? (
         cardElements

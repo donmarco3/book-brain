@@ -59,9 +59,11 @@ export default function Distillation() {
   function promoteNote() {
     if (userResponses.response1 === "" || userResponses.response2 === "") {
       alert("Please answer all retention questions");
+      return;
     }
     if (selectedBuckets.length === 0) {
       alert("Please select at least one bucket");
+      return;
     }
     addCard(
       notes[currentIndex],
@@ -70,6 +72,7 @@ export default function Distillation() {
       selectedBuckets,
     );
     updateNoteStatus(notes[currentIndex].id);
+    setSelectedBuckets([]);
     setCurrentIndex((prev) => prev + 1);
     setPromoted((prev) => prev + 1);
   }
@@ -88,7 +91,7 @@ export default function Distillation() {
     return (
       <button
         className={
-          selectedBuckets.includes(bucket.name) ? "bucket selected" : "bucket"
+          selectedBuckets.includes(bucket.name) ? "bucket btn-dark" : "bucket"
         }
         key={bucket.id}
         onClick={() => toggleBucket(bucket.name)}
