@@ -36,7 +36,11 @@ export default function Bookshelf() {
         </div>
         <p className="text-sm">by {book.author}</p>
         <div className="book-card-links">
-          <Link className="link-btn link-btn-dark" to={`/book/${book.id}/log`}>
+          <Link
+            className="link-btn link-btn-dark"
+            to={`/book/${book.id}/log`}
+            state={{ from: "/bookshelf" }}
+          >
             Log Notes
           </Link>
           <Link className="link-btn" to={`/book/${book.id}/inbox`}>

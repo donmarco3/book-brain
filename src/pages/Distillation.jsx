@@ -72,17 +72,20 @@ export default function Distillation() {
       selectedBuckets,
     );
     updateNoteStatus(notes[currentIndex].id);
+    setUserResponses({ response1: "", response2: "" });
     setSelectedBuckets([]);
     setCurrentIndex((prev) => prev + 1);
     setPromoted((prev) => prev + 1);
   }
 
   function discardNote() {
+    setUserResponses({ response1: "", response2: "" });
     setCurrentIndex((prev) => prev + 1);
     setDiscarded((prev) => prev + 1);
   }
 
   function skipNote() {
+    setUserResponses({ response1: "", response2: "" });
     setCurrentIndex((prev) => prev + 1);
     setSkipped((prev) => prev + 1);
   }
@@ -106,7 +109,7 @@ export default function Distillation() {
       <h1>Distillation</h1>
       {currentIndex < notes.length ? (
         <p className="text-sm">
-          Card {currentIndex + 1} of {notes.length}
+          Note {currentIndex + 1} of {notes.length}
         </p>
       ) : null}
 
@@ -172,7 +175,7 @@ export default function Distillation() {
                       placeholder="e.g. Mindset"
                     />
                     <button
-                      className="btn-dark"
+                      className="btn-dark btn-lg"
                       onClick={updateSelectedBuckets}
                     >
                       Add

@@ -215,7 +215,10 @@ export default function Card() {
                     onChange={updateUserBucket}
                     placeholder="e.g. Mindset"
                   />
-                  <button className="btn-dark" onClick={updateSelectedBuckets}>
+                  <button
+                    className="btn-dark btn-lg"
+                    onClick={updateSelectedBuckets}
+                  >
                     Add
                   </button>
                 </div>

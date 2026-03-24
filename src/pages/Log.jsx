@@ -1,6 +1,7 @@
 import React from "react";
-import { Form, Link, redirect, useLoaderData } from "react-router";
+import { Form, Link, redirect, useLoaderData, useLocation } from "react-router";
 import { addNote, getBook } from "../api";
+import { validatePageRange } from "../utils";
 
 export function loader({ params }) {
   return getBook(params.id);
@@ -20,12 +21,24 @@ export async function action({ request, params }) {
 
 export default function Log() {
   const book = useLoaderData();
+  const location = useLocation();
+
+  const pathName = location.state ? location.state.from : "/bookshelf";
+
+  let pathNameText;
+  if (pathName === "/") {
+    pathNameText = "Home";
+  } else if (pathName === "/bookshelf") {
+    pathNameText = "Bookshelf";
+  } else {
+    pathNameText = "Inbox";
+  }
 
   return (
     <>
       <div className="log-header">
-        <Link to="/bookshelf" className="link-btn">
-          &larr; Back to Bookshelf
+        <Link to={pathName} className="link-btn">
+          &larr; Back to {pathNameText}
         </Link>
         <h1>Log Notes</h1>
         <p>

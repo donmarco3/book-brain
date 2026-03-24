@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, useActionData } from "react-router";
 import { addBook } from "../api";
+import useClickOutside from "./hooks/useClickOutside";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -18,6 +19,7 @@ export async function action({ request }) {
 export default function AddBook({ action, showModal, setShowModal }) {
   const actionData = useActionData();
   const [errorMessage, setErrorMessage] = React.useState("");
+  const modalRef = React.useRef(null);
 
   React.useEffect(() => {
     if (actionData?.error) {
@@ -25,11 +27,13 @@ export default function AddBook({ action, showModal, setShowModal }) {
     }
   }, [actionData]);
 
+  useClickOutside(modalRef, () => setShowModal(false));
+
   return (
     <>
       {showModal ? (
         <div className="add-book-modal-overlay">
-          <div className="add-book-modal">
+          <div className="add-book-modal" ref={modalRef}>
             <Form
               method="post"
               action={action}

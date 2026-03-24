@@ -3,6 +3,7 @@ import { getBooks, getBuckets, getCards } from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import AddBook from "../components/AddBook";
 import { sliceString } from "../utils";
+import useClickOutside from "../components/hooks/useClickOutside";
 
 export async function loader() {
   const cards = await getCards();
@@ -14,6 +15,7 @@ export async function loader() {
 export default function Library() {
   const { cards, buckets, books } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
+  const sidebarRef = React.useRef(null);
 
   const bookParam = searchParams.get("book");
   const initialBooks = bookParam ? [bookParam] : [];
@@ -26,6 +28,8 @@ export default function Library() {
   const [bookFilter, setBookFilter] = React.useState(false);
   const [bucketFilter, setBucketFilter] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
+
+  useClickOutside(sidebarRef, () => setShowFilters(false));
 
   function toggle(bucketName, bookId) {
     const newParams = new URLSearchParams(searchParams);
@@ -160,6 +164,7 @@ export default function Library() {
   return (
     <>
       <aside
+        ref={sidebarRef}
         className="sidebar"
         style={{
           transform: showFilters ? "translateX(0)" : "translateX(-100%",

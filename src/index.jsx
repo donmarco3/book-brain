@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import Home, { loader as homeLoader } from "./components/Home";
+import Home, { loader as homeLoader } from "./pages/Home";
 import Layout from "./components/Layout";
 import AddBook, { action as addBookAction } from "./components/AddBook";
 import Error from "./components/Error";

@@ -43,7 +43,7 @@ export default function Inbox() {
         <Link to="/bookshelf" className="link-btn">
           &larr; Back to Bookshelf
         </Link>
-        <h1>Log Notes</h1>
+        <h1>Inbox</h1>
         <p>
           {book.title} by {book.author}
         </p>
@@ -56,7 +56,11 @@ export default function Inbox() {
             : "You have no notes to review"}
         </p>
         <div>
-          <Link to={`/book/${book.id}/log`} className="link-btn">
+          <Link
+            to={`/book/${book.id}/log`}
+            state={{ from: `/book/${book.id}/inbox` }}
+            className="link-btn"
+          >
             New Note
           </Link>
           <Link
