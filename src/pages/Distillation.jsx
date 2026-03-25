@@ -82,12 +82,14 @@ export default function Distillation() {
     setUserResponses({ response1: "", response2: "" });
     setCurrentIndex((prev) => prev + 1);
     setDiscarded((prev) => prev + 1);
+    updateNoteStatus(notes[currentIndex].id);
   }
 
   function skipNote() {
     setUserResponses({ response1: "", response2: "" });
     setCurrentIndex((prev) => prev + 1);
     setSkipped((prev) => prev + 1);
+    updateNoteStatus(notes[currentIndex].id);
   }
 
   const bucketElements = buckets.map((bucket) => {
@@ -159,12 +161,17 @@ export default function Distillation() {
             </div>
 
             <div className="buckets">
-              <button
-                onClick={() => setShowBuckets(!showBuckets)}
-                className="btn-dark btn-lg"
-              >
-                Select Buckets
-              </button>
+              <div className="buckets-header">
+                <button
+                  onClick={() => setShowBuckets(!showBuckets)}
+                  className="btn-dark btn-lg"
+                >
+                  Select Buckets
+                </button>
+                <Link to="/manage-buckets" className="link-btn">
+                  Manage Buckets
+                </Link>
+              </div>
 
               {showBuckets && (
                 <div className="buckets-expanded">

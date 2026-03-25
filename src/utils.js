@@ -12,17 +12,33 @@ export function sliceString(string) {
 }
 
 export function validatePageRange(range) {
-    // 7
-    // 7-12
-    // 7-12, 23-26, 80-95
-
     const newRange = range.split("")
-    let type = ""
+
     if (newRange.includes(",")) {
-        type = "ranges"
+        if (!range.split(",").every(item => validateRange(item.trim()))) {
+            throw new Error("Invalid page format")
+        }
+        return range.split(",").map(item => item.trim()).join(", ")
     } else if (newRange.includes("-") && !newRange.includes(",")) {
-        type = "range"
+        if (!validateRange(range)) {
+            throw new Error("Invalid page format")
+        }
     } else {
-        type = "number"
+        if (parseInt(range).toString() !== range) {
+            throw new Error("Invalid page format")
+        }
+    }
+    return range
+}
+
+function validateRange(range) {
+    const rangeArr = range.split("-")
+    const rangeStart = parseInt(rangeArr[0])
+    const rangeEnd = parseInt(rangeArr[1])
+    
+    if (rangeArr.length !== 2 || isNaN(rangeStart) || isNaN(rangeEnd) || rangeStart >= rangeEnd) {
+        return false
+    } else {
+        return true
     }
 }

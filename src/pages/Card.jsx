@@ -1,6 +1,7 @@
 import React from "react";
 import { addBucket, deleteCard, getBuckets, getCard, updateCard } from "../api";
 import { Link, useLoaderData, useNavigate, useRevalidator } from "react-router";
+import { validatePageRange } from "../utils";
 
 export async function loader({ params }) {
   const card = await getCard(params.id);
@@ -28,6 +29,7 @@ export default function Card() {
   const [selectedBuckets, setSelectedBuckets] = React.useState(
     card?.buckets || [],
   );
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   if (!card) {
     return (
@@ -41,19 +43,42 @@ export default function Card() {
   }
 
   function handleClick() {
-    updateCard(
-      card.id,
-      noteTitle,
-      page,
-      context,
-      capture,
-      spark,
-      response1,
-      response2,
-      selectedBuckets,
-    );
-    setIsEditing((prev) => !prev);
-    revalidator.revalidate();
+    if (!noteTitle) {
+      setErrorMessage("Title is required");
+      return;
+    }
+    if (!page) {
+      setErrorMessage("Page is required");
+      return;
+    }
+    if (!context && !capture && !spark) {
+      setErrorMessage("At least one of context, capture, or spark is required");
+      return;
+    }
+    if (selectedBuckets.length === 0) {
+      setErrorMessage("At least one bucket is required");
+      return;
+    }
+
+    try {
+      validatePageRange(page);
+      updateCard(
+        card.id,
+        noteTitle,
+        page,
+        context,
+        capture,
+        spark,
+        response1,
+        response2,
+        selectedBuckets,
+      );
+      setIsEditing((prev) => !prev);
+      revalidator.revalidate();
+    } catch (error) {
+      setErrorMessage(error.message);
+      return;
+    }
   }
 
   function updateUserBucket(event) {
@@ -141,6 +166,7 @@ export default function Card() {
               <span className="bold">Book:</span>{" "}
               <span className="nice-font">{card.bookTitle}</span>
             </p>
+            {errorMessage && <p className="red">{errorMessage}</p>}
             <div className="note-editing-header">
               <div>
                 <label htmlFor="card-note-title">
@@ -163,25 +189,21 @@ export default function Card() {
                 />
               </div>
             </div>
-            <label htmlFor="card-context">
-              Context <span className="required-field">*</span>
-            </label>
+            <label htmlFor="card-context">Context</label>
             <textarea
               id="card-context"
               defaultValue={card.context}
               onChange={(e) => setContext(e.currentTarget.value)}
             ></textarea>
             <label htmlFor="card-capture">
-              Capture <span className="required-field">*</span>
+              Capture (passage from the book){" "}
             </label>
             <textarea
               id="card-capture"
               defaultValue={card.capture}
               onChange={(e) => setCapture(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-spark">
-              Spark <span className="required-field">*</span>
-            </label>
+            <label htmlFor="card-spark">Spark (your thought/reaction) </label>
             <textarea
               id="card-spark"
               defaultValue={card.spark}

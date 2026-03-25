@@ -1,6 +1,7 @@
 import React from "react";
 import { deleteNote, getNote, updateNote } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
+import { validatePageRange } from "../utils";
 
 export async function loader({ params }) {
   const note = await getNote(params.id);
@@ -20,6 +21,7 @@ export default function Note() {
   const [context, setContext] = React.useState(note?.context);
   const [capture, setCapture] = React.useState(note?.capture);
   const [spark, setSpark] = React.useState(note?.spark);
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   if (!note) {
     return (
@@ -33,9 +35,28 @@ export default function Note() {
   }
 
   function handleClick() {
-    updateNote(note.id, noteTitle, page, context, capture, spark);
-    setIsEditing((prev) => !prev);
-    revalidator.revalidate();
+    if (!noteTitle) {
+      setErrorMessage("Title is required");
+      return;
+    }
+    if (!page) {
+      setErrorMessage("Page is required");
+      return;
+    }
+    if (!context && !capture && !spark) {
+      setErrorMessage("At least one of context, capture, or spark is required");
+      return;
+    }
+
+    try {
+      validatePageRange(page);
+      updateNote(note.id, noteTitle, page, context, capture, spark);
+      setIsEditing((prev) => !prev);
+      revalidator.revalidate();
+    } catch (error) {
+      setErrorMessage(error.message);
+      return;
+    }
   }
 
   function handleDeletion() {
@@ -81,6 +102,7 @@ export default function Note() {
               <span className="bold">Book:</span>{" "}
               <span className="nice-font">{note.bookTitle}</span>
             </p>
+            {errorMessage && <p className="red">{errorMessage}</p>}
             <div className="note-editing-header">
               <div>
                 <label htmlFor="note-note-title">
@@ -103,9 +125,7 @@ export default function Note() {
                 />
               </div>
             </div>
-            <label htmlFor="note-context">
-              Context <span className="required-field">*</span>
-            </label>
+            <label htmlFor="note-context">Context</label>
             <textarea
               id="note-context"
               defaultValue={note.context}
@@ -114,7 +134,6 @@ export default function Note() {
             ></textarea>
             <label htmlFor="note-capture">
               Capture (passage from the book){" "}
-              <span className="required-field">*</span>
             </label>
             <textarea
               id="note-capture"
@@ -122,10 +141,7 @@ export default function Note() {
               onChange={(e) => setCapture(e.currentTarget.value)}
               rows={3}
             ></textarea>
-            <label htmlFor="note-spark">
-              Spark (your thought/reaction){" "}
-              <span className="required-field">*</span>
-            </label>
+            <label htmlFor="note-spark">Spark (your thought/reaction) </label>
             <textarea
               id="note-spark"
               defaultValue={note.spark}

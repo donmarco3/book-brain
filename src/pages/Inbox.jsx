@@ -63,12 +63,14 @@ export default function Inbox() {
           >
             New Note
           </Link>
-          <Link
-            to={`/book/${book.id}/distillation`}
-            className="link-btn link-btn-dark"
-          >
-            Begin Distillation
-          </Link>
+          {notes.length > 0 && (
+            <Link
+              to={`/book/${book.id}/distillation`}
+              className="link-btn link-btn-dark"
+            >
+              Begin Distillation
+            </Link>
+          )}
         </div>
       </div>
 

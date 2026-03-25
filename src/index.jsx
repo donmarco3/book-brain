@@ -20,6 +20,9 @@ import Distillation, {
 import NotFound from "./pages/NotFound";
 import Card, { loader as cardLoader } from "./pages/Card";
 import Note, { loader as noteLoader } from "./pages/Note";
+import ManageBuckets, {
+  loader as manageBucketsLoader,
+} from "./pages/ManageBuckets";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,6 +46,12 @@ const router = createBrowserRouter(
         path="library"
         element={<Library />}
         loader={libraryLoader}
+        hydrateFallbackElement={<h1>Loading...</h1>}
+      />
+      <Route
+        path="manage-buckets"
+        element={<ManageBuckets />}
+        loader={manageBucketsLoader}
         hydrateFallbackElement={<h1>Loading...</h1>}
       />
       <Route

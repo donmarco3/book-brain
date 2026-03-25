@@ -137,6 +137,10 @@ export async function getBuckets() {
     return dataArr
 }
 
+export async function deleteBucket(id) {
+    await deleteDoc(doc(db, "buckets", id))
+}
+
 // CARDS
 
 export async function addCard(note, response1, response2, buckets) {

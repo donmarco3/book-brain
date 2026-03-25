@@ -17,8 +17,6 @@ export default function Home() {
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
   const [showModal, setShowModal] = React.useState(false);
 
-  validatePageRange("7-12, 23-26, 80-95");
-
   let streak = 0;
 
   const currentDate = new Date();

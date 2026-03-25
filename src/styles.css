@@ -97,6 +97,10 @@ p {
     color: var(--color-warm-brown-light);
 }
 
+.error {
+    margin-top: 10px;
+}
+
 /* ============================================
    LAYOUT
    ============================================ */
@@ -626,6 +630,7 @@ form.log-note-form > textarea {
 div.inbox-sub-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 30px;
 }
 
@@ -661,6 +666,7 @@ div.note-editing-header {
     display: flex;
     gap: 20px;
     justify-content: space-between;
+    margin-top: 20px;
 }
 
 div.note-editing-header > div {
@@ -686,10 +692,16 @@ div.distillation-card {
     margin: 5px 0 20px;
 }
 
-div.buckets > .buckets-expanded{
+div.buckets > .buckets-expanded {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
+}
+
+div.buckets > .buckets-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 div.buckets input {
@@ -740,4 +752,17 @@ div.distillation-stats {
     text-align: center;
     gap: 2em;
     margin: 20px 0 40px;
+}
+
+
+
+/* ============================================
+   MANAGE BUCKETS
+   ============================================ */
+
+div.bucket {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
 }
