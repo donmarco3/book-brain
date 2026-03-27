@@ -17,12 +17,16 @@ export default function Library() {
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = React.useRef(null);
 
-  const bookParam = searchParams.get("book");
+  const bookParam = searchParams.getAll("book");
   const initialBooks = bookParam ? [bookParam] : [];
+  const bucketParam = searchParams.getAll("bucket");
+  const initialBuckets = bucketParam ? [bucketParam] : [];
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedBuckets, setSelectedBuckets] = React.useState([]);
-  const [selectedBooks, setSelectedBooks] = React.useState(initialBooks);
+  const [selectedBuckets, setSelectedBuckets] = React.useState(
+    initialBuckets[0],
+  );
+  const [selectedBooks, setSelectedBooks] = React.useState(initialBooks[0]);
   const [selectedValue, setSelectedValue] = React.useState("newest");
   const [showFilters, setShowFilters] = React.useState(false);
   const [bookFilter, setBookFilter] = React.useState(false);
@@ -96,15 +100,22 @@ export default function Library() {
   });
 
   const cardElements = sortedCards.map((card) => {
-    const bucketElements = card.buckets.map((bucket) => (
-      <button key={bucket} className="pill">
-        {bucket}
-      </button>
-    ));
+    const bucketElements = card.buckets.map((bucket) => {
+      if (buckets.some((item) => item.name === bucket))
+        return (
+          <p key={bucket} className="pill">
+            {bucket}
+          </p>
+        );
+    });
 
     return (
       <div className="card main-card" key={card.id}>
-        <Link to={`/card/${card.id}`} className="link">
+        <Link
+          to={`/card/${card.id}`}
+          state={{ from: "/library", search: `?${searchParams.toString()}` }}
+          className="link"
+        >
           <div className="main-card-header">
             <p className="nice-font card-title">{card.noteTitle}</p>
             <div>

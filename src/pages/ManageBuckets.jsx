@@ -1,6 +1,6 @@
 import React from "react";
 import { deleteBucket, getBuckets } from "../api";
-import { useLoaderData, useRevalidator } from "react-router";
+import { Link, useLoaderData, useLocation, useRevalidator } from "react-router";
 
 export async function loader() {
   const buckets = await getBuckets();
@@ -10,6 +10,7 @@ export async function loader() {
 export default function ManageBuckets() {
   const { buckets } = useLoaderData();
   const revalidator = useRevalidator();
+  const location = useLocation();
 
   function handleDeletion(id) {
     deleteBucket(id);
@@ -30,9 +31,25 @@ export default function ManageBuckets() {
     );
   });
 
+  const pathName = location.state ? location.state.from : "/";
+
+  let pathNameText;
+  if (pathName.includes("/card")) {
+    pathNameText = "Card";
+  } else if (pathName.includes("/distillation")) {
+    pathNameText = "Distillation";
+  } else {
+    pathNameText = "Home";
+  }
+
   return (
     <>
-      <h1>Manage Buckets</h1>
+      <div className="log-header">
+        <Link to={pathName} className="link-btn">
+          &larr; Back to {pathNameText}
+        </Link>
+        <h1>Manage Buckets</h1>
+      </div>
       <div className="bookshelf-header">
         <p className="text-sm">
           {buckets.length > 0

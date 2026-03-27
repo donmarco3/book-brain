@@ -1,6 +1,12 @@
 import React from "react";
 import { addBucket, deleteCard, getBuckets, getCard, updateCard } from "../api";
-import { Link, useLoaderData, useNavigate, useRevalidator } from "react-router";
+import {
+  Link,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useRevalidator,
+} from "react-router";
 import { validatePageRange } from "../utils";
 
 export async function loader({ params }) {
@@ -16,6 +22,7 @@ export default function Card() {
   const { card, buckets } = useLoaderData();
   const revalidator = useRevalidator();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [noteTitle, setNoteTitle] = React.useState(card?.noteTitle) || "";
@@ -106,11 +113,15 @@ export default function Card() {
     }
   }
 
-  const bucketElements = card.buckets.map((bucket) => (
-    <p key={bucket} className="pill">
-      {bucket}
-    </p>
-  ));
+  const bucketElements = card.buckets.map((bucket) => {
+    if (buckets.some((item) => item.name === bucket)) {
+      return (
+        <p key={bucket} className="pill">
+          {bucket}
+        </p>
+      );
+    }
+  });
 
   const allBucketElements = buckets.map((bucket) => {
     return (
@@ -126,11 +137,24 @@ export default function Card() {
     );
   });
 
+  const search = location.state ? location.state.search : "";
+  const pathName = location.state ? location.state.from : "/library";
+
+  let pathNameText;
+  if (pathName === "/library") {
+    pathNameText = "Library";
+  } else {
+    pathNameText = "Home";
+  }
+
   return (
     <>
       <div className="log-header">
-        <Link to={"/library"} className="link-btn">
-          &larr; Back to Library
+        <Link
+          to={pathName === "/library" ? `/library${search}` : "/"}
+          className="link-btn"
+        >
+          &larr; Back to {pathNameText}
         </Link>
         <h1>{card.noteTitle}</h1>
       </div>
@@ -227,9 +251,18 @@ export default function Card() {
             ></textarea>
 
             <div className="buckets">
-              <p>
-                Select Buckets <span className="required-field">*</span>
-              </p>
+              <div className="buckets-header">
+                <p>
+                  Select Buckets <span className="required-field">*</span>
+                </p>
+                <Link
+                  to="/manage-buckets"
+                  state={{ from: `/card/${card.id}` }}
+                  className="link-btn"
+                >
+                  Manage Buckets
+                </Link>
+              </div>
               <div className="buckets-expanded">
                 <div className="bucket-buttons">{allBucketElements}</div>
                 <div className="add-bucket">

@@ -1,18 +1,19 @@
 import React from "react";
-import { getAllNotes, getBooks, getCards } from "../api";
+import { getAllNotes, getBooks, getBuckets, getCards } from "../api";
 import { Link, useLoaderData } from "react-router";
 import AddBook from "../components/AddBook";
-import { sliceString, validatePageRange } from "../utils";
+import { sliceString } from "../utils";
 
 export async function loader() {
   const books = await getBooks();
   const cards = await getCards();
   const notes = await getAllNotes();
-  return { books, cards, notes };
+  const buckets = await getBuckets();
+  return { books, cards, notes, buckets };
 }
 
 export default function Home() {
-  const { books, cards, notes } = useLoaderData();
+  const { books, cards, notes, buckets } = useLoaderData();
 
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
   const [showModal, setShowModal] = React.useState(false);
@@ -75,11 +76,7 @@ export default function Home() {
         <div className="card" key={book.id}>
           <p className="nice-font card-title">{book.title}</p>
           <p className="text-sm">by {book.author}</p>
-          <Link
-            to={`/book/${book.id}/log`}
-            state={{ from: "/" }}
-            className="link-btn link-btn-dark"
-          >
+          <Link to={`/book/${book.id}/log`} className="link-btn link-btn-dark">
             Log Notes
           </Link>
         </div>
@@ -94,15 +91,23 @@ export default function Home() {
     }
 
     const randomIndex = sum % cards.length;
-    const bucketElements = cards[randomIndex].buckets.map((bucket) => (
-      <p key={bucket} className="pill">
-        {bucket}
-      </p>
-    ));
+    const bucketElements = cards[randomIndex].buckets.map((bucket) => {
+      if (buckets.some((item) => item.name === bucket)) {
+        return (
+          <p key={bucket} className="pill">
+            {bucket}
+          </p>
+        );
+      }
+    });
 
     return (
       <div className="card main-card" key={cards[randomIndex].id}>
-        <Link to={`/card/${cards[randomIndex].id}`} className="link">
+        <Link
+          to={`/card/${cards[randomIndex].id}`}
+          state={{ from: "/" }}
+          className="link"
+        >
           <div className="main-card-header">
             <p className="nice-font card-title">
               {cards[randomIndex].noteTitle}

@@ -168,7 +168,13 @@ export default function Distillation() {
                 >
                   Select Buckets
                 </button>
-                <Link to="/manage-buckets" className="link-btn">
+                <Link
+                  to="/manage-buckets"
+                  state={{
+                    from: `/book/${notes[currentIndex].bookId}/distillation`,
+                  }}
+                  className="link-btn"
+                >
                   Manage Buckets
                 </Link>
               </div>
