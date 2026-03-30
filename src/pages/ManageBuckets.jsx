@@ -12,8 +12,8 @@ export default function ManageBuckets() {
   const revalidator = useRevalidator();
   const location = useLocation();
 
-  function handleDeletion(id) {
-    deleteBucket(id);
+  function handleDeletion(id, bucket) {
+    deleteBucket(id, bucket);
     revalidator.revalidate();
   }
 
@@ -23,7 +23,7 @@ export default function ManageBuckets() {
         <button className="btn-dark btn-lg">{bucket.name}</button>
         <button
           className="btn btn-lg"
-          onClick={() => handleDeletion(bucket.id)}
+          onClick={() => handleDeletion(bucket.id, bucket.name)}
         >
           Delete
         </button>

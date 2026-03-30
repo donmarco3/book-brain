@@ -100,14 +100,11 @@ export default function Library() {
   });
 
   const cardElements = sortedCards.map((card) => {
-    const bucketElements = card.buckets.map((bucket) => {
-      if (buckets.some((item) => item.name === bucket))
-        return (
-          <p key={bucket} className="pill">
-            {bucket}
-          </p>
-        );
-    });
+    const bucketElements = card.buckets.map((bucket) => (
+      <p key={bucket} className="pill">
+        {bucket}
+      </p>
+    ));
 
     return (
       <div className="card main-card" key={card.id}>

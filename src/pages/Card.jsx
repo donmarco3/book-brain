@@ -93,9 +93,11 @@ export default function Card() {
   }
 
   function updateSelectedBuckets() {
-    setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
-    addBucket(userBucket);
-    revalidator.revalidate();
+    if (userBucket !== "") {
+      setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      addBucket(userBucket);
+      revalidator.revalidate();
+    }
   }
 
   function toggleBucket(name) {

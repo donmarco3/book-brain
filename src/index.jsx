@@ -23,6 +23,10 @@ import Note, { loader as noteLoader } from "./pages/Note";
 import ManageBuckets, {
   loader as manageBucketsLoader,
 } from "./pages/ManageBuckets";
+import Login, { action as loginAction } from "./pages/Login";
+import { monitorAuthState } from "./api";
+import Register, { action as registerAction } from "./pages/Register";
+import Account from "./pages/Account";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,6 +38,9 @@ const router = createBrowserRouter(
         errorElement={<Error />}
         hydrateFallbackElement={<h1>Loading Home...</h1>}
       />
+      <Route path="/login" element={<Login />} action={loginAction} />
+      <Route path="/register" element={<Register />} action={registerAction} />
+      <Route path="/account" element={<Account />} />
       <Route
         path="bookshelf"
         element={<Bookshelf />}
@@ -96,8 +103,24 @@ const router = createBrowserRouter(
   ),
 );
 
+const UserContext = React.createContext();
+
 function App() {
-  return <RouterProvider router={router} />;
+  const [user, setUser] = React.useState();
+
+  React.useEffect(() => {
+    monitorAuthState((user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ user }}>
+      <RouterProvider router={router} />
+    </UserContext.Provider>
+  );
 }
 
 createRoot(document.getElementById("root")).render(
@@ -105,3 +128,5 @@ createRoot(document.getElementById("root")).render(
     <App />
   </React.StrictMode>,
 );
+
+export { UserContext };

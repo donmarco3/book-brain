@@ -1,7 +1,11 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
+import { UserContext } from "..";
 
 export default function Header() {
+  const { user } = React.useContext(UserContext);
+  console.log(user);
+
   return (
     <header>
       <Link to="/" className="site-logo">
@@ -19,6 +23,12 @@ export default function Header() {
           className={({ isActive }) => (isActive ? "active" : null)}
         >
           Library
+        </NavLink>
+        <NavLink
+          to={user ? "account" : "login"}
+          className={({ isActive }) => (isActive ? "active" : null)}
+        >
+          {user ? "Account" : "Login"}
         </NavLink>
       </nav>
     </header>

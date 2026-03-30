@@ -1,9 +1,45 @@
 import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, getDoc, query, where, serverTimestamp } from "firebase/firestore"
 import { firebaseConfig } from "./keys";
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
 const db = getFirestore(app)
+
+// AUTH
+
+export function monitorAuthState(callback) {
+    onAuthStateChanged(auth, callback)
+}
+
+export async function createNewUser(name, email, password) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        userCredential.user.displayName = name
+        console.log(userCredential)
+    } catch(error) {
+        console.log(error)
+        return error
+    }
+}
+
+export async function signInUser(email, password) {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password)
+    console.log(userCredential)
+    return userCredential
+}
+
+export async function signOutUser() {
+    try {
+        const userCredential = await signOut(auth)
+        console.log(userCredential)
+    } catch(error) {
+        console.log(error)
+        return error
+    }
+}
+
 
 // BOOKS
 
@@ -137,8 +173,20 @@ export async function getBuckets() {
     return dataArr
 }
 
-export async function deleteBucket(id) {
+export async function deleteBucket(id, bucket) {
     await deleteDoc(doc(db, "buckets", id))
+    const q = query(collection(db, "cards"), where("buckets", "array-contains", bucket))
+    const querySnapshot = await getDocs(q)
+    const dataArr = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+    }))
+    dataArr.map(async (card) => {
+        const updatedBuckets = card.buckets.filter(item => item !== bucket)
+        await updateDoc(doc(db, "cards", card.id), {
+            buckets: updatedBuckets
+        })
+    })
 }
 
 // CARDS
