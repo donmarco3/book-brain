@@ -9,6 +9,16 @@ const db = getFirestore(app)
 
 // AUTH
 
+async function getCurrentUser() {
+    await auth.authStateReady()
+    const user = auth.currentUser
+    if (user) {
+        return user
+    } else {
+        return null
+    }
+}
+
 export function monitorAuthState(callback) {
     onAuthStateChanged(auth, callback)
 }
@@ -41,10 +51,12 @@ export async function signOutUser() {
 // BOOKS
 
 export async function addBook(bookTitle, bookAuthor) {
+    const currentUser = await getCurrentUser()
     if (!bookTitle || bookTitle.trim() === "" || !bookAuthor || bookAuthor.trim() === "") {
         throw new Error("Must include Title and Author")
     }
     const docRef = await addDoc(collection(db, "books"), {
+        userId: currentUser.uid,
         title: bookTitle,
         author: bookAuthor,
         status: "Reading"
@@ -63,7 +75,12 @@ export async function deleteBook(id) {
 }
 
 export async function getBooks() {
-    const querySnapshot = await getDocs(collection(db, "books"))
+    const currentUser = await getCurrentUser()
+    const q = query(
+        collection(db, "books"),
+        where("userId", "==", currentUser.uid)
+    )
+    const querySnapshot = await getDocs(q)
     const dataArr = querySnapshot.docs.map(doc => ({
         ...doc.data(),
         id: doc.id
@@ -86,7 +103,9 @@ export async function getBook(id) {
 // NOTES
 
 export async function addNote(note, book) {
+    const currentUser = await getCurrentUser()
     const docRef = await addDoc(collection(db, "notes"), {
+        userId: currentUser.uid,
         noteTitle: note.title,
         bookId: book.id,
         bookTitle: book.title,
@@ -104,7 +123,12 @@ export async function deleteNote(id) {
 }
 
 export async function getAllNotes() {
-    const querySnapshot = await getDocs(collection(db, "notes"))
+    const currentUser = await getCurrentUser()
+    const q = query(
+        collection(db, "notes"),
+        where("userId", "==", currentUser.uid)
+    )
+    const querySnapshot = await getDocs(q)
     const dataArr = querySnapshot.docs.map(doc => ({
         ...doc.data(),
         id: doc.id
@@ -156,13 +180,20 @@ export async function updateNoteStatus(id) {
 // BUCKETS
 
 export async function addBucket(bucket) {
+    const currentUser = await getCurrentUser()
     const docRef = await addDoc(collection(db, "buckets"), {
+        userId: currentUser.uid,
         name: bucket
     })
 }
 
 export async function getBuckets() {
-    const querySnapshot = await getDocs(collection(db, "buckets"))
+    const currentUser = await getCurrentUser()
+    const q = query(
+        collection(db, "buckets"),
+        where("userId", "==", currentUser.uid)
+    )
+    const querySnapshot = await getDocs(q)
     const dataArr = querySnapshot.docs.map(doc => ({
         ...doc.data(),
         id: doc.id
@@ -203,7 +234,12 @@ export async function addCard(note, response1, response2, buckets) {
 }
 
 export async function getCards() {
-    const querySnapshot = await getDocs(collection(db, "cards"))
+    const currentUser = await getCurrentUser()
+    const q = query(
+        collection(db, "cards"),
+        where("userId", "==", currentUser.uid)
+    )
+    const querySnapshot = await getDocs(q)
     const dataArr = querySnapshot.docs.map(doc => ({
         ...doc.data(),
         id: doc.id

@@ -3,7 +3,13 @@ import { UserContext } from "..";
 import { Navigate, Outlet } from "react-router";
 
 export default function AuthRequired() {
-  const { user } = React.useContext(UserContext);
+  const { user, isLoading } = React.useContext(UserContext);
 
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  if (isLoading) {
+    return <h1>Loading user credentials...</h1>;
+  } else if (user && !isLoading) {
+    return <Outlet />;
+  } else if (!user && !isLoading) {
+    return <Navigate to="/login" replace />;
+  }
 }

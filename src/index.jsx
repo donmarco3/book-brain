@@ -110,17 +110,20 @@ const UserContext = React.createContext();
 
 function App() {
   const [user, setUser] = React.useState();
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
+    setIsLoading(true);
     monitorAuthState((user) => {
       if (user) {
         setUser(user);
       }
+      setIsLoading(false);
     });
   }, []);
 
   return (
-    <UserContext.Provider value={{ user }}>
+    <UserContext.Provider value={{ user, isLoading }}>
       <RouterProvider router={router} />
     </UserContext.Provider>
   );

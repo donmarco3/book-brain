@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, useActionData } from "react-router";
+import { Form, redirect, useActionData } from "react-router";
 import { addBook } from "../api";
 import useClickOutside from "./hooks/useClickOutside";
 
@@ -8,9 +8,13 @@ export async function action({ request }) {
   const title = formData.get("book-title");
   const author = formData.get("book-author");
 
+  if (!title || !author) {
+    return { error: "Must include title and author" };
+  }
+
   try {
     await addBook(title, author);
-    return { success: true };
+    return redirect("/bookshelf");
   } catch (error) {
     return { error: error.message };
   }

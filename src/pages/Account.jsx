@@ -8,7 +8,6 @@ export default function Account() {
   const navigate = useNavigate();
 
   function handleSignOut() {
-    console.log("button clicked");
     signOutUser();
     return navigate("/login");
   }
