@@ -4,7 +4,6 @@ import { UserContext } from "..";
 
 export default function Header() {
   const { user } = React.useContext(UserContext);
-  console.log(user);
 
   return (
     <header>

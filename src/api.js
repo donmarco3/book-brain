@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, getDoc, query, where, serverTimestamp } from "firebase/firestore"
 import { firebaseConfig } from "./keys";
 
@@ -14,14 +14,11 @@ export function monitorAuthState(callback) {
 }
 
 export async function createNewUser(name, email, password) {
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-        userCredential.user.displayName = name
-        console.log(userCredential)
-    } catch(error) {
-        console.log(error)
-        return error
-    }
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+    updateProfile(userCredential.user, {
+        displayName: name
+    })
 }
 
 export async function signInUser(email, password) {

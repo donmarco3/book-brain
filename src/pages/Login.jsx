@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, Link, redirect, useActionData } from "react-router";
 import { signInUser } from "../api";
-import { UserContext } from "..";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -22,7 +21,6 @@ export async function action({ request }) {
 
 export default function Login() {
   const actionData = useActionData();
-  const { user } = React.useContext(UserContext);
 
   const [errorMessage, setErrorMessage] = React.useState();
 
@@ -35,20 +33,21 @@ export default function Login() {
   return (
     <>
       <div className="log-header">
-        <Link to="/" className="link-btn">
-          &larr; Back to Home
-        </Link>
         <h1>Login</h1>
-        <Form method="post" replace>
+        <Form method="post" className="login-form" replace>
           {errorMessage && <p className="red error">{errorMessage}</p>}
-          <label htmlFor="user-email">Email</label>
+          <label htmlFor="user-email">
+            Email <span className="required-field">*</span>
+          </label>
           <input
             id="user-email"
             name="email"
             type="email"
             placeholder="name@example.com"
           />
-          <label htmlFor="user-password">Password</label>
+          <label htmlFor="user-password">
+            Password <span className="required-field">*</span>
+          </label>
           <input id="user-password" name="password" type="password" />
           <button className="btn-dark btn-lg">Login</button>
         </Form>

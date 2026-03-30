@@ -27,77 +27,80 @@ import Login, { action as loginAction } from "./pages/Login";
 import { monitorAuthState } from "./api";
 import Register, { action as registerAction } from "./pages/Register";
 import Account from "./pages/Account";
+import AuthRequired from "./components/AuthRequired";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-      <Route
-        index
-        element={<Home />}
-        loader={homeLoader}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Home...</h1>}
-      />
       <Route path="/login" element={<Login />} action={loginAction} />
       <Route path="/register" element={<Register />} action={registerAction} />
-      <Route path="/account" element={<Account />} />
-      <Route
-        path="bookshelf"
-        element={<Bookshelf />}
-        loader={bookshelfLoader}
-        action={addBookAction}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Bookshelf...</h1>}
-      />
-      <Route
-        path="library"
-        element={<Library />}
-        loader={libraryLoader}
-        hydrateFallbackElement={<h1>Loading Library...</h1>}
-      />
-      <Route
-        path="manage-buckets"
-        element={<ManageBuckets />}
-        loader={manageBucketsLoader}
-        hydrateFallbackElement={<h1>Loading Buckets...</h1>}
-      />
-      <Route
-        path="card/:id"
-        element={<Card />}
-        loader={cardLoader}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Card...</h1>}
-      />
-      <Route
-        path="book/:id/log"
-        element={<Log />}
-        loader={logLoader}
-        action={logAction}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Log...</h1>}
-      />
-      <Route
-        path="book/:id/inbox"
-        element={<Inbox />}
-        loader={inboxLoader}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Inbox...</h1>}
-      />
-      <Route
-        path="note/:id"
-        element={<Note />}
-        loader={noteLoader}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Note...</h1>}
-      />
-      <Route
-        path="book/:id/distillation"
-        element={<Distillation />}
-        loader={distillationLoader}
-        errorElement={<Error />}
-        hydrateFallbackElement={<h1>Loading Distillation...</h1>}
-      />
-      <Route element={<AddBook />} action={addBookAction} />
+      <Route element={<AuthRequired />}>
+        <Route
+          index
+          element={<Home />}
+          loader={homeLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Home...</h1>}
+        />
+        <Route path="/account" element={<Account />} />
+        <Route
+          path="bookshelf"
+          element={<Bookshelf />}
+          loader={bookshelfLoader}
+          action={addBookAction}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Bookshelf...</h1>}
+        />
+        <Route
+          path="library"
+          element={<Library />}
+          loader={libraryLoader}
+          hydrateFallbackElement={<h1>Loading Library...</h1>}
+        />
+        <Route
+          path="manage-buckets"
+          element={<ManageBuckets />}
+          loader={manageBucketsLoader}
+          hydrateFallbackElement={<h1>Loading Buckets...</h1>}
+        />
+        <Route
+          path="card/:id"
+          element={<Card />}
+          loader={cardLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Card...</h1>}
+        />
+        <Route
+          path="book/:id/log"
+          element={<Log />}
+          loader={logLoader}
+          action={logAction}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Log...</h1>}
+        />
+        <Route
+          path="book/:id/inbox"
+          element={<Inbox />}
+          loader={inboxLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Inbox...</h1>}
+        />
+        <Route
+          path="note/:id"
+          element={<Note />}
+          loader={noteLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Note...</h1>}
+        />
+        <Route
+          path="book/:id/distillation"
+          element={<Distillation />}
+          loader={distillationLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Distillation...</h1>}
+        />
+        <Route element={<AddBook />} action={addBookAction} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Route>,
   ),
