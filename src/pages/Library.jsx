@@ -31,7 +31,6 @@ export default function Library() {
   const [showFilters, setShowFilters] = React.useState(false);
   const [bookFilter, setBookFilter] = React.useState(false);
   const [bucketFilter, setBucketFilter] = React.useState(false);
-  const [showModal, setShowModal] = React.useState(false);
 
   useClickOutside(sidebarRef, () => setShowFilters(false));
 
@@ -250,17 +249,6 @@ export default function Library() {
           <p>
             Your library is empty. Start by adding books and distilling notes.
           </p>
-          <button
-            className="btn-dark btn-lg"
-            onClick={() => setShowModal(true)}
-          >
-            + Add Book
-          </button>
-          <AddBook
-            action={"/bookshelf"}
-            showModal={showModal}
-            setShowModal={setShowModal}
-          />
         </div>
       )}
     </>

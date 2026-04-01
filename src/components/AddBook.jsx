@@ -14,7 +14,7 @@ export async function action({ request }) {
 
   try {
     await addBook(title, author);
-    return redirect("/bookshelf");
+    return { success: true };
   } catch (error) {
     return { error: error.message };
   }
@@ -28,6 +28,8 @@ export default function AddBook({ action, showModal, setShowModal }) {
   React.useEffect(() => {
     if (actionData?.error) {
       setErrorMessage(actionData.error);
+    } else {
+      setShowModal(false);
     }
   }, [actionData]);
 

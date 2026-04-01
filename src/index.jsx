@@ -111,6 +111,7 @@ const UserContext = React.createContext();
 function App() {
   const [user, setUser] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
+  console.log(user);
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -123,7 +124,7 @@ function App() {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, isLoading }}>
+    <UserContext.Provider value={{ user, setUser, isLoading }}>
       <RouterProvider router={router} />
     </UserContext.Provider>
   );

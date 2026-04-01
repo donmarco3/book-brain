@@ -16,7 +16,6 @@ export default function Home() {
   const { books, cards, notes, buckets } = useLoaderData();
 
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
-  const [showModal, setShowModal] = React.useState(false);
 
   let streak = 0;
 
@@ -186,17 +185,12 @@ export default function Home() {
             <p className="text-sm no-items-text">
               You are currently reading no books.
             </p>
-            <button
-              className="btn-dark btn-lg"
-              onClick={() => setShowModal(true)}
-            >
-              + Add Book
-            </button>
-            <AddBook
-              action={"/bookshelf"}
-              showModal={showModal}
-              setShowModal={setShowModal}
-            />
+            <p className="text-sm no-items-text">
+              Add your first book from the bookshelf page.
+            </p>
+            <Link to="/bookshelf" className="link-btn link-btn-dark">
+              Bookshelf
+            </Link>
           </div>
         )}
       </div>

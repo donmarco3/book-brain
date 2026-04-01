@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, getDoc, query, where, serverTimestamp } from "firebase/firestore"
 import { firebaseConfig } from "./keys";
 
@@ -39,8 +39,31 @@ export async function signInUser(email, password) {
 
 export async function signOutUser() {
     try {
-        const userCredential = await signOut(auth)
-        console.log(userCredential)
+        await signOut(auth)
+    } catch(error) {
+        console.log(error)
+        return error
+    }
+}
+
+export async function resetPassword(email) {
+    try {
+        await sendPasswordResetEmail(auth, email)
+        console.log("email sent")
+    } catch(error) {
+        console.log(error)
+        return error
+    }
+}
+
+export async function updateUserProfile(newName, newEmail) {
+    const currentUser = await getCurrentUser()
+    try {
+        await updateProfile(currentUser, {
+            displayName: newName,
+            email: newEmail
+        })
+        console.log("user profile updated")
     } catch(error) {
         console.log(error)
         return error
