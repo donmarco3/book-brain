@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Link, redirect, useActionData } from "react-router";
-import { resetPassword, signInUser } from "../api";
+import { resetPassword, signInUser, signOutUser } from "../api";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -70,6 +70,9 @@ export default function Login() {
         <Link to="/register" className="link-btn">
           Register
         </Link>
+        <button onClick={signOutUser} className="btn-lg">
+          Logout
+        </button>
       </div>
     </>
   );

@@ -1,13 +1,12 @@
 import React from "react";
 import { UserContext } from "..";
 import { resetPassword, signOutUser, updateUserProfile } from "../api";
-import { useNavigate, useRevalidator } from "react-router";
+import { useNavigate } from "react-router";
 import Avatar from "../components/Avatar";
 
 export default function Account() {
   const { user, setUser } = React.useContext(UserContext);
   const navigate = useNavigate();
-  const revalidator = useRevalidator();
   const [isEditing, setIsEditing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [userName, setUserName] = React.useState(user?.displayName);
@@ -48,7 +47,7 @@ export default function Account() {
       <div className="card profile-card">
         {!isEditing ? (
           <>
-            <Avatar name={user?.displayName} />
+            {/* <Avatar name={user?.displayName} /> */}
             <p className="bold">{user?.displayName}</p>
             <p className="text-sm">{user?.email}</p>
           </>
