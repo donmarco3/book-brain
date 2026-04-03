@@ -3,8 +3,8 @@ import {
   addBucket,
   deleteCard,
   getBook,
-  getBuckets,
   getCard,
+  getCardBuckets,
   updateCard,
 } from "../api";
 import {
@@ -18,12 +18,12 @@ import { validatePageRange } from "../utils";
 
 export async function loader({ params }) {
   const card = await getCard(params.id);
-  const buckets = await getBuckets();
   if (!card) {
     return { card: null, buckets: [] };
   }
   const book = await getBook(card[0].book_id);
-  return { card, buckets, book };
+  const buckets = await getCardBuckets(card[0].id);
+  return { card: card[0], buckets, book };
 }
 
 export default function Card() {
@@ -33,7 +33,7 @@ export default function Card() {
   const location = useLocation();
 
   const [isEditing, setIsEditing] = React.useState(false);
-  const [noteTitle, setNoteTitle] = React.useState(card?.noteTitle) || "";
+  const [cardTitle, setCardTitle] = React.useState(card?.card_title) || "";
   const [page, setPage] = React.useState(card?.page || null);
   const [context, setContext] = React.useState(card?.context || "");
   const [capture, setCapture] = React.useState(card?.capture || "");
@@ -41,9 +41,7 @@ export default function Card() {
   const [response1, setResponse1] = React.useState(card?.response1 || "");
   const [response2, setResponse2] = React.useState(card?.response2 || "");
   const [userBucket, setUserBucket] = React.useState("");
-  const [selectedBuckets, setSelectedBuckets] = React.useState(
-    card?.buckets || [],
-  );
+  const [selectedBuckets, setSelectedBuckets] = React.useState(buckets || []);
   const [errorMessage, setErrorMessage] = React.useState("");
 
   if (!card) {
@@ -58,7 +56,8 @@ export default function Card() {
   }
 
   function handleClick() {
-    if (!noteTitle) {
+    console.log("handleClick");
+    if (!cardTitle) {
       setErrorMessage("Title is required");
       return;
     }
@@ -70,23 +69,22 @@ export default function Card() {
       setErrorMessage("At least one of context, capture, or spark is required");
       return;
     }
-    if (selectedBuckets.length === 0) {
-      setErrorMessage("At least one bucket is required");
-      return;
-    }
+    // if (selectedBuckets.length === 0) {
+    //   setErrorMessage("At least one bucket is required");
+    //   return;
+    // }
 
     try {
       validatePageRange(page);
       updateCard(
         card.id,
-        noteTitle,
+        cardTitle,
         page,
         context,
         capture,
         spark,
         response1,
         response2,
-        selectedBuckets,
       );
       setIsEditing((prev) => !prev);
       revalidator.revalidate();
@@ -103,7 +101,7 @@ export default function Card() {
   function updateSelectedBuckets() {
     if (userBucket !== "") {
       setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
-      addBucket(userBucket);
+      addBucket(card.id, userBucket);
       revalidator.revalidate();
     }
   }
@@ -124,25 +122,23 @@ export default function Card() {
   }
 
   const bucketElements = buckets.map((bucket) => {
-    if (buckets.some((item) => item.name === bucket)) {
-      return (
-        <p key={bucket.id} className="pill">
-          {bucket.name}
-        </p>
-      );
-    }
+    return (
+      <p key={bucket} className="pill">
+        {bucket}
+      </p>
+    );
   });
 
   const allBucketElements = buckets.map((bucket) => {
     return (
       <button
         className={
-          selectedBuckets.includes(bucket.name) ? "bucket btn-dark" : "bucket"
+          selectedBuckets.includes(bucket) ? "bucket btn-dark" : "bucket"
         }
-        key={bucket.id}
-        onClick={() => toggleBucket(bucket.name)}
+        key={bucket}
+        onClick={() => toggleBucket(bucket)}
       >
-        {bucket.name}
+        {bucket}
       </button>
     );
   });
@@ -208,8 +204,8 @@ export default function Card() {
                 </label>
                 <input
                   id="card-note-title"
-                  defaultValue={card.noteTitle}
-                  onChange={(e) => setNoteTitle(e.currentTarget.value)}
+                  defaultValue={card.card_title}
+                  onChange={(e) => setCardTitle(e.currentTarget.value)}
                 />
               </div>
               <div>

@@ -20,18 +20,6 @@ export async function getCurrentUser() {
     }
 }
 
-// export function monitorAuthState(callback) {
-//     onAuthStateChanged(auth, callback)
-// }
-
-// export async function createNewUser(name, email, password) {
-//     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-
-//     updateProfile(userCredential.user, {
-//         displayName: name
-//     })
-// }
-
 export async function createNewUser(name, email, password) {
     const { data, signUpError } = await supabase.auth
         .signUp({
@@ -43,12 +31,6 @@ export async function createNewUser(name, email, password) {
         .insert({ id: data.user.id, name, email })
 }
 
-// export async function signInUser(email, password) {
-//     const userCredential = await signInWithEmailAndPassword(auth, email, password)
-//     console.log(userCredential)
-//     return userCredential
-// }
-
 export async function signInUser(email, password) {
     const { data, error } = await supabase.auth
         .signInWithPassword({
@@ -56,15 +38,6 @@ export async function signInUser(email, password) {
             password
         })
 }
-
-// export async function signOutUser() {
-//     try {
-//         await signOut(auth)
-//     } catch(error) {
-//         console.log(error)
-//         return error
-//     }
-// }
 
 export async function signOutUser() {
     const { error } = await supabase.auth.signOut()
@@ -93,19 +66,6 @@ export async function updateUserProfile(newName, newEmail) {
 
 // BOOKS
 
-// export async function addBook(bookTitle, bookAuthor) {
-//     const currentUser = await getCurrentUser()
-//     if (!bookTitle || bookTitle.trim() === "" || !bookAuthor || bookAuthor.trim() === "") {
-//         throw new Error("Must include Title and Author")
-//     }
-//     const docRef = await addDoc(collection(db, "books"), {
-//         userId: currentUser.uid,
-//         title: bookTitle,
-//         author: bookAuthor,
-//         status: "Reading"
-//     })
-// }
-
 export async function addBook(bookTitle, bookAuthor) {
     const currentUser = await getCurrentUser()
     const { error } = await supabase
@@ -117,13 +77,6 @@ export async function addBook(bookTitle, bookAuthor) {
         })
 }
 
-// export async function updateBookStatus(id, currentStatus) {
-//     const newStatus = currentStatus === "Reading" ? "Finished" : "Reading" 
-//     const docRef = await updateDoc(doc(db, "books", id), {
-//         status: newStatus
-//     })
-// }
-
 export async function updateBookStatus(id, currentStatus) {
     const newStatus = currentStatus === "reading" ? "finished" : "reading" 
     const { error } = await supabase
@@ -131,10 +84,6 @@ export async function updateBookStatus(id, currentStatus) {
         .update({ status: newStatus })
         .eq('id', id)
 }
-
-// export async function deleteBook(id) {
-//     await deleteDoc(doc(db, "books", id))
-// }
 
 export async function deleteBook(id) {
     console.log(id)
@@ -149,20 +98,6 @@ export async function deleteBook(id) {
     }
 }
 
-// export async function getBooks() {
-//     const currentUser = await getCurrentUser()
-//     const q = query(
-//         collection(db, "books"),
-//         where("userId", "==", currentUser.uid)
-//     )
-//     const querySnapshot = await getDocs(q)
-//     const dataArr = querySnapshot.docs.map(doc => ({
-//         ...doc.data(),
-//         id: doc.id
-//     }))
-//     return dataArr
-// }
-
 export async function getBooks() {
     const currentUser = await getCurrentUser()
     const { data, error } = await supabase
@@ -171,18 +106,6 @@ export async function getBooks() {
         .eq('user_id', currentUser.data.user.id)
     return data
 }
-
-// export async function getBook(id) {
-//     const docRef = doc(db, "books", id)
-//     const bookSnap = await getDoc(docRef)
-//     if (!bookSnap.exists()) {
-//         return null
-//     }
-//     return {
-//         ...bookSnap.data(),
-//         id: bookSnap.id
-//     }
-// }
 
 export async function getBook(id) {
     const { data, error } = await supabase
@@ -193,22 +116,6 @@ export async function getBook(id) {
 }
 
 // NOTES
-
-// export async function addNote(note, book) {
-//     const currentUser = await getCurrentUser()
-//     const docRef = await addDoc(collection(db, "notes"), {
-//         userId: currentUser.uid,
-//         noteTitle: note.title,
-//         bookId: book.id,
-//         bookTitle: book.title,
-//         page: note.page,
-//         context: note.context,
-//         capture: note.capture,
-//         spark: note.spark,
-//         status: "Inbox",
-//         createdAt: serverTimestamp()
-//     })
-// }
 
 export async function addNote(note, book) {
     const currentUser = await getCurrentUser()
@@ -225,30 +132,12 @@ export async function addNote(note, book) {
         })
 }
 
-// export async function deleteNote(id) {
-//     await deleteDoc(doc(db, "notes", id))
-// }
-
 export async function deleteNote(id) {
     const response = await supabase
         .from('notes')
         .delete()
         .eq('id', id)
 }
-
-// export async function getAllNotes() {
-//     const currentUser = await getCurrentUser()
-//     const q = query(
-//         collection(db, "notes"),
-//         where("userId", "==", currentUser.uid)
-//     )
-//     const querySnapshot = await getDocs(q)
-//     const dataArr = querySnapshot.docs.map(doc => ({
-//         ...doc.data(),
-//         id: doc.id
-//     }))
-//     return dataArr
-// }
 
 export async function getAllNotes() {
     const currentUser = await getCurrentUser()
@@ -259,18 +148,6 @@ export async function getAllNotes() {
     return data
 }
 
-// export async function getNote(id) {
-//     const docRef = doc(db, "notes", id)
-//     const noteSnap = await getDoc(docRef)
-//     if (!noteSnap.exists()) {
-//         return null
-//     }
-//     return {
-//         ...noteSnap.data(),
-//         id: noteSnap.id
-//     }
-// }
-
 export async function getNote(id) {
     const { data, error } = await supabase
         .from('notes')
@@ -278,19 +155,6 @@ export async function getNote(id) {
         .eq('id', id)
     return data[0]
 }
-
-// export async function getNotes(id) {
-//     const q = query(
-//         collection(db, "notes"),
-//         where("bookId", "==", id),
-//         where("status", "==", "Inbox"))
-//     const querySnapshot = await getDocs(q)
-//     const dataArr = querySnapshot.docs.map(doc => ({
-//         ...doc.data(),
-//         id: doc.id
-//     }))
-//     return dataArr
-// }
 
 export async function getNotes(id) {
     const { data, error } = await supabase
@@ -301,21 +165,11 @@ export async function getNotes(id) {
     return data
 }
 
-// export async function updateNote(id, noteTitle, page, context, capture, spark) {
-//     const docRef = await updateDoc(doc(db, "notes", id), {
-//         noteTitle,
-//         page,
-//         context,
-//         capture,
-//         spark
-//     })
-// }
-
-export async function updateNote(id, noteTitle, page, context, capture, spark) {
+export async function updateNote(id, note_title, page, context, capture, spark) {
     const { error } = await supabase
         .from('notes')
         .update({
-            note_title: noteTitle,
+            note_title,
             page,
             context,
             capture,
@@ -323,12 +177,6 @@ export async function updateNote(id, noteTitle, page, context, capture, spark) {
         })
         .eq('id', id)
 }
-
-// export async function updateNoteStatus(id) {
-//     const docRef = await updateDoc(doc(db, "notes", id), {
-//         status: "Processed"
-//     })
-// }
 
 export async function updateNoteStatus(id) {
     const { error } = await supabase
@@ -339,37 +187,22 @@ export async function updateNoteStatus(id) {
 
 // BUCKETS
 
-// export async function addBucket(bucket) {
-//     const currentUser = await getCurrentUser()
-//     const docRef = await addDoc(collection(db, "buckets"), {
-//         userId: currentUser.uid,
-//         name: bucket
-//     })
-// }
-
-export async function addBucket(bucket) {
+export async function addBucket(cardId, bucketName) {
     const currentUser = await getCurrentUser()
-    const { error } = await supabase
+    const { data, bucketsError } = await supabase
         .from('buckets')
         .insert({
-            name: bucket,
+            name: bucketName,
             user_id: currentUser.data.user.id
         })
+        .select()
+    const { cardBucketsError } = await supabase
+        .from("card_buckets")
+        .insert({
+            card_id: cardId,
+            bucket_id: data[0].id
+        })
 }
-
-// export async function getBuckets() {
-//     const currentUser = await getCurrentUser()
-//     const q = query(
-//         collection(db, "buckets"),
-//         where("userId", "==", currentUser.uid)
-//     )
-//     const querySnapshot = await getDocs(q)
-//     const dataArr = querySnapshot.docs.map(doc => ({
-//         ...doc.data(),
-//         id: doc.id
-//     }))
-//     return dataArr
-// }
 
 export async function getBuckets() {
     const currentUser = await getCurrentUser()
@@ -380,23 +213,23 @@ export async function getBuckets() {
     return data
 }
 
-// export async function deleteBucket(id, bucket) {
-//     await deleteDoc(doc(db, "buckets", id))
-//     const q = query(collection(db, "cards"), where("buckets", "array-contains", bucket))
-//     const querySnapshot = await getDocs(q)
-//     const dataArr = querySnapshot.docs.map(doc => ({
-//         ...doc.data(),
-//         id: doc.id
-//     }))
-//     dataArr.map(async (card) => {
-//         const updatedBuckets = card.buckets.filter(item => item !== bucket)
-//         await updateDoc(doc(db, "cards", card.id), {
-//             buckets: updatedBuckets
-//         })
-//     })
-// }
+export async function getCardBuckets(id) {
+    const { data, error } = await supabase
+        .from('card_buckets')
+        .select()
+        .eq('card_id', id)
+    const buckets = data.map(async (bucket) => {
+        const { data, error } = await supabase
+            .from('buckets')
+            .select()
+            .eq('id', bucket.bucket_id)
+        return data[0].name
+    })
+    const bucketsArr = await Promise.all(buckets)
+    return bucketsArr.flat()
+}
 
-export async function deleteBucket(id, bucket) {
+export async function deleteBucket(id) {
     const { error } = await supabase
         .from('buckets')
         .delete()
@@ -404,20 +237,6 @@ export async function deleteBucket(id, bucket) {
 }
 
 // CARDS
-
-// export async function addCard(note, response1, response2, buckets) {
-//     const docRef = await addDoc(collection(db, "cards"), {
-//         ...note,
-//         noteId: note.id,
-//         status: "Promoted",
-//         question1: "Why did this stop you?",
-//         response1,
-//         question2: "What does this connect to in your life or other reading?",
-//         response2,
-//         buckets,
-//         createdAt: serverTimestamp()
-//     })
-// }
 
 export async function addCard(note, response1, response2) {
     const { error } = await supabase
@@ -437,20 +256,6 @@ export async function addCard(note, response1, response2) {
         })
 }
 
-// export async function getCards() {
-//     const currentUser = await getCurrentUser()
-//     const q = query(
-//         collection(db, "cards"),
-//         where("userId", "==", currentUser.uid)
-//     )
-//     const querySnapshot = await getDocs(q)
-//     const dataArr = querySnapshot.docs.map(doc => ({
-//         ...doc.data(),
-//         id: doc.id
-//     }))
-//     return dataArr
-// }
-
 export async function getCards() {
     const currentUser = await getCurrentUser()
     const { data, error } = await supabase
@@ -460,18 +265,6 @@ export async function getCards() {
     return data
 }
 
-// export async function getCard(id) {
-//     const docRef = doc(db, "cards", id)
-//     const cardSnap = await getDoc(docRef)
-//     if (!cardSnap.exists()) {
-//         return null
-//     }
-//     return {
-//         ...cardSnap.data(),
-//         id: cardSnap.id
-//     }
-// }
-
 export async function getCard(id) {
     const { data, error } = await supabase
         .from('cards')
@@ -480,44 +273,24 @@ export async function getCard(id) {
     return data
 }
 
-// export async function updateCard(id,
-//       noteTitle,
-//       page,
-//       context,
-//       capture,
-//       spark,
-//       response1,
-//       response2,
-//       selectedBuckets,) {
-//     const docRef = await updateDoc(doc(db, "cards", id), {
-//         noteTitle,
-//         page,
-//         context,
-//         capture,
-//         spark,
-//         response1,
-//         response2,
-//         buckets: selectedBuckets
-//     })
-// }
-
-export async function updateCard(id, noteTitle, page, context, capture, spark, response1, response2) {
-    const { error } = await supabase
-        .from('cards')
-        .update({
-            note_title: noteTitle,
-            page,
-            context,
-            capture,
-            spark,
-            response1,
-            response2
-        })
+export async function updateCard(id, card_title, page, context, capture, spark, response1, response2) {
+    try {
+        const { error } = await supabase
+            .from('cards')
+            .update({
+                card_title,
+                page,
+                context,
+                capture,
+                spark,
+                response1,
+                response2
+            })
+            .eq('id', id)
+    } catch(error) {
+        console.log(error)
+    }
 }
-
-// export async function deleteCard(id) {
-//     await deleteDoc(doc(db, "cards", id))
-// }
 
 export async function deleteCard(id) {
     const { error } = await supabase

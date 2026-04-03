@@ -64,8 +64,9 @@ export default function Home() {
       cutoffDate = new Date(now);
       cutoffDate.setDate(now.getDate() - 365);
     }
-    return cards.filter((card) => card.created_at.toDate() >= cutoffDate)
-      .length;
+    return cards.filter(
+      (card) => new Date(card.created_at).toDateString() >= cutoffDate,
+    ).length;
   }
 
   const bookElements = books.map((book) => {
@@ -107,7 +108,7 @@ export default function Home() {
               {cards[randomIndex].noteTitle}
             </p>
             <div>
-              <p>{cards[randomIndex].bookTitle}</p>
+              {/* <p>{cards[randomIndex].bookTitle}</p> */}
               <p>p. {cards[randomIndex].page}</p>
             </div>
           </div>
