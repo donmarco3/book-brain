@@ -2,6 +2,7 @@ import React from "react";
 import {
   addBucket,
   addCard,
+  getBook,
   getBuckets,
   getNotes,
   updateNoteStatus,
@@ -11,7 +12,8 @@ import { Link, useLoaderData, useRevalidator } from "react-router";
 export async function loader({ params }) {
   const notes = await getNotes(params.id);
   const buckets = await getBuckets();
-  return { notes, buckets };
+  const book = await getBook(notes[0].book_id);
+  return { notes, buckets, book };
 }
 
 export default function Distillation() {
@@ -27,7 +29,7 @@ export default function Distillation() {
   const [skipped, setSkipped] = React.useState(0);
   const [showBuckets, setShowBuckets] = React.useState(false);
 
-  const { notes, buckets } = useLoaderData();
+  const { notes, buckets, book } = useLoaderData();
   const revalidator = useRevalidator();
 
   function updateUserResponses(event) {
@@ -120,10 +122,10 @@ export default function Distillation() {
           <div className="card main-card" key={notes[currentIndex].id}>
             <div className="main-card-header">
               <p className="nice-font card-title">
-                {notes[currentIndex].noteTitle}
+                {notes[currentIndex].note_title}
               </p>
               <div>
-                <p>{notes[currentIndex].bookTitle}</p>
+                <p>{book.title}</p>
                 <p>p. {notes[currentIndex].page}</p>
               </div>
             </div>

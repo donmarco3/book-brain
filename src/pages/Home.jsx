@@ -1,19 +1,17 @@
 import React from "react";
 import { getAllNotes, getBooks, getBuckets, getCards } from "../api";
 import { Link, useLoaderData } from "react-router";
-import AddBook from "../components/AddBook";
 import { sliceString } from "../utils";
 
 export async function loader() {
   const books = await getBooks();
   const cards = await getCards();
   const notes = await getAllNotes();
-  const buckets = await getBuckets();
-  return { books, cards, notes, buckets };
+  return { books, cards, notes };
 }
 
 export default function Home() {
-  const { books, cards, notes, buckets } = useLoaderData();
+  const { books, cards, notes } = useLoaderData();
 
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
 
@@ -26,7 +24,7 @@ export default function Home() {
   const formattedDate = year + month + day;
 
   const notesCreationDates = notes.map((note) =>
-    note.createdAt.toDate().toDateString(),
+    new Date(note.created_at).toDateString(),
   );
   const uniqueDates = [...new Set(notesCreationDates)];
 
@@ -66,11 +64,12 @@ export default function Home() {
       cutoffDate = new Date(now);
       cutoffDate.setDate(now.getDate() - 365);
     }
-    return cards.filter((card) => card.createdAt.toDate() >= cutoffDate).length;
+    return cards.filter((card) => card.created_at.toDate() >= cutoffDate)
+      .length;
   }
 
   const bookElements = books.map((book) => {
-    if (book.status === "Reading") {
+    if (book.status === "reading") {
       return (
         <div className="card" key={book.id}>
           <p className="nice-font card-title">{book.title}</p>

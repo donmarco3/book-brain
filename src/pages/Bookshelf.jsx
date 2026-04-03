@@ -30,8 +30,8 @@ export default function Bookshelf() {
       <div className="card" key={book.id}>
         <div className="book-card-header">
           <p className="nice-font card-title">{book.title}</p>
-          <p className={book.status === "Finished" ? "pill success" : "pill"}>
-            {book.status}
+          <p className={book.status === "finished" ? "pill success" : "pill"}>
+            {book.status === "finished" ? "Finished" : "Reading"}
           </p>
         </div>
         <p className="text-sm">by {book.author}</p>
@@ -52,7 +52,7 @@ export default function Bookshelf() {
         </div>
         <div className="book-card-buttons">
           <button onClick={() => changeBookStatus(book.id, book.status)}>
-            Mark as {book.status === "Reading" ? "Finished" : "Reading"}
+            Mark as {book.status === "reading" ? "Finished" : "Reading"}
           </button>
           <button
             className="btn-delete"

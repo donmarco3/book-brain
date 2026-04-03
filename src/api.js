@@ -33,17 +33,14 @@ export async function getCurrentUser() {
 // }
 
 export async function createNewUser(name, email, password) {
-    console.log("function working")
     const { data, signUpError } = await supabase.auth
         .signUp({
             email,
             password
         })
-    console.log(signUpError)
     const { insertError } = await supabase
         .from('profiles')
         .insert({ id: data.user.id, name, email })
-    console.log(insertError)
 }
 
 // export async function signInUser(email, password) {
@@ -71,15 +68,12 @@ export async function signInUser(email, password) {
 
 export async function signOutUser() {
     const { error } = await supabase.auth.signOut()
-    console.log(error)
 }
 
 export async function resetPassword(email) {
     try {
         await sendPasswordResetEmail(auth, email)
-        console.log("email sent")
     } catch(error) {
-        console.log(error)
         return error
     }
 }
@@ -91,9 +85,7 @@ export async function updateUserProfile(newName, newEmail) {
             displayName: newName,
             email: newEmail
         })
-        console.log("user profile updated")
     } catch(error) {
-        console.log(error)
         return error
     }
 }
@@ -123,7 +115,6 @@ export async function addBook(bookTitle, bookAuthor) {
             author: bookAuthor,
             user_id: currentUser.data.user.id
         })
-    console.log(error)
 }
 
 // export async function updateBookStatus(id, currentStatus) {
@@ -134,7 +125,7 @@ export async function addBook(bookTitle, bookAuthor) {
 // }
 
 export async function updateBookStatus(id, currentStatus) {
-    const newStatus = currentStatus === "Reading" ? "Finished" : "Reading" 
+    const newStatus = currentStatus === "reading" ? "finished" : "reading" 
     const { error } = await supabase
         .from('books')
         .update({ status: newStatus })
@@ -146,10 +137,16 @@ export async function updateBookStatus(id, currentStatus) {
 // }
 
 export async function deleteBook(id) {
-    const response = await supabase
-        .from('books')
-        .delete()
-        .eq('id', id)
+    console.log(id)
+    try {
+        const response = await supabase
+            .from('books')
+            .delete()
+            .eq('id', id)
+        console.log(response)
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 // export async function getBooks() {
@@ -172,7 +169,6 @@ export async function getBooks() {
         .from('books')
         .select()
         .eq('user_id', currentUser.data.user.id)
-    console.log(error)
     return data
 }
 
@@ -193,9 +189,7 @@ export async function getBook(id) {
         .from('books')
         .select()
         .eq('id', id)
-    console.log(data)
-    console.log(error)
-    return data
+    return data[0]
 }
 
 // NOTES
@@ -218,20 +212,17 @@ export async function getBook(id) {
 
 export async function addNote(note, book) {
     const currentUser = await getCurrentUser()
-    console.log(book)
-    console.log(book[0].id)
     const { error } = await supabase
         .from('notes')
         .insert({
             note_title: note.title,
-            book_id: book[0].id,
+            book_id: book.id,
             page: note.page,
             context: note.context,
             capture: note.capture,
             spark: note.spark,
             user_id: currentUser.data.user.id
         })
-    console.log(error)
 }
 
 // export async function deleteNote(id) {
@@ -285,7 +276,7 @@ export async function getNote(id) {
         .from('notes')
         .select()
         .eq('id', id)
-    return data
+    return data[0]
 }
 
 // export async function getNotes(id) {
@@ -432,11 +423,17 @@ export async function addCard(note, response1, response2) {
     const { error } = await supabase
         .from('cards')
         .insert({
-            ...note,
+            card_title: note.note_title,
+            book_id: note.book_id,
+            page: note.page,
+            context: note.context,
+            capture: note.capture,
+            spark: note.spark,
             question1: "Why did this stop you?",
             response1,
             question2: "What does this connect to in your life or other reading?",
-            response2
+            response2,
+            user_id: note.user_id
         })
 }
 

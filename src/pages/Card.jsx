@@ -1,5 +1,12 @@
 import React from "react";
-import { addBucket, deleteCard, getBuckets, getCard, updateCard } from "../api";
+import {
+  addBucket,
+  deleteCard,
+  getBook,
+  getBuckets,
+  getCard,
+  updateCard,
+} from "../api";
 import {
   Link,
   useLoaderData,
@@ -15,11 +22,12 @@ export async function loader({ params }) {
   if (!card) {
     return { card: null, buckets: [] };
   }
-  return { card, buckets };
+  const book = await getBook(card[0].book_id);
+  return { card, buckets, book };
 }
 
 export default function Card() {
-  const { card, buckets } = useLoaderData();
+  const { card, buckets, book } = useLoaderData();
   const revalidator = useRevalidator();
   const navigate = useNavigate();
   const location = useLocation();
@@ -115,11 +123,11 @@ export default function Card() {
     }
   }
 
-  const bucketElements = card.buckets.map((bucket) => {
+  const bucketElements = buckets.map((bucket) => {
     if (buckets.some((item) => item.name === bucket)) {
       return (
-        <p key={bucket} className="pill">
-          {bucket}
+        <p key={bucket.id} className="pill">
+          {bucket.name}
         </p>
       );
     }
@@ -158,13 +166,13 @@ export default function Card() {
         >
           &larr; Back to {pathNameText}
         </Link>
-        <h1>{card.noteTitle}</h1>
+        <h1>{card.card_title}</h1>
       </div>
       <div className="card main-card card-content" key={card.id}>
         {!isEditing ? (
           <>
             <div className="main-card-header">
-              <p className="nice-font card-title">{card.noteTitle}</p>
+              <p className="nice-font card-title">{card.card_title}</p>
               <div>
                 <p>p. {card.page}</p>
               </div>
@@ -190,7 +198,7 @@ export default function Card() {
           <div className="note-editing">
             <p>
               <span className="bold">Book:</span>{" "}
-              <span className="nice-font">{card.bookTitle}</span>
+              <span className="nice-font">{book.title}</span>
             </p>
             {errorMessage && <p className="red">{errorMessage}</p>}
             <div className="note-editing-header">

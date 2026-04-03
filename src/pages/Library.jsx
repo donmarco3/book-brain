@@ -71,7 +71,7 @@ export default function Library() {
   const filteredCards = cards.filter((card) => {
     const matchesSearch =
       searchQuery.toLowerCase() === "" ||
-      card.noteTitle.toLowerCase().includes(searchQuery) ||
+      card.card_title.toLowerCase().includes(searchQuery) ||
       card.bookId.toLowerCase().includes(searchQuery) ||
       card.context.toLowerCase().includes(searchQuery) ||
       card.capture.toLowerCase().includes(searchQuery) ||
@@ -99,9 +99,9 @@ export default function Library() {
   });
 
   const cardElements = sortedCards.map((card) => {
-    const bucketElements = card.buckets.map((bucket) => (
-      <p key={bucket} className="pill">
-        {bucket}
+    const bucketElements = buckets.map((bucket) => (
+      <p key={bucket.id} className="pill">
+        {bucket.name}
       </p>
     ));
 
@@ -113,7 +113,7 @@ export default function Library() {
           className="link"
         >
           <div className="main-card-header">
-            <p className="nice-font card-title">{card.noteTitle}</p>
+            <p className="nice-font card-title">{card.card_title}</p>
             <div>
               <p>{card.bookTitle}</p>
               <p>p. {card.page}</p>

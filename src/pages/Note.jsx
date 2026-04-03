@@ -1,5 +1,5 @@
 import React from "react";
-import { deleteNote, getNote, updateNote } from "../api";
+import { deleteNote, getBook, getNote, updateNote } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
 import { validatePageRange } from "../utils";
 
@@ -8,15 +8,16 @@ export async function loader({ params }) {
   if (!note) {
     return { note: null };
   }
-  return { note };
+  const book = await getBook(note.book_id);
+  return { note, book };
 }
 
 export default function Note() {
-  const { note } = useLoaderData();
+  const { note, book } = useLoaderData();
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);
-  const [noteTitle, setNoteTitle] = React.useState(note?.noteTitle);
+  const [noteTitle, setNoteTitle] = React.useState(note?.note_title);
   const [page, setPage] = React.useState(note?.page);
   const [context, setContext] = React.useState(note?.context);
   const [capture, setCapture] = React.useState(note?.capture);
@@ -62,26 +63,26 @@ export default function Note() {
   function handleDeletion() {
     if (window.confirm("Are you sure you want to delete this note?")) {
       deleteNote(note.id);
-      return navigate(`/book/${note.bookId}/inbox`);
+      return navigate(`/book/${note.book_id}/inbox`);
     }
   }
 
   return (
     <>
       <div className="log-header">
-        <Link to={`/book/${note.bookId}/inbox`} className="link-btn">
+        <Link to={`/book/${note.book_id}/inbox`} className="link-btn">
           &larr; Back to Inbox
         </Link>
-        <h1>{note.noteTitle}</h1>
+        <h1>{note.note_title}</h1>
       </div>
 
       <div className="card main-card" key={note.id}>
         {!isEditing ? (
           <>
             <div className="main-card-header">
-              <p className="nice-font card-title">{note.noteTitle}</p>
+              <p className="nice-font card-title">{note.note_title}</p>
               <div>
-                <p>{note.bookTitle}</p>
+                <p>{book.title}</p>
                 <p>p. {note.page}</p>
               </div>
             </div>
@@ -100,7 +101,7 @@ export default function Note() {
           <div className="note-editing">
             <p>
               <span className="bold">Book:</span>{" "}
-              <span className="nice-font">{note.bookTitle}</span>
+              <span className="nice-font">{book.title}</span>
             </p>
             {errorMessage && <p className="red">{errorMessage}</p>}
             <div className="note-editing-header">
@@ -110,7 +111,7 @@ export default function Note() {
                 </label>
                 <input
                   id="note-note-title"
-                  defaultValue={note.noteTitle}
+                  defaultValue={note.note_title}
                   onChange={(e) => setNoteTitle(e.currentTarget.value)}
                 />
               </div>

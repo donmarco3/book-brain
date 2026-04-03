@@ -17,7 +17,7 @@ export default function Inbox() {
       <div className="card main-card" key={note.id}>
         <Link to={`/note/${note.id}`} className="link">
           <div className="main-card-header">
-            <p className="nice-font card-title">{note.noteTitle}</p>
+            <p className="nice-font card-title">{note.note_title}</p>
             <div>
               <p>p. {note.page}</p>
             </div>
