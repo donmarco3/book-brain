@@ -2,7 +2,9 @@ import React from "react";
 import {
   addBucket,
   deleteCard,
+  deleteCardBucket,
   getBook,
+  getBuckets,
   getCard,
   getCardBuckets,
   updateCard,
@@ -22,12 +24,13 @@ export async function loader({ params }) {
     return { card: null, buckets: [] };
   }
   const book = await getBook(card[0].book_id);
-  const buckets = await getCardBuckets(card[0].id);
-  return { card: card[0], buckets, book };
+  const cardBuckets = await getCardBuckets(card[0].id);
+  const userBuckets = await getBuckets();
+  return { card: card[0], cardBuckets, userBuckets, book };
 }
 
 export default function Card() {
-  const { card, buckets, book } = useLoaderData();
+  const { card, cardBuckets, userBuckets, book } = useLoaderData();
   const revalidator = useRevalidator();
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,7 +44,9 @@ export default function Card() {
   const [response1, setResponse1] = React.useState(card?.response1 || "");
   const [response2, setResponse2] = React.useState(card?.response2 || "");
   const [userBucket, setUserBucket] = React.useState("");
-  const [selectedBuckets, setSelectedBuckets] = React.useState(buckets || []);
+  const [selectedBuckets, setSelectedBuckets] = React.useState(
+    cardBuckets || [],
+  );
   const [errorMessage, setErrorMessage] = React.useState("");
 
   if (!card) {
@@ -56,7 +61,6 @@ export default function Card() {
   }
 
   function handleClick() {
-    console.log("handleClick");
     if (!cardTitle) {
       setErrorMessage("Title is required");
       return;
@@ -69,10 +73,22 @@ export default function Card() {
       setErrorMessage("At least one of context, capture, or spark is required");
       return;
     }
-    // if (selectedBuckets.length === 0) {
-    //   setErrorMessage("At least one bucket is required");
-    //   return;
-    // }
+    if (selectedBuckets.length === 0) {
+      setErrorMessage("At least one bucket is required");
+      return;
+    }
+
+    selectedBuckets.map((bucket) => {
+      if (!cardBuckets.includes(bucket)) {
+        addBucket(card.id, bucket);
+      }
+    });
+
+    cardBuckets.map((bucket) => {
+      if (!selectedBuckets.includes(bucket)) {
+        deleteCardBucket(bucket);
+      }
+    });
 
     try {
       validatePageRange(page);
@@ -121,7 +137,7 @@ export default function Card() {
     }
   }
 
-  const bucketElements = buckets.map((bucket) => {
+  const bucketElements = cardBuckets.map((bucket) => {
     return (
       <p key={bucket} className="pill">
         {bucket}
@@ -129,7 +145,7 @@ export default function Card() {
     );
   });
 
-  const allBucketElements = buckets.map((bucket) => {
+  const allBucketElements = userBuckets.map((bucket) => {
     return (
       <button
         className={

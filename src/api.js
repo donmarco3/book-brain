@@ -210,7 +210,8 @@ export async function getBuckets() {
         .from('buckets')
         .select()
         .eq('user_id', currentUser.data.user.id)
-    return data
+    const buckets = data.map(bucket => bucket.name)
+    return buckets
 }
 
 export async function getCardBuckets(id) {
@@ -234,6 +235,23 @@ export async function deleteBucket(id) {
         .from('buckets')
         .delete()
         .eq('id', id)
+}
+
+export async function deleteCardBucket(bucket) {
+    const currentUser = await getCurrentUser()
+    const { data, error } = await supabase
+        .from('buckets')
+        .select()
+        .eq('name', bucket)
+        .eq('user_id', currentUser.data.user.id)
+    const buckets = data.map(async (bucket) => {
+        const { data, error } = await supabase
+            .from('card_buckets')
+            .delete()
+            .eq('bucket_id', bucket.id)
+        return data
+    })
+    await Promise.all(buckets)
 }
 
 // CARDS
