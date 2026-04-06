@@ -14,7 +14,11 @@ export default function Bookshelf() {
   const [showModal, setShowModal] = React.useState(false);
 
   function handleDeletion(id) {
-    if (window.confirm("Are you sure you want to delete this book?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this book? Deleting this book will also delete any associated notes and cards. Do you wish to continue?",
+      )
+    ) {
       deleteBook(id);
       revalidator.revalidate();
     }

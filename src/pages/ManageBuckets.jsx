@@ -12,19 +12,22 @@ export default function ManageBuckets() {
   const revalidator = useRevalidator();
   const location = useLocation();
 
-  function handleDeletion(id, bucket) {
-    deleteBucket(id, bucket);
-    revalidator.revalidate();
+  function handleDeletion(bucket) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this bucket? This will remove it from all cards. Do you wish to continue?",
+      )
+    ) {
+      deleteBucket(bucket);
+      revalidator.revalidate();
+    }
   }
 
   const bucketElements = buckets.map((bucket) => {
     return (
-      <div className="bucket" key={bucket.id}>
-        <button className="btn-dark btn-lg">{bucket.name}</button>
-        <button
-          className="btn btn-lg"
-          onClick={() => handleDeletion(bucket.id, bucket.name)}
-        >
+      <div className="bucket" key={bucket}>
+        <button className="btn-dark btn-lg">{bucket}</button>
+        <button className="btn btn-lg" onClick={() => handleDeletion(bucket)}>
           Delete
         </button>
       </div>

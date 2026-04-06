@@ -26,9 +26,8 @@ import ManageBuckets, {
 import Login, { action as loginAction } from "./pages/Login";
 import { getCurrentUser } from "./api";
 import Register, { action as registerAction } from "./pages/Register";
-import Account from "./pages/Account";
+import Account, { loader as accountLoader } from "./pages/Account";
 import AuthRequired from "./components/AuthRequired";
-import supabase from "./supabaseClient";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,7 +42,12 @@ const router = createBrowserRouter(
         errorElement={<Error />}
         hydrateFallbackElement={<h1>Loading Home...</h1>}
       />
-      <Route path="/account" element={<Account />} />
+      <Route
+        path="/account"
+        element={<Account />}
+        loader={accountLoader}
+        hydrateFallbackElement={<h1>Loading Account...</h1>}
+      />
       <Route
         path="bookshelf"
         element={<Bookshelf />}
@@ -112,7 +116,6 @@ const UserContext = React.createContext();
 function App() {
   const [user, setUser] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
-  console.log(user);
 
   React.useEffect(() => {
     setIsLoading(true);

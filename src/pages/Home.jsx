@@ -7,11 +7,12 @@ export async function loader() {
   const books = await getBooks();
   const cards = await getCards();
   const notes = await getAllNotes();
-  return { books, cards, notes };
+  const buckets = await getBuckets();
+  return { books, cards, notes, buckets };
 }
 
 export default function Home() {
-  const { books, cards, notes } = useLoaderData();
+  const { books, cards, notes, buckets } = useLoaderData();
 
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
 
@@ -90,11 +91,13 @@ export default function Home() {
     }
 
     const randomIndex = sum % cards.length;
-    const bucketElements = cards[randomIndex].buckets.map((bucket) => (
+    const bucketElements = buckets.map((bucket) => (
       <p key={bucket} className="pill">
         {bucket}
       </p>
     ));
+
+    const book = books.find((book) => book.id === cards[randomIndex].book_id);
 
     return (
       <div className="card main-card" key={cards[randomIndex].id}>
@@ -105,10 +108,10 @@ export default function Home() {
         >
           <div className="main-card-header">
             <p className="nice-font card-title">
-              {cards[randomIndex].noteTitle}
+              {cards[randomIndex].card_title}
             </p>
             <div>
-              {/* <p>{cards[randomIndex].bookTitle}</p> */}
+              <p>{book.title}</p>
               <p>p. {cards[randomIndex].page}</p>
             </div>
           </div>
@@ -179,7 +182,7 @@ export default function Home() {
       <h2 className="home-heading">Currently Reading</h2>
       <div className="currently-reading">
         {bookElements.length > 0 ? (
-          <div>{bookElements}</div>
+          <div className="currently-reading-books">{bookElements}</div>
         ) : (
           <div className="no-items-container">
             <p className="text-sm no-items-text">

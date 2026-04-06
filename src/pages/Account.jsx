@@ -1,16 +1,21 @@
 import React from "react";
-import { UserContext } from "..";
-import { resetPassword, signOutUser, updateUserProfile } from "../api";
-import { useNavigate } from "react-router";
+import { getUser, resetPassword, signOutUser, updateUserProfile } from "../api";
+import { useLoaderData, useNavigate } from "react-router";
 import Avatar from "../components/Avatar";
 
+export async function loader() {
+  const userProfile = await getUser();
+  return { userProfile };
+}
+
 export default function Account() {
-  const { user, setUser } = React.useContext(UserContext);
+  const { userProfile } = useLoaderData();
   const navigate = useNavigate();
+
   const [isEditing, setIsEditing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
-  const [userName, setUserName] = React.useState(user?.displayName);
-  const [userEmail, setUserEmail] = React.useState(user?.email);
+  const [userName, setUserName] = React.useState(userProfile.name);
+  const [userEmail, setUserEmail] = React.useState(userProfile.email);
 
   function handleSignOut() {
     signOutUser();
@@ -31,9 +36,8 @@ export default function Account() {
       }
 
       try {
-        updateUserProfile(userName, userEmail);
+        updateUserProfile(userEmail);
         setIsEditing(false);
-        setUser({ ...user, displayName: userName, email: userEmail });
       } catch (error) {
         setErrorMessage(error.message);
         return;
@@ -43,13 +47,13 @@ export default function Account() {
 
   return (
     <>
-      <h1>Hello, {user?.displayName}</h1>
+      <h1>Hello, {userProfile.name}</h1>
       <div className="card profile-card">
         {!isEditing ? (
           <>
             {/* <Avatar name={user?.displayName} /> */}
-            <p className="bold">{user?.displayName}</p>
-            <p className="text-sm">{user?.email}</p>
+            <p className="bold">{userProfile.name}</p>
+            <p className="text-sm">{userProfile.email}</p>
           </>
         ) : (
           <div className="note-editing">
@@ -59,7 +63,7 @@ export default function Account() {
             </label>
             <input
               id="user-name"
-              defaultValue={user?.displayName}
+              defaultValue={userProfile.name}
               onChange={(e) => setUserName(e.currentTarget.value)}
             />
             <label htmlFor="user-email" className="bold">
@@ -67,7 +71,7 @@ export default function Account() {
             </label>
             <input
               id="user-email"
-              defaultValue={user?.email}
+              defaultValue={userProfile.email}
               onChange={(e) => setUserEmail(e.currentTarget.value)}
             />
             <button

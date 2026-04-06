@@ -20,7 +20,7 @@ import { validatePageRange } from "../utils";
 
 export async function loader({ params }) {
   const card = await getCard(params.id);
-  if (!card) {
+  if (card.length === 0) {
     return { card: null, buckets: [] };
   }
   const book = await getBook(card[0].book_id);
@@ -73,7 +73,7 @@ export default function Card() {
       setErrorMessage("At least one of context, capture, or spark is required");
       return;
     }
-    if (selectedBuckets.length === 0) {
+    if (selectedBuckets.length === 0 && isEditing) {
       setErrorMessage("At least one bucket is required");
       return;
     }

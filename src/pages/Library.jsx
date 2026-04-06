@@ -1,7 +1,6 @@
 import React from "react";
 import { getBooks, getBuckets, getCards } from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
-import AddBook from "../components/AddBook";
 import { sliceString } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
 
@@ -50,11 +49,13 @@ export default function Library() {
     }
 
     if (!bucketName) {
-      if (selectedBooks.includes(bookId)) {
-        setSelectedBooks(selectedBooks.filter((book) => book !== bookId));
+      if (selectedBooks.includes(bookId.toString())) {
+        setSelectedBooks(
+          selectedBooks.filter((book) => book !== bookId.toString()),
+        );
         newParams.delete("book", bookId);
       } else {
-        setSelectedBooks([...selectedBooks, bookId]);
+        setSelectedBooks([...selectedBooks, bookId.toString()]);
         newParams.append("book", bookId);
       }
     }
@@ -72,7 +73,6 @@ export default function Library() {
     const matchesSearch =
       searchQuery.toLowerCase() === "" ||
       card.card_title.toLowerCase().includes(searchQuery) ||
-      card.bookId.toLowerCase().includes(searchQuery) ||
       card.context.toLowerCase().includes(searchQuery) ||
       card.capture.toLowerCase().includes(searchQuery) ||
       card.spark.toLowerCase().includes(searchQuery) ||
@@ -81,11 +81,11 @@ export default function Library() {
 
     const matchesBuckets =
       selectedBuckets.length === 0 ||
-      selectedBuckets.every((bucket) => card.buckets.includes(bucket));
+      selectedBuckets.every((bucket) => buckets.includes(bucket));
 
     const matchesBooks =
       selectedBooks.length === 0 ||
-      selectedBooks.some((book) => card.bookId === book);
+      selectedBooks.some((book) => card.book_id.toString() === book);
 
     return matchesSearch && matchesBuckets && matchesBooks;
   });
@@ -99,9 +99,11 @@ export default function Library() {
   });
 
   const cardElements = sortedCards.map((card) => {
+    const book = books.find((book) => book.id === card.book_id);
+
     const bucketElements = buckets.map((bucket) => (
-      <p key={bucket.id} className="pill">
-        {bucket.name}
+      <p key={bucket} className="pill">
+        {bucket}
       </p>
     ));
 
@@ -115,7 +117,7 @@ export default function Library() {
           <div className="main-card-header">
             <p className="nice-font card-title">{card.card_title}</p>
             <div>
-              <p>{card.bookTitle}</p>
+              <p>{book.title}</p>
               <p>p. {card.page}</p>
             </div>
           </div>
@@ -140,14 +142,14 @@ export default function Library() {
     return (
       <button
         className={
-          selectedBuckets.includes(bucket.name)
+          selectedBuckets.includes(bucket)
             ? "filter-item-btn"
             : "filter-item-btn btn-dark"
         }
-        key={bucket.id}
-        onClick={() => toggle(bucket.name, null)}
+        key={bucket}
+        onClick={() => toggle(bucket, null)}
       >
-        {bucket.name}
+        {bucket}
       </button>
     );
   });
@@ -156,7 +158,7 @@ export default function Library() {
     return (
       <button
         className={
-          selectedBooks.includes(book.id)
+          selectedBooks.includes(book.id.toString())
             ? "filter-item-btn"
             : "filter-item-btn btn-dark"
         }
@@ -210,7 +212,9 @@ export default function Library() {
       </aside>
 
       <h1>Library</h1>
-      <p className="text-sm">{cardElements.length} cards</p>
+      <p className="text-sm">
+        {cardElements.length} {cardElements.length > 1 ? "cards" : "card"}
+      </p>
       <div className="library-header">
         <div className="filter-container">
           <button
@@ -218,7 +222,6 @@ export default function Library() {
             className="btn-dark btn-lg"
           >
             Filter
-            {selectedBuckets.length > 0 && ` (${selectedBuckets.length})`}
           </button>
           {selectedBuckets.length > 0 || selectedBooks.length > 0 ? (
             <button className="btn-lg" onClick={clearFilters}>

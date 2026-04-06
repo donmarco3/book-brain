@@ -14,6 +14,7 @@ const db = getFirestore(app)
 export async function getCurrentUser() {
     const user = await supabase.auth.getUser()
     if (user.data.user) {
+        console.log(user.data.user)
         return user
     } else {
         return null
@@ -51,15 +52,27 @@ export async function resetPassword(email) {
     }
 }
 
-export async function updateUserProfile(newName, newEmail) {
+export async function getUser() {
     const currentUser = await getCurrentUser()
+    const { data, error } = await supabase
+        .from('profiles')
+        .select()
+        .eq('id', currentUser.data.user.id)
+    return data[0]
+}
+
+export async function updateUserProfile(newEmail) {
+    console.log("function")
+    console.log(newEmail)
     try {
-        await updateProfile(currentUser, {
-            displayName: newName,
-            email: newEmail
-        })
+        const { data, error } = await supabase.auth
+            .updateUser({
+                Email: newEmail
+            })
+        console.log(data)
+        console.log(error)
     } catch(error) {
-        return error
+        console.log(error)
     }
 }
 
@@ -79,20 +92,23 @@ export async function addBook(bookTitle, bookAuthor) {
 
 export async function updateBookStatus(id, currentStatus) {
     const newStatus = currentStatus === "reading" ? "finished" : "reading" 
-    const { error } = await supabase
-        .from('books')
-        .update({ status: newStatus })
-        .eq('id', id)
+    try {
+        await supabase
+            .from('books')
+            .update({ status: newStatus })
+            .eq('id', id)
+    } catch(error) {
+        console.log(error)
+        return error
+    }
 }
 
 export async function deleteBook(id) {
-    console.log(id)
     try {
         const response = await supabase
             .from('books')
             .delete()
             .eq('id', id)
-        console.log(response)
     } catch (error) {
         console.log(error)
     }
@@ -230,11 +246,13 @@ export async function getCardBuckets(id) {
     return bucketsArr.flat()
 }
 
-export async function deleteBucket(id) {
-    const { error } = await supabase
+export async function deleteBucket(bucket) {
+    const currentUser = await getCurrentUser()
+    const response = await supabase
         .from('buckets')
         .delete()
-        .eq('id', id)
+        .eq('user_id', currentUser.data.user.id)
+        .eq('name', bucket)
 }
 
 export async function deleteCardBucket(bucket) {
