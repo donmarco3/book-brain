@@ -1,20 +1,10 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from "firebase/auth";
-import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, getDoc, query, where, serverTimestamp } from "firebase/firestore"
-import { firebaseConfig } from "./keys";
-
 import supabase from "./supabaseClient.js"
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app)
-const db = getFirestore(app)
 
 // AUTH
 
 export async function getCurrentUser() {
     const user = await supabase.auth.getUser()
     if (user.data.user) {
-        console.log(user.data.user)
         return user
     } else {
         return null
@@ -27,28 +17,60 @@ export async function createNewUser(name, email, password) {
             email,
             password
         })
+    console.log(data)
+    console.log(signUpError)
     const { insertError } = await supabase
         .from('profiles')
         .insert({ id: data.user.id, name, email })
+    console.log(insertError)
 }
 
 export async function signInUser(email, password) {
-    const { data, error } = await supabase.auth
-        .signInWithPassword({
-            email,
-            password
-        })
+    try {
+        const { data, error } = await supabase.auth
+            .signInWithPassword({
+                email,
+                password
+            })
+        console.log(data)
+        console.log(error)
+        return { data, error }
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 export async function signOutUser() {
     const { error } = await supabase.auth.signOut()
 }
 
-export async function resetPassword(email) {
+export async function sendResetPasswordEmail(email) {
     try {
-        await sendPasswordResetEmail(auth, email)
+        const { data, error } = await supabase.auth
+            .resetPasswordForEmail(email, {
+                redirectTo: 'http://localhost:5173/update-password'
+            })
+        console.log(data)
+        console.log(error)
+        return { data, error }
     } catch(error) {
-        return error
+        console.log(error)
+    }
+}
+
+export async function updateUserPassword(newPassword) {
+    if (newPassword.length < 7) {
+        throw new Error("Password must be longer than 6 characters")
+    }
+    try {
+        const { data, error } = await supabase.auth
+            .updateUser({
+                password: newPassword
+            })
+        console.log(data)
+        console.log(error)
+    } catch(error) {
+        console.log(error)
     }
 }
 
@@ -58,11 +80,12 @@ export async function getUser() {
         .from('profiles')
         .select()
         .eq('id', currentUser.data.user.id)
+    console.log(data)
+    console.log(error)
     return data[0]
 }
 
 export async function updateUserProfile(newEmail) {
-    console.log("function")
     console.log(newEmail)
     try {
         const { data, error } = await supabase.auth
@@ -116,11 +139,20 @@ export async function deleteBook(id) {
 
 export async function getBooks() {
     const currentUser = await getCurrentUser()
-    const { data, error } = await supabase
-        .from('books')
-        .select()
-        .eq('user_id', currentUser.data.user.id)
-    return data
+    if (!currentUser) {
+        return
+    }
+    try {
+        const { data, error } = await supabase
+            .from('books')
+            .select()
+            .eq('user_id', currentUser.data.user.id)
+        console.log(data)
+        console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 export async function getBook(id) {
@@ -128,6 +160,8 @@ export async function getBook(id) {
         .from('books')
         .select()
         .eq('id', id)
+    console.log(data)
+    console.log(error)
     return data[0]
 }
 
@@ -157,10 +191,15 @@ export async function deleteNote(id) {
 
 export async function getAllNotes() {
     const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
     const { data, error } = await supabase
         .from('notes')
         .select()
         .eq('user_id', currentUser.data.user.id)
+    console.log(data)
+    console.log(error)
     return data
 }
 
@@ -169,6 +208,8 @@ export async function getNote(id) {
         .from('notes')
         .select()
         .eq('id', id)
+    console.log(data)
+    console.log(error)
     return data[0]
 }
 
@@ -178,6 +219,8 @@ export async function getNotes(id) {
         .select()
         .eq('book_id', id)
         .eq('status', 'inbox')
+    console.log(data)
+    console.log(error)
     return data
 }
 
@@ -222,12 +265,21 @@ export async function addBucket(cardId, bucketName) {
 
 export async function getBuckets() {
     const currentUser = await getCurrentUser()
-    const { data, error } = await supabase
-        .from('buckets')
-        .select()
-        .eq('user_id', currentUser.data.user.id)
-    const buckets = data.map(bucket => bucket.name)
-    return buckets
+    if (!currentUser) {
+        return
+    }
+    try {
+        const { data, error } = await supabase
+            .from('buckets')
+            .select()
+            .eq('user_id', currentUser.data.user.id)
+        console.log(data)
+        console.log(error)
+        const buckets = data.map(bucket => bucket.name)
+        return buckets
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 export async function getCardBuckets(id) {
@@ -235,11 +287,15 @@ export async function getCardBuckets(id) {
         .from('card_buckets')
         .select()
         .eq('card_id', id)
+    console.log(data)
+    console.log(error)
     const buckets = data.map(async (bucket) => {
         const { data, error } = await supabase
             .from('buckets')
             .select()
             .eq('id', bucket.bucket_id)
+        console.log(data)
+        console.log(error)
         return data[0].name
     })
     const bucketsArr = await Promise.all(buckets)
@@ -262,11 +318,15 @@ export async function deleteCardBucket(bucket) {
         .select()
         .eq('name', bucket)
         .eq('user_id', currentUser.data.user.id)
+    console.log(data)
+    console.log(error)
     const buckets = data.map(async (bucket) => {
         const { data, error } = await supabase
             .from('card_buckets')
             .delete()
             .eq('bucket_id', bucket.id)
+        console.log(data)
+        console.log(error)
         return data
     })
     await Promise.all(buckets)
@@ -294,11 +354,20 @@ export async function addCard(note, response1, response2) {
 
 export async function getCards() {
     const currentUser = await getCurrentUser()
-    const { data, error } = await supabase
-        .from('cards')
-        .select()
-        .eq('user_id', currentUser.data.user.id)
-    return data
+    if (!currentUser) {
+        return
+    }
+    try {
+        const { data, error } = await supabase
+            .from('cards')
+            .select()
+            .eq('user_id', currentUser.data.user.id)
+        console.log(data)
+        console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 export async function getCard(id) {
@@ -306,6 +375,8 @@ export async function getCard(id) {
         .from('cards')
         .select()
         .eq('id', id)
+    console.log(data)
+    console.log(error)
     return data
 }
 

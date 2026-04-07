@@ -1,6 +1,7 @@
 import React from "react";
-import { Form, Link, redirect, useActionData } from "react-router";
-import { resetPassword, signInUser, signOutUser } from "../api";
+import { Form, Link, useActionData, useNavigate } from "react-router";
+import { sendResetPasswordEmail, signInUser } from "../api";
+import { UserContext } from "..";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -12,16 +13,21 @@ export async function action({ request }) {
   }
 
   try {
-    await signInUser(email, password);
-    return redirect("/");
+    const data = await signInUser(email, password);
+    console.log(data.data);
+    if (!data.data.user) {
+      return { error: data.error.message };
+    }
+    return { user: data.data.user };
   } catch (error) {
-    return { error: "User not found" };
+    return { error };
   }
 }
 
 export default function Login() {
   const actionData = useActionData();
-
+  const { setUser } = React.useContext(UserContext);
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = React.useState();
   const [userEmail, setUserEmail] = React.useState("");
 
@@ -29,13 +35,21 @@ export default function Login() {
     if (actionData?.error) {
       setErrorMessage(actionData.error);
     }
+    if (actionData?.user) {
+      setUser(actionData.user);
+      navigate("/");
+    }
   }, [actionData]);
 
-  function handleClick() {
-    if (userEmail === "") {
-      setErrorMessage("Must enter email");
+  async function handleClick() {
+    try {
+      const data = await sendResetPasswordEmail(userEmail);
+      if (!data.data) {
+        setErrorMessage(data.error.message);
+      }
+    } catch (error) {
+      console.log(error);
     }
-    resetPassword(userEmail);
   }
 
   return (
@@ -67,12 +81,12 @@ export default function Login() {
             </button>
           </div>
         </Form>
+        <p className="text-sm register-message">
+          If you don't have an account register here.
+        </p>
         <Link to="/register" className="link-btn">
           Register
         </Link>
-        <button onClick={signOutUser} className="btn-lg">
-          Logout
-        </button>
       </div>
     </>
   );

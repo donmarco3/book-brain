@@ -1,41 +1,30 @@
 import React from "react";
 import { Form, redirect, useActionData } from "react-router";
-import { createNewUser } from "../api";
+import { updateUserPassword } from "../api";
 import { passwordStrength } from "check-password-strength";
 import clasnames from "classnames";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const password = formData.get("password");
-
-  if (!name || !email || !password) {
-    return { error: "All fields are required" };
-  }
-
-  if (password.length < 6) {
-    return { error: "Password must be at least 6 characters" };
-  }
+  const newPassword = formData.get("password");
 
   try {
-    await createNewUser(name, email, password);
+    await updateUserPassword(newPassword);
     return redirect("/");
   } catch (error) {
-    return { error: "Error creating new user" };
+    return { error };
   }
 }
 
-export default function Register() {
+export default function UpdatePassword() {
   const actionData = useActionData();
-
   const [errorMessage, setErrorMessage] = React.useState();
   const [password, setPassword] = React.useState("");
   const [strength, setStrength] = React.useState("");
 
   React.useEffect(() => {
     if (actionData?.error) {
-      setErrorMessage(actionData.error);
+      setErrorMessage(actionData.error.message);
     }
   }, [actionData]);
 
@@ -52,27 +41,15 @@ export default function Register() {
   return (
     <>
       <div className="log-header">
-        <h1>Register</h1>
+        <h1>Update Password</h1>
         <Form method="post" className="login-form" replace>
           {errorMessage && <p className="red error">{errorMessage}</p>}
-          <label htmlFor="user-name">
-            Name <span className="required-field">*</span>
-          </label>
-          <input id="user-name" name="name" placeholder="John" />
-          <label htmlFor="user-email">
-            Email <span className="required-field">*</span>
-          </label>
-          <input
-            id="user-email"
-            name="email"
-            type="email"
-            placeholder="name@example.com"
-          />
           <label htmlFor="user-password">
-            Password <span className="required-field">*</span>
+            New Password <span className="required-field">*</span>
             {strength && <span className={classes}>{strength}</span>}
           </label>
           <input
+            className="update-password"
             id="user-password"
             name="password"
             type="password"
@@ -81,7 +58,11 @@ export default function Register() {
               setStrength(passwordStrength(password).value);
             }}
           />
-          <button className="btn-dark btn-lg">Create Account</button>
+          <div className="login-form-buttons">
+            <button type="submit" className="btn-dark btn-lg">
+              Login
+            </button>
+          </div>
         </Form>
       </div>
     </>

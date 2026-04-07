@@ -815,6 +815,35 @@ form.login-form > div.login-form-buttons {
     gap: 20px;
 }
 
+form.login-form > p.error {
+    margin-bottom: 20px;
+}
+
+p.register-message {
+    margin-bottom: 10px;
+}
+
+form.login-form > input.update-password {
+    margin-top: 20px;
+}
+
+span.bold {
+    margin-left: 20px;
+}
+
+span.red {
+    color: #991B1B;
+    background-color: #FEE2E2;
+}
+span.yellow {
+    color: #92400E;
+    background-color: #FEF3C7;
+}
+span.green {
+    color: #065F46;
+    background-color: #D1FAE5;
+}
+
 /* ============================================
    ACCOUNT
    ============================================ */

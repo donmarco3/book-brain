@@ -1,6 +1,12 @@
 import React from "react";
-import { getUser, resetPassword, signOutUser, updateUserProfile } from "../api";
+import {
+  getUser,
+  sendResetPasswordEmail,
+  signOutUser,
+  updateUserProfile,
+} from "../api";
 import { useLoaderData, useNavigate } from "react-router";
+import { UserContext } from "..";
 import Avatar from "../components/Avatar";
 
 export async function loader() {
@@ -10,6 +16,7 @@ export async function loader() {
 
 export default function Account() {
   const { userProfile } = useLoaderData();
+  const { setUser } = React.useContext(UserContext);
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -19,6 +26,7 @@ export default function Account() {
 
   function handleSignOut() {
     signOutUser();
+    setUser(undefined);
     return navigate("/login");
   }
 
@@ -76,7 +84,7 @@ export default function Account() {
             />
             <button
               type="button"
-              onClick={() => resetPassword(userEmail)}
+              onClick={() => sendResetPasswordEmail(userEmail)}
               className="btn"
             >
               Reset password
