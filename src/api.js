@@ -12,17 +12,26 @@ export async function getCurrentUser() {
 }
 
 export async function createNewUser(name, email, password) {
-    const { data, signUpError } = await supabase.auth
-        .signUp({
-            email,
-            password
-        })
-    console.log(data)
-    console.log(signUpError)
-    const { insertError } = await supabase
-        .from('profiles')
-        .insert({ id: data.user.id, name, email })
-    console.log(insertError)
+    if (password.length < 7) {
+        throw new Error("Password must be longer than 6 characters")
+    }
+    try {
+        const { data, signUpError } = await supabase.auth
+            .signUp({
+                email,
+                password
+            })
+        console.log(data)
+        console.log(signUpError)
+        const { insertError } = await supabase
+            .from('profiles')
+            .insert({ id: data.user.id, name, email })
+        console.log(insertError)
+        return { data, signUpError, insertError }
+    } catch(error) {
+        console.log(error)
+        return error
+    }
 }
 
 export async function signInUser(email, password) {
@@ -76,6 +85,9 @@ export async function updateUserPassword(newPassword) {
 
 export async function getUser() {
     const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
     const { data, error } = await supabase
         .from('profiles')
         .select()
@@ -85,15 +97,27 @@ export async function getUser() {
     return data[0]
 }
 
-export async function updateUserProfile(newEmail) {
-    console.log(newEmail)
+export async function updateUserProfile(newName, newEmail) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
     try {
-        const { data, error } = await supabase.auth
+        const { data, authError } = await supabase.auth
             .updateUser({
-                Email: newEmail
+                name: newName,
+                email: newEmail
             })
         console.log(data)
-        console.log(error)
+        console.log(authError)
+        const { tableError } = await supabase
+            .from('profiles')
+            .update({
+                name: newName,
+                email: newEmail
+            })
+            .eq('id', currentUser.data.user.id)
+        console.log(tableError)
     } catch(error) {
         console.log(error)
     }
@@ -147,8 +171,8 @@ export async function getBooks() {
             .from('books')
             .select()
             .eq('user_id', currentUser.data.user.id)
-        console.log(data)
-        console.log(error)
+        // console.log(data)
+        // console.log(error)
         return data
     } catch(error) {
         console.log(error)
@@ -198,8 +222,8 @@ export async function getAllNotes() {
         .from('notes')
         .select()
         .eq('user_id', currentUser.data.user.id)
-    console.log(data)
-    console.log(error)
+    // console.log(data)
+    // console.log(error)
     return data
 }
 
@@ -273,8 +297,8 @@ export async function getBuckets() {
             .from('buckets')
             .select()
             .eq('user_id', currentUser.data.user.id)
-        console.log(data)
-        console.log(error)
+        // console.log(data)
+        // console.log(error)
         const buckets = data.map(bucket => bucket.name)
         return buckets
     } catch(error) {
@@ -362,8 +386,8 @@ export async function getCards() {
             .from('cards')
             .select()
             .eq('user_id', currentUser.data.user.id)
-        console.log(data)
-        console.log(error)
+        // console.log(data)
+        // console.log(error)
         return data
     } catch(error) {
         console.log(error)

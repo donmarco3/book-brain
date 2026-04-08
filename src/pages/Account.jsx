@@ -44,12 +44,23 @@ export default function Account() {
       }
 
       try {
-        updateUserProfile(userEmail);
+        updateUserProfile(userName, userEmail);
         setIsEditing(false);
       } catch (error) {
         setErrorMessage(error.message);
         return;
       }
+    }
+  }
+
+  async function handlePasswordReset() {
+    try {
+      const data = await sendResetPasswordEmail(userEmail);
+      if (!data.data) {
+        setErrorMessage(data.error.message);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -59,7 +70,7 @@ export default function Account() {
       <div className="card profile-card">
         {!isEditing ? (
           <>
-            {/* <Avatar name={user?.displayName} /> */}
+            <Avatar name={userProfile.name} />
             <p className="bold">{userProfile.name}</p>
             <p className="text-sm">{userProfile.email}</p>
           </>
@@ -82,11 +93,10 @@ export default function Account() {
               defaultValue={userProfile.email}
               onChange={(e) => setUserEmail(e.currentTarget.value)}
             />
-            <button
-              type="button"
-              onClick={() => sendResetPasswordEmail(userEmail)}
-              className="btn"
-            >
+            <p className="text-sm">
+              Check your current email to confirm your updated email.
+            </p>
+            <button type="button" onClick={handlePasswordReset} className="btn">
               Reset password
             </button>
           </div>

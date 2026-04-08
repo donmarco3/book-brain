@@ -1,8 +1,9 @@
 import React from "react";
-import { Form, redirect, useActionData } from "react-router";
+import { Form, redirect, useActionData, useNavigate } from "react-router";
 import { createNewUser } from "../api";
 import { passwordStrength } from "check-password-strength";
 import clasnames from "classnames";
+import { UserContext } from "..";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -19,15 +20,25 @@ export async function action({ request }) {
   }
 
   try {
-    await createNewUser(name, email, password);
-    return redirect("/");
+    const data = await createNewUser(name, email, password);
+    console.log(data);
+    if (data.signUpError) {
+      return { error: data.signUpError.message };
+    } else if (data.insertError) {
+      return { error: data.insertError.message };
+    } else {
+      return { user: data.data.user };
+    }
   } catch (error) {
-    return { error: "Error creating new user" };
+    console.log(error);
+    return { error: error.message };
   }
 }
 
 export default function Register() {
   const actionData = useActionData();
+  const { setUser } = React.useContext(UserContext);
+  const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = React.useState();
   const [password, setPassword] = React.useState("");
@@ -36,6 +47,10 @@ export default function Register() {
   React.useEffect(() => {
     if (actionData?.error) {
       setErrorMessage(actionData.error);
+    }
+    if (actionData?.user) {
+      setUser(actionData.user);
+      navigate("/");
     }
   }, [actionData]);
 

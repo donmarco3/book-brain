@@ -128,14 +128,14 @@ function App() {
 
   React.useEffect(() => {
     setIsLoading(true);
-    getCurrentUser().then((user) => {
-      if (!user) {
+    getCurrentUser().then((data) => {
+      if (!data) {
         setUser(undefined);
       } else {
-        setUser(user.data.user);
+        setUser(data.data.user);
       }
+      setIsLoading(false);
     });
-    setIsLoading(false);
   }, []);
 
   return (

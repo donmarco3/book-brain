@@ -19,14 +19,12 @@ export default function Bookshelf() {
         "Are you sure you want to delete this book? Deleting this book will also delete any associated notes and cards. Do you wish to continue?",
       )
     ) {
-      deleteBook(id);
-      revalidator.revalidate();
+      deleteBook(id).then(() => revalidator.revalidate());
     }
   }
 
   function changeBookStatus(id, currentStatus) {
-    updateBookStatus(id, currentStatus);
-    revalidator.revalidate();
+    updateBookStatus(id, currentStatus).then(() => revalidator.revalidate());
   }
 
   const bookElements = books.map((book) => {
