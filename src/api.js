@@ -329,25 +329,12 @@ export async function getCardBuckets(id) {
                 .from('buckets')
                 .select()
                 .eq('id', bucket.bucket_id)
-            console.log(data)
-            console.log(error)
+            // console.log(data)
+            // console.log(error)
             return data[0].name
         })
         const bucketsArr = await Promise.all(buckets)
         return bucketsArr.flat()
-    } catch(error) {
-        console.log(error)
-    }
-}
-
-export async function getCardBuckets2(id) {
-    try {
-        const { data, error } = await supabase
-            .from('card_buckets')
-            .select()
-            .eq('card_id', id)
-        console.log(data)
-        console.log(error)
     } catch(error) {
         console.log(error)
     }
@@ -447,7 +434,10 @@ export async function getCards() {
     try {
         const { data, error } = await supabase
             .from('cards')
-            .select()
+            .select(`
+                *,
+                buckets ( * )
+            `)
             .eq('user_id', currentUser.data.user.id)
         // console.log(data)
         // console.log(error)
@@ -462,8 +452,8 @@ export async function getCard(id) {
         .from('cards')
         .select()
         .eq('id', id)
-    console.log(data)
-    console.log(error)
+    // console.log(data)
+    // console.log(error)
     return data
 }
 

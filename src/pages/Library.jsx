@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  getBooks,
-  getBuckets,
-  getCardBuckets,
-  getCardBuckets2,
-  getCards,
-} from "../api";
+import { getBooks, getBuckets, getCards } from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { sliceString } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
@@ -98,36 +92,29 @@ export default function Library() {
 
   const sortedCards = [...filteredCards].sort((a, b) => {
     if (selectedValue === "newest") {
-      return b.created_at - a.created_at;
+      return new Date(b.created_at) - new Date(a.created_at);
     } else if (selectedValue === "oldest") {
-      return a.created_at - b.created_at;
+      return new Date(a.created_at) - new Date(b.created_at);
     }
     return;
   });
 
-  async function test() {
-    console.log(cards[0]);
-    const cardBuckets = await getCardBuckets2(cards[0].id);
-    console.log(cardBuckets);
-  }
-  test();
-
-  const cardElements = sortedCards.map(async (card) => {
+  const cardElements = sortedCards.map((card) => {
     const book = books.find((book) => book.id === card.book_id);
 
-    const bucketElements = buckets.map((bucket) => (
-      <p key={bucket} className="pill">
-        {bucket}
+    const bucketElements = card.buckets.map((bucket) => (
+      <p key={bucket.id} className="pill">
+        {bucket.name}
       </p>
     ));
 
     return (
-      <div className="card main-card" key={card.id}>
-        <Link
-          to={`/card/${card.id}`}
-          state={{ from: "/library", search: `?${searchParams.toString()}` }}
-          className="link"
-        >
+      <Link
+        to={`/card/${card.id}`}
+        state={{ from: "/library", search: `?${searchParams.toString()}` }}
+        className="link"
+      >
+        <div className="card main-card" key={card.id}>
           <div className="main-card-header">
             <p className="nice-font card-title">{card.card_title}</p>
             <div>
@@ -147,8 +134,8 @@ export default function Library() {
               <p>{sliceString(card.spark)}</p>
             </div>
           </div>
-        </Link>
-      </div>
+        </div>
+      </Link>
     );
   });
 

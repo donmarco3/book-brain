@@ -56,6 +56,13 @@ export default function Bookshelf() {
           <button onClick={() => changeBookStatus(book.id, book.status)}>
             Mark as {book.status === "reading" ? "Finished" : "Reading"}
           </button>
+          <Link
+            to={`/book/${book.id}`}
+            state={{ from: "/bookshelf" }}
+            className="link link-btn"
+          >
+            Edit Book
+          </Link>
           <button
             className="btn-delete"
             onClick={() => handleDeletion(book.id)}

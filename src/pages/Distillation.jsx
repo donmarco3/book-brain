@@ -66,11 +66,11 @@ export default function Distillation() {
 
   function promoteNote() {
     if (userResponses.response1 === "" || userResponses.response2 === "") {
-      alert("Please answer all retention questions");
+      setErrorMessage("Please answer all retention questions");
       return;
     }
     if (selectedBuckets.length === 0) {
-      alert("Please select at least one bucket");
+      setErrorMessage("Please select at least one bucket");
       return;
     }
     addCard(
@@ -150,6 +150,7 @@ export default function Distillation() {
             </div>
 
             <div className="retention-questions">
+              {errorMessage && <p className="red">{errorMessage}</p>}
               <label htmlFor="question1">Why did this stop you?</label>
               <textarea
                 id="question1"
@@ -202,7 +203,6 @@ export default function Distillation() {
                       Add
                     </button>
                   </div>
-                  {errorMessage && <p className="red">{errorMessage}</p>}
                 </div>
               )}
             </div>

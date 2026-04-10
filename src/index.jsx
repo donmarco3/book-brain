@@ -31,6 +31,7 @@ import UpdatePassword, {
 } from "./pages/UpdatePassword";
 import Account, { loader as accountLoader } from "./pages/Account";
 import AuthRequired from "./components/AuthRequired";
+import Book, { loader as bookLoader } from "./pages/Book";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -63,6 +64,12 @@ const router = createBrowserRouter(
           action={addBookAction}
           errorElement={<Error />}
           hydrateFallbackElement={<h1>Loading Bookshelf...</h1>}
+        />
+        <Route
+          path="book/:id"
+          element={<Book />}
+          loader={bookLoader}
+          hydrateFallbackElement={<h1>Loading Book...</h1>}
         />
         <Route
           path="library"

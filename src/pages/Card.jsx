@@ -183,7 +183,7 @@ export default function Card() {
         </Link>
         <h1>{card.card_title}</h1>
       </div>
-      <div className="card main-card card-content" key={card.id}>
+      <div className="card main-card card-content">
         {!isEditing ? (
           <>
             <div className="main-card-header">

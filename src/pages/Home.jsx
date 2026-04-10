@@ -100,12 +100,12 @@ export default function Home() {
     const book = books.find((book) => book.id === cards[randomIndex].book_id);
 
     return (
-      <div className="card main-card" key={cards[randomIndex].id}>
-        <Link
-          to={`/card/${cards[randomIndex].id}`}
-          state={{ from: "/" }}
-          className="link"
-        >
+      <Link
+        to={`/card/${cards[randomIndex].id}`}
+        state={{ from: "/" }}
+        className="link"
+      >
+        <div className="card main-card" key={cards[randomIndex].id}>
           <div className="main-card-header">
             <p className="nice-font card-title">
               {cards[randomIndex].card_title}
@@ -130,8 +130,8 @@ export default function Home() {
               <p>{sliceString(cards[randomIndex].spark)}</p>
             </div>
           </div>
-        </Link>
-      </div>
+        </div>
+      </Link>
     );
   }
 

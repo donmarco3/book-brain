@@ -82,6 +82,7 @@ p {
 .required-field,
 .red {
     color: var(--color-danger);
+    font-weight: 800;
 }
 
 .green {
@@ -699,6 +700,10 @@ div.distillation-card {
 
 .retention-questions {
     margin-top: 30px;
+}
+
+.retention-questions > p.red {
+    margin-bottom: 20px;
 }
 
 .retention-questions input,
