@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  addBucket,
   addCard,
   getBook,
   getBuckets,
@@ -17,20 +16,22 @@ export async function loader({ params }) {
 }
 
 export default function Distillation() {
+  const { notes, buckets, book } = useLoaderData();
+  const revalidator = useRevalidator();
+
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [userResponses, setUserResponses] = React.useState({
     response1: "",
     response2: "",
   });
   const [userBucket, setUserBucket] = React.useState("");
+  const [allBuckets, setAllBuckets] = React.useState(buckets);
   const [selectedBuckets, setSelectedBuckets] = React.useState([]);
   const [promoted, setPromoted] = React.useState(0);
   const [discarded, setDiscarded] = React.useState(0);
   const [skipped, setSkipped] = React.useState(0);
   const [showBuckets, setShowBuckets] = React.useState(false);
-
-  const { notes, buckets, book } = useLoaderData();
-  const revalidator = useRevalidator();
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   function updateUserResponses(event) {
     const { value, name } = event.currentTarget;
@@ -45,9 +46,14 @@ export default function Distillation() {
   }
 
   function updateSelectedBuckets() {
-    setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
-    addBucket(userBucket);
-    revalidator.revalidate();
+    if (userBucket !== "") {
+      setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      revalidator.revalidate();
+    } else {
+      console.log("empty name");
+      setErrorMessage("Bucket must have a name");
+    }
   }
 
   function toggleBucket(name) {
@@ -73,37 +79,37 @@ export default function Distillation() {
       userResponses.response2,
       selectedBuckets,
     );
-    updateNoteStatus(notes[currentIndex].id);
     setUserResponses({ response1: "", response2: "" });
     setSelectedBuckets([]);
     setCurrentIndex((prev) => prev + 1);
     setPromoted((prev) => prev + 1);
+    updateNoteStatus(notes[currentIndex].id, "processed");
   }
 
   function discardNote() {
     setUserResponses({ response1: "", response2: "" });
     setCurrentIndex((prev) => prev + 1);
     setDiscarded((prev) => prev + 1);
-    updateNoteStatus(notes[currentIndex].id);
+    updateNoteStatus(notes[currentIndex].id, "processed");
   }
 
   function skipNote() {
     setUserResponses({ response1: "", response2: "" });
     setCurrentIndex((prev) => prev + 1);
     setSkipped((prev) => prev + 1);
-    updateNoteStatus(notes[currentIndex].id);
+    updateNoteStatus(notes[currentIndex].id, "inbox");
   }
 
-  const bucketElements = buckets.map((bucket) => {
+  const bucketElements = allBuckets.map((bucket) => {
     return (
       <button
         className={
-          selectedBuckets.includes(bucket.name) ? "bucket btn-dark" : "bucket"
+          selectedBuckets.includes(bucket) ? "bucket btn-dark" : "bucket"
         }
-        key={bucket.id}
-        onClick={() => toggleBucket(bucket.name)}
+        key={bucket}
+        onClick={() => toggleBucket(bucket)}
       >
-        {bucket.name}
+        {bucket}
       </button>
     );
   });
@@ -173,7 +179,7 @@ export default function Distillation() {
                 <Link
                   to="/manage-buckets"
                   state={{
-                    from: `/book/${notes[currentIndex].bookId}/distillation`,
+                    from: `/book/${notes[currentIndex].book_id}/distillation`,
                   }}
                   className="link-btn"
                 >
@@ -196,6 +202,7 @@ export default function Distillation() {
                       Add
                     </button>
                   </div>
+                  {errorMessage && <p className="red">{errorMessage}</p>}
                 </div>
               )}
             </div>

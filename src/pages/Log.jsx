@@ -34,7 +34,7 @@ export async function action({ request, params }) {
 
   try {
     await validatePageRange(page);
-    addNote({ title, page, context, capture, spark }, book);
+    await addNote({ title, page, context, capture, spark }, book);
     return redirect(`/book/${book.id}/inbox`);
   } catch (error) {
     return { error: error.message };

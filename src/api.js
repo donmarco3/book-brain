@@ -16,7 +16,7 @@ export async function createNewUser(name, email, password) {
         throw new Error("Password must be longer than 6 characters")
     }
     try {
-        const { data, signUpError } = await supabase.auth
+        const { data, error: signUpError } = await supabase.auth
             .signUp({
                 email,
                 password
@@ -103,7 +103,7 @@ export async function updateUserProfile(newName, newEmail) {
         return
     }
     try {
-        const { data, authError } = await supabase.auth
+        const { data, error: authError } = await supabase.auth
             .updateUser({
                 name: newName,
                 email: newEmail
@@ -184,8 +184,8 @@ export async function getBook(id) {
         .from('books')
         .select()
         .eq('id', id)
-    console.log(data)
-    console.log(error)
+    // console.log(data)
+    // console.log(error)
     return data[0]
 }
 
@@ -243,8 +243,8 @@ export async function getNotes(id) {
         .select()
         .eq('book_id', id)
         .eq('status', 'inbox')
-    console.log(data)
-    console.log(error)
+    // console.log(data)
+    // console.log(error)
     return data
 }
 
@@ -261,31 +261,41 @@ export async function updateNote(id, note_title, page, context, capture, spark) 
         .eq('id', id)
 }
 
-export async function updateNoteStatus(id) {
+export async function updateNoteStatus(id, newStatus) {
     const { error } = await supabase
         .from('notes')
-        .update({ status: 'processed' })
+        .update({ status: newStatus })
         .eq('id', id)
 }
 
 // BUCKETS
 
-export async function addBucket(cardId, bucketName) {
-    const currentUser = await getCurrentUser()
-    const { data, bucketsError } = await supabase
-        .from('buckets')
-        .insert({
-            name: bucketName,
-            user_id: currentUser.data.user.id
-        })
-        .select()
-    const { cardBucketsError } = await supabase
-        .from("card_buckets")
-        .insert({
-            card_id: cardId,
-            bucket_id: data[0].id
-        })
-}
+// export async function addBucket(cardId, bucketName) {
+//     const currentUser = await getCurrentUser()
+//     if (!currentUser) {
+//         return
+//     }
+//     try {
+//         const { data, error: bucketsError } = await supabase
+//             .from('buckets')
+//             .insert({
+//                 name: bucketName,
+//                 user_id: currentUser.data.user.id
+//             })
+//             .select()
+//         console.log(data)
+//         console.log(bucketsError)
+//         const { cardBucketsError } = await supabase
+//             .from("card_buckets")
+//             .insert({
+//                 card_id: cardId,
+//                 bucket_id: data[0].id
+//             })
+//         console.log(cardBucketsError)
+//     } catch(error) {
+//         console.log(error)
+//     }
+// }
 
 export async function getBuckets() {
     const currentUser = await getCurrentUser()
@@ -307,23 +317,40 @@ export async function getBuckets() {
 }
 
 export async function getCardBuckets(id) {
-    const { data, error } = await supabase
-        .from('card_buckets')
-        .select()
-        .eq('card_id', id)
-    console.log(data)
-    console.log(error)
-    const buckets = data.map(async (bucket) => {
+    try {
         const { data, error } = await supabase
-            .from('buckets')
+            .from('card_buckets')
             .select()
-            .eq('id', bucket.bucket_id)
+            .eq('card_id', id)
         console.log(data)
         console.log(error)
-        return data[0].name
-    })
-    const bucketsArr = await Promise.all(buckets)
-    return bucketsArr.flat()
+        const buckets = data.map(async (bucket) => {
+            const { data, error } = await supabase
+                .from('buckets')
+                .select()
+                .eq('id', bucket.bucket_id)
+            console.log(data)
+            console.log(error)
+            return data[0].name
+        })
+        const bucketsArr = await Promise.all(buckets)
+        return bucketsArr.flat()
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+export async function getCardBuckets2(id) {
+    try {
+        const { data, error } = await supabase
+            .from('card_buckets')
+            .select()
+            .eq('card_id', id)
+        console.log(data)
+        console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 export async function deleteBucket(bucket) {
@@ -344,36 +371,72 @@ export async function deleteCardBucket(bucket) {
         .eq('user_id', currentUser.data.user.id)
     console.log(data)
     console.log(error)
-    const buckets = data.map(async (bucket) => {
-        const { data, error } = await supabase
-            .from('card_buckets')
-            .delete()
-            .eq('bucket_id', bucket.id)
-        console.log(data)
-        console.log(error)
-        return data
-    })
-    await Promise.all(buckets)
+
+    await Promise.all(
+        data.map(async (bucket) => {
+            const { data, error } = await supabase
+                .from('card_buckets')
+                .delete()
+                .eq('bucket_id', bucket.id)
+            console.log(data)
+            console.log(error)
+            return data
+        })  
+    )
 }
 
 // CARDS
 
-export async function addCard(note, response1, response2) {
-    const { error } = await supabase
-        .from('cards')
-        .insert({
-            card_title: note.note_title,
-            book_id: note.book_id,
-            page: note.page,
-            context: note.context,
-            capture: note.capture,
-            spark: note.spark,
-            question1: "Why did this stop you?",
-            response1,
-            question2: "What does this connect to in your life or other reading?",
-            response2,
-            user_id: note.user_id
-        })
+export async function addCard(note, response1, response2, buckets) {
+    try {
+        const { data: cardData, error: insertCardError } = await supabase
+            .from('cards')
+            .insert({
+                card_title: note.note_title,
+                book_id: note.book_id,
+                page: note.page,
+                context: note.context,
+                capture: note.capture,
+                spark: note.spark,
+                question1: "Why did this stop you?",
+                response1,
+                question2: "What does this connect to in your life or other reading?",
+                response2,
+                user_id: note.user_id
+            })
+            .select()
+        // console.log(cardData)
+        // console.log(insertCardError)
+
+        await Promise.all(
+            buckets.map(async (bucket) => {
+                const { data: bucketData, error: upsertError } = await supabase
+                    .from('buckets')
+                    .upsert({
+                        name: bucket,
+                        user_id: note.user_id
+                    }, {
+                        onConflict: 'name,user_id'
+                    })
+                    .select()
+                // console.log(bucketData)
+                // console.log(upsertError)
+
+                const { data: cardBucketData, error: cardBucketError } = await supabase
+                    .from('card_buckets')
+                    .insert({
+                        card_id: cardData[0].id,
+                        bucket_id: bucketData[0].id
+                    })
+                    .select()
+                // console.log(cardBucketData)
+                // console.log(cardBucketError)
+            })
+        )
+
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 export async function getCards() {
@@ -404,9 +467,9 @@ export async function getCard(id) {
     return data
 }
 
-export async function updateCard(id, card_title, page, context, capture, spark, response1, response2) {
+export async function updateCard(id, card_title, page, context, capture, spark, response1, response2, buckets) {
     try {
-        const { error } = await supabase
+        const { data: cardData, error } = await supabase
             .from('cards')
             .update({
                 card_title,
@@ -418,6 +481,36 @@ export async function updateCard(id, card_title, page, context, capture, spark, 
                 response2
             })
             .eq('id', id)
+            .select()
+        console.log(cardData)
+        console.log(error)
+
+        console.log(buckets)
+        await Promise.all(
+            buckets.map(async (bucket) => {
+                const { data: bucketData, error: upsertError } = await supabase
+                    .from('buckets')
+                    .upsert({
+                        name: bucket,
+                        user_id: cardData[0].user_id
+                    }, {
+                        onConflict: 'name,user_id'
+                    })
+                    .select()
+                console.log(bucketData)
+                console.log(upsertError)
+
+                const { data: cardBucketData, error: cardBucketError } = await supabase
+                    .from('card_buckets')
+                    .insert({
+                        card_id: cardData[0].id,
+                        bucket_id: bucketData[0].id
+                    })
+                    .select()
+                console.log(cardBucketData)
+                console.log(cardBucketError)
+            })
+        )
     } catch(error) {
         console.log(error)
     }

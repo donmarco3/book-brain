@@ -725,6 +725,7 @@ div.buckets input {
 .bucket-buttons {
     margin-block: 10px;
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
 }
 
@@ -827,7 +828,7 @@ form.login-form > input.update-password {
     margin-top: 20px;
 }
 
-span.bold {
+form.login-form span.bold {
     margin-left: 20px;
 }
 

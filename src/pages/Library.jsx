@@ -1,5 +1,11 @@
 import React from "react";
-import { getBooks, getBuckets, getCards } from "../api";
+import {
+  getBooks,
+  getBuckets,
+  getCardBuckets,
+  getCardBuckets2,
+  getCards,
+} from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { sliceString } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
@@ -92,13 +98,21 @@ export default function Library() {
 
   const sortedCards = [...filteredCards].sort((a, b) => {
     if (selectedValue === "newest") {
-      return b.createdAt.seconds - a.createdAt.seconds;
+      return b.created_at - a.created_at;
     } else if (selectedValue === "oldest") {
-      return a.createdAt.seconds - b.createdAt.seconds;
+      return a.created_at - b.created_at;
     }
+    return;
   });
 
-  const cardElements = sortedCards.map((card) => {
+  async function test() {
+    console.log(cards[0]);
+    const cardBuckets = await getCardBuckets2(cards[0].id);
+    console.log(cardBuckets);
+  }
+  test();
+
+  const cardElements = sortedCards.map(async (card) => {
     const book = books.find((book) => book.id === card.book_id);
 
     const bucketElements = buckets.map((bucket) => (

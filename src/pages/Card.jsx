@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  addBucket,
   deleteCard,
   deleteCardBucket,
   getBook,
@@ -44,6 +43,7 @@ export default function Card() {
   const [response1, setResponse1] = React.useState(card?.response1 || "");
   const [response2, setResponse2] = React.useState(card?.response2 || "");
   const [userBucket, setUserBucket] = React.useState("");
+  const [allBuckets, setAllBuckets] = React.useState(userBuckets);
   const [selectedBuckets, setSelectedBuckets] = React.useState(
     cardBuckets || [],
   );
@@ -78,11 +78,11 @@ export default function Card() {
       return;
     }
 
-    selectedBuckets.map((bucket) => {
-      if (!cardBuckets.includes(bucket)) {
-        addBucket(card.id, bucket);
-      }
-    });
+    // selectedBuckets.map((bucket) => {
+    //   if (!cardBuckets.includes(bucket)) {
+    //     addBucket(card.id, bucket);
+    //   }
+    // });
 
     cardBuckets.map((bucket) => {
       if (!selectedBuckets.includes(bucket)) {
@@ -101,6 +101,7 @@ export default function Card() {
         spark,
         response1,
         response2,
+        selectedBuckets,
       );
       setIsEditing((prev) => !prev);
       revalidator.revalidate();
@@ -116,9 +117,11 @@ export default function Card() {
 
   function updateSelectedBuckets() {
     if (userBucket !== "") {
+      setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
       setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
-      addBucket(card.id, userBucket);
       revalidator.revalidate();
+    } else {
+      setErrorMessage("Bucket must have a name");
     }
   }
 
