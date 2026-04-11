@@ -170,6 +170,7 @@ main {
    ============================================ */
 
 button, select {
+    font-size: 16px;
     border-radius: 10px;
     border: 1px solid var(--color-border);
     padding: 4px 10px;
@@ -252,6 +253,7 @@ a.active {
 .card-title {
     font-weight: 800;
     font-family: var(--font-heading);
+    font-size: 20px;
 }
 
 .main-card {
@@ -264,11 +266,6 @@ a.active {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
-}
-
-.main-card-header > p {
-    font-weight: 800;
-    font-size: 20px;
 }
 
 .main-card-header > div {
@@ -492,16 +489,42 @@ div.books-list > .card {
     display: flex;
     gap: 5px;
     flex-wrap: wrap;
-    padding-block: 20px;
-    border-bottom: 1px solid var(--color-border);
+    padding-top: 20px;
 }
 
-.card > .book-card-buttons {
+div.book-card > .book-buttons {
     display: flex;
     justify-content: space-between;
-    margin: 20px 0;
+    margin: 20px 0 10px;
 }
 
+/* ============================================
+   BOOK
+   ============================================ */
+
+
+div.main-card > div.book-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div.book-buttons > div {
+    display: flex;
+    gap: 10px;
+}
+
+div.book-info {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+div.book-info > .link-btn {
+    display: inline;
+}
 
 /* ============================================
    LIBRARY
@@ -666,6 +689,8 @@ div.note-buttons {
     justify-content: flex-end;
     gap: 10px;
     margin-top: 40px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 20px;
 }
 
 div.note-editing input,
@@ -823,6 +848,27 @@ form.login-form > div.login-form-buttons {
 
 form.login-form > p.error {
     margin-bottom: 20px;
+}
+
+form.login-form > div.password-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0 20px;
+    position: relative;
+}
+
+form.login-form > div.password-input > input {
+    margin: 0;
+}
+
+div.password-input > button {
+    border: none;
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 p.register-message {

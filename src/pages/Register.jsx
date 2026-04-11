@@ -70,11 +70,11 @@ export default function Register() {
         <h1>Register</h1>
         <Form method="post" className="login-form" replace>
           {errorMessage && <p className="red error">{errorMessage}</p>}
-          <label htmlFor="user-name">
+          <label htmlFor="user-name" className="bold">
             Name <span className="required-field">*</span>
           </label>
           <input id="user-name" name="name" placeholder="John" />
-          <label htmlFor="user-email">
+          <label htmlFor="user-email" className="bold">
             Email <span className="required-field">*</span>
           </label>
           <input
@@ -83,7 +83,7 @@ export default function Register() {
             type="email"
             placeholder="name@example.com"
           />
-          <label htmlFor="user-password">
+          <label htmlFor="user-password" className="bold">
             Password <span className="required-field">*</span>
             {strength && <span className={classes}>{strength}</span>}
           </label>

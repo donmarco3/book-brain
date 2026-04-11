@@ -49,7 +49,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
               <h2>Add a Book</h2>
               {errorMessage && <p className="red">{errorMessage}</p>}
               <div className="add-book-modal-inputs">
-                <label htmlFor="book-title">
+                <label htmlFor="book-title" className="bold">
                   Title <span className="required-field">*</span>
                 </label>
                 <input
@@ -58,7 +58,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
                   placeholder="Enter book title"
                   autoFocus
                 />
-                <label htmlFor="book-author">
+                <label htmlFor="book-author" className="bold">
                   Author <span className="required-field">*</span>
                 </label>
                 <input

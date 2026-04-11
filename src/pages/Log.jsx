@@ -82,13 +82,13 @@ export default function Log() {
         {errorMessage && <p className="red error">{errorMessage}</p>}
         <div className="log-note-form-header">
           <div>
-            <label htmlFor="note-title">
+            <label htmlFor="note-title" className="bold">
               Title <span className="required-field">*</span>
             </label>
             <input id="note-title" name="note-title" placeholder="Note title" />
           </div>
           <div>
-            <label htmlFor="book-page">
+            <label htmlFor="book-page" className="bold">
               Page <span className="required-field">*</span>
             </label>
             <input
@@ -98,21 +98,27 @@ export default function Log() {
             />
           </div>
         </div>
-        <label htmlFor="note-context">Context</label>
+        <label htmlFor="note-context" className="bold">
+          Context
+        </label>
         <textarea
           id="note-context"
           name="note-context"
           placeholder="Summarise the key idea in your own words..."
           rows={3}
         ></textarea>
-        <label htmlFor="note-capture">Capture (passage from the book) </label>
+        <label htmlFor="note-capture" className="bold">
+          Capture (passage from the book){" "}
+        </label>
         <textarea
           id="note-capture"
           name="note-capture"
           placeholder="Copy a quote or passage from the book..."
           rows={3}
         ></textarea>
-        <label htmlFor="note-spark">Spark (your thought/reaction) </label>
+        <label htmlFor="note-spark" className="bold">
+          Spark (your thought/reaction){" "}
+        </label>
         <textarea
           id="note-spark"
           name="note-spark"

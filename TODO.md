@@ -2,4 +2,4 @@ ability to take photo of capture
 
 change profile image
 
-edit book
+rate book on book page

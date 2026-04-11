@@ -7,12 +7,11 @@ export async function loader() {
   const books = await getBooks();
   const cards = await getCards();
   const notes = await getAllNotes();
-  const buckets = await getBuckets();
-  return { books, cards, notes, buckets };
+  return { books, cards, notes };
 }
 
 export default function Home() {
-  const { books, cards, notes, buckets } = useLoaderData();
+  const { books, cards, notes } = useLoaderData();
 
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
 
@@ -65,9 +64,8 @@ export default function Home() {
       cutoffDate = new Date(now);
       cutoffDate.setDate(now.getDate() - 365);
     }
-    return cards.filter(
-      (card) => new Date(card.created_at).toDateString() >= cutoffDate,
-    ).length;
+    return notes.filter((note) => new Date(note.created_at) >= cutoffDate)
+      .length;
   }
 
   const bookElements = books.map((book) => {
@@ -91,9 +89,9 @@ export default function Home() {
     }
 
     const randomIndex = sum % cards.length;
-    const bucketElements = buckets.map((bucket) => (
-      <p key={bucket} className="pill">
-        {bucket}
+    const bucketElements = cards[randomIndex].buckets.map((bucket) => (
+      <p key={bucket.id} className="pill">
+        {bucket.name}
       </p>
     ));
 
@@ -174,7 +172,7 @@ export default function Home() {
             </button>
           </div>
           <p>
-            {getNumberOfCards() === 1 ? "Card" : "Cards"} This {selectedPeriod}
+            {getNumberOfCards() === 1 ? "Note" : "Notes"} This {selectedPeriod}
           </p>
         </div>
       </div>

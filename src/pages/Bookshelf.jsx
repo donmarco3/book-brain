@@ -29,7 +29,7 @@ export default function Bookshelf() {
 
   const bookElements = books.map((book) => {
     return (
-      <div className="card" key={book.id}>
+      <div className="card book-card" key={book.id}>
         <div className="book-card-header">
           <p className="nice-font card-title">{book.title}</p>
           <p className={book.status === "finished" ? "pill success" : "pill"}>
@@ -52,23 +52,25 @@ export default function Bookshelf() {
             View Cards
           </Link>
         </div>
-        <div className="book-card-buttons">
+        <div className="note-buttons book-buttons">
           <button onClick={() => changeBookStatus(book.id, book.status)}>
             Mark as {book.status === "reading" ? "Finished" : "Reading"}
           </button>
-          <Link
-            to={`/book/${book.id}`}
-            state={{ from: "/bookshelf" }}
-            className="link link-btn"
-          >
-            Edit Book
-          </Link>
-          <button
-            className="btn-delete"
-            onClick={() => handleDeletion(book.id)}
-          >
-            Delete
-          </button>
+          <div>
+            <Link
+              to={`/book/${book.id}`}
+              state={{ from: "/bookshelf" }}
+              className="link link-btn"
+            >
+              Edit Book
+            </Link>
+            <button
+              className="btn-delete"
+              onClick={() => handleDeletion(book.id)}
+            >
+              Delete Book
+            </button>
+          </div>
         </div>
       </div>
     );

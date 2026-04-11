@@ -189,6 +189,17 @@ export async function getBook(id) {
     return data[0]
 }
 
+export async function updateBook(id, title, author) {
+    const { error } = await supabase
+        .from('books')
+        .update({
+            title,
+            author
+        })
+        .eq('id', id)
+    console.log(error)
+}
+
 // NOTES
 
 export async function addNote(note, book) {
@@ -322,8 +333,8 @@ export async function getCardBuckets(id) {
             .from('card_buckets')
             .select()
             .eq('card_id', id)
-        console.log(data)
-        console.log(error)
+        // console.log(data)
+        // console.log(error)
         const buckets = data.map(async (bucket) => {
             const { data, error } = await supabase
                 .from('buckets')
@@ -447,7 +458,22 @@ export async function getCards() {
     }
 }
 
+export async function getBookCards(id) {
+    try {
+        const { count, error } = await supabase
+            .from('cards')
+            .select('*', { count: 'exact', head: true })
+            .eq('book_id', id)
+        // console.log(count)
+        // console.log(error)
+        return count
+    } catch(error) {
+        console.log(error)
+    }
+}
+
 export async function getCard(id) {
+    console.log(id)
     const { data, error } = await supabase
         .from('cards')
         .select()

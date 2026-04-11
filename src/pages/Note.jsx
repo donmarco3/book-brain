@@ -106,7 +106,7 @@ export default function Note() {
             {errorMessage && <p className="red">{errorMessage}</p>}
             <div className="note-editing-header">
               <div>
-                <label htmlFor="note-note-title">
+                <label htmlFor="note-note-title" className="bold">
                   Note Title <span className="required-field">*</span>
                 </label>
                 <input
@@ -116,7 +116,7 @@ export default function Note() {
                 />
               </div>
               <div>
-                <label htmlFor="note-page">
+                <label htmlFor="note-page" className="bold">
                   Page <span className="required-field">*</span>
                 </label>
                 <input
@@ -126,14 +126,16 @@ export default function Note() {
                 />
               </div>
             </div>
-            <label htmlFor="note-context">Context</label>
+            <label htmlFor="note-context" className="bold">
+              Context
+            </label>
             <textarea
               id="note-context"
               defaultValue={note.context}
               onChange={(e) => setContext(e.currentTarget.value)}
               rows={3}
             ></textarea>
-            <label htmlFor="note-capture">
+            <label htmlFor="note-capture" className="bold">
               Capture (passage from the book){" "}
             </label>
             <textarea
@@ -142,7 +144,9 @@ export default function Note() {
               onChange={(e) => setCapture(e.currentTarget.value)}
               rows={3}
             ></textarea>
-            <label htmlFor="note-spark">Spark (your thought/reaction) </label>
+            <label htmlFor="note-spark" className="bold">
+              Spark (your thought/reaction){" "}
+            </label>
             <textarea
               id="note-spark"
               defaultValue={note.spark}

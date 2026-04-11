@@ -78,12 +78,6 @@ export default function Card() {
       return;
     }
 
-    // selectedBuckets.map((bucket) => {
-    //   if (!cardBuckets.includes(bucket)) {
-    //     addBucket(card.id, bucket);
-    //   }
-    // });
-
     cardBuckets.map((bucket) => {
       if (!selectedBuckets.includes(bucket)) {
         deleteCardBucket(bucket);
@@ -218,7 +212,7 @@ export default function Card() {
             {errorMessage && <p className="red">{errorMessage}</p>}
             <div className="note-editing-header">
               <div>
-                <label htmlFor="card-note-title">
+                <label htmlFor="card-note-title" className="bold">
                   Card Title <span className="required-field">*</span>
                 </label>
                 <input
@@ -228,7 +222,7 @@ export default function Card() {
                 />
               </div>
               <div>
-                <label htmlFor="card-page">
+                <label htmlFor="card-page" className="bold">
                   Page <span className="required-field">*</span>
                 </label>
                 <input
@@ -238,13 +232,15 @@ export default function Card() {
                 />
               </div>
             </div>
-            <label htmlFor="card-context">Context</label>
+            <label htmlFor="card-context" className="bold">
+              Context
+            </label>
             <textarea
               id="card-context"
               defaultValue={card.context}
               onChange={(e) => setContext(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-capture">
+            <label htmlFor="card-capture" className="bold">
               Capture (passage from the book){" "}
             </label>
             <textarea
@@ -252,13 +248,15 @@ export default function Card() {
               defaultValue={card.capture}
               onChange={(e) => setCapture(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-spark">Spark (your thought/reaction) </label>
+            <label htmlFor="card-spark" className="bold">
+              Spark (your thought/reaction){" "}
+            </label>
             <textarea
               id="card-spark"
               defaultValue={card.spark}
               onChange={(e) => setSpark(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-question1">
+            <label htmlFor="card-question1" className="bold">
               {card.question1} <span className="required-field">*</span>
             </label>
             <textarea
@@ -266,7 +264,7 @@ export default function Card() {
               defaultValue={card.response1}
               onChange={(e) => setResponse1(e.currentTarget.value)}
             ></textarea>
-            <label htmlFor="card-question2">
+            <label htmlFor="card-question2" className="bold">
               {card.question2} <span className="required-field">*</span>
             </label>
             <textarea
@@ -277,7 +275,7 @@ export default function Card() {
 
             <div className="buckets">
               <div className="buckets-header">
-                <p>
+                <p className="bold">
                   Select Buckets <span className="required-field">*</span>
                 </p>
                 <Link

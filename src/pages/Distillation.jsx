@@ -151,14 +151,16 @@ export default function Distillation() {
 
             <div className="retention-questions">
               {errorMessage && <p className="red">{errorMessage}</p>}
-              <label htmlFor="question1">Why did this stop you?</label>
+              <label htmlFor="question1" className="bold">
+                Why did this stop you?
+              </label>
               <textarea
                 id="question1"
                 name="response1"
                 onChange={updateUserResponses}
                 value={userResponses.response1}
               ></textarea>
-              <label htmlFor="question2">
+              <label htmlFor="question2" className="bold">
                 What does this connect to in your life or other reading?
               </label>
               <textarea
