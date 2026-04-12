@@ -163,7 +163,7 @@ main {
     flex-grow: 1;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
     header {
         padding: 0;
         height: 80px;
@@ -355,7 +355,7 @@ textarea:-webkit-autofill:focus {
   box-shadow: 0 0 0px 1000px white inset !important;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
     button, select {
         font-size: 14px;
     }
@@ -450,7 +450,7 @@ div.currently-reading-books {
     gap: 20px;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
     h1.home-heading {
         font-size: 1.5em;
     }
