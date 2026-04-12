@@ -51,7 +51,6 @@ export default function Distillation() {
       setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
       revalidator.revalidate();
     } else {
-      console.log("empty name");
       setErrorMessage("Bucket must have a name");
     }
   }

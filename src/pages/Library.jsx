@@ -79,9 +79,10 @@ export default function Library() {
       card.question1.toLowerCase().includes(searchQuery) ||
       card.question2.toLowerCase().includes(searchQuery);
 
+    const cardBuckets = card.buckets.map((bucket) => bucket.name);
     const matchesBuckets =
       selectedBuckets.length === 0 ||
-      selectedBuckets.every((bucket) => buckets.includes(bucket));
+      selectedBuckets.some((bucket) => cardBuckets.includes(bucket));
 
     const matchesBooks =
       selectedBooks.length === 0 ||
@@ -113,8 +114,9 @@ export default function Library() {
         to={`/card/${card.id}`}
         state={{ from: "/library", search: `?${searchParams.toString()}` }}
         className="link"
+        key={card.id}
       >
-        <div className="card main-card" key={card.id}>
+        <div className="card main-card">
           <div className="main-card-header">
             <p className="nice-font card-title">{card.card_title}</p>
             <div>

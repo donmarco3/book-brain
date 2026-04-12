@@ -473,7 +473,6 @@ export async function getBookCards(id) {
 }
 
 export async function getCard(id) {
-    console.log(id)
     const { data, error } = await supabase
         .from('cards')
         .select()
@@ -501,7 +500,6 @@ export async function updateCard(id, card_title, page, context, capture, spark, 
         console.log(cardData)
         console.log(error)
 
-        console.log(buckets)
         await Promise.all(
             buckets.map(async (bucket) => {
                 const { data: bucketData, error: upsertError } = await supabase

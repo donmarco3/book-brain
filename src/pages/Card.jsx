@@ -113,6 +113,7 @@ export default function Card() {
     if (userBucket !== "") {
       setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
       setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setUserBucket("");
       revalidator.revalidate();
     } else {
       setErrorMessage("Bucket must have a name");
@@ -142,7 +143,7 @@ export default function Card() {
     );
   });
 
-  const allBucketElements = userBuckets.map((bucket) => {
+  const allBucketElements = allBuckets.map((bucket) => {
     return (
       <button
         className={
@@ -292,6 +293,7 @@ export default function Card() {
                   <input
                     onChange={updateUserBucket}
                     placeholder="e.g. Mindset"
+                    value={userBucket}
                   />
                   <button
                     className="btn-dark btn-lg"
@@ -305,7 +307,12 @@ export default function Card() {
           </div>
         )}
         <div className="note-buttons">
-          <button className="btn-dark btn-lg" onClick={handleClick}>
+          <button
+            className="btn-dark btn-lg"
+            onClick={
+              isEditing ? handleClick : () => setIsEditing((prev) => !prev)
+            }
+          >
             {isEditing ? "Save" : "Edit"}
           </button>
           {isEditing ? (

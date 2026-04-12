@@ -70,6 +70,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
 
               <div className="add-book-modal-buttons">
                 <button
+                  type="button"
                   className="btn-lg"
                   onClick={() => {
                     setShowModal(false);
