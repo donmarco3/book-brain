@@ -131,7 +131,6 @@ const UserContext = React.createContext();
 function App() {
   const [user, setUser] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
-  console.log(user);
 
   React.useEffect(() => {
     setIsLoading(true);

@@ -68,6 +68,55 @@ export default function Home() {
       .length;
   }
 
+  function getCurrentlyReading() {
+    if (books.every((book) => book.status === "finished")) {
+      return (
+        <div className="no-items-container">
+          <p className="text-sm no-items-text">
+            You are currently reading no books.
+          </p>
+          <p className="text-sm no-items-text">
+            Add another book from the bookshelf page.
+          </p>
+          <Link to="/bookshelf" className="link-btn link-btn-dark">
+            Bookshelf
+          </Link>
+        </div>
+      );
+    } else if (books.length === 0) {
+      return (
+        <div className="no-items-container">
+          <p className="text-sm no-items-text">
+            You are currently reading no books.
+          </p>
+          <p className="text-sm no-items-text">
+            Add your first book from the bookshelf page.
+          </p>
+          <Link to="/bookshelf" className="link-btn link-btn-dark">
+            Bookshelf
+          </Link>
+        </div>
+      );
+    } else {
+      return books.map((book) => {
+        if (book.status === "reading") {
+          return (
+            <div className="card" key={book.id}>
+              <p className="nice-font card-title">{book.title}</p>
+              <p className="text-sm">by {book.author}</p>
+              <Link
+                to={`/book/${book.id}/log`}
+                className="link-btn link-btn-dark"
+              >
+                Log Notes
+              </Link>
+            </div>
+          );
+        }
+      });
+    }
+  }
+
   const bookElements = books.map((book) => {
     if (book.status === "reading") {
       return (
@@ -179,21 +228,7 @@ export default function Home() {
 
       <h2 className="home-heading">Currently Reading</h2>
       <div className="currently-reading">
-        {bookElements.length > 0 ? (
-          <div className="currently-reading-books">{bookElements}</div>
-        ) : (
-          <div className="no-items-container">
-            <p className="text-sm no-items-text">
-              You are currently reading no books.
-            </p>
-            <p className="text-sm no-items-text">
-              Add your first book from the bookshelf page.
-            </p>
-            <Link to="/bookshelf" className="link-btn link-btn-dark">
-              Bookshelf
-            </Link>
-          </div>
-        )}
+        <div className="currently-reading-books">{getCurrentlyReading()}</div>
       </div>
 
       <h2 className="home-heading">Daily Random Card</h2>
