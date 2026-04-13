@@ -83,7 +83,7 @@ export default function Bookshelf() {
         <p className="text-sm">
           {books.length} {books.length === 1 ? "book" : "books"}
         </p>
-        <button className="btn-dark btn-lg" onClick={() => setShowModal(true)}>
+        <button className="btn-dark" onClick={() => setShowModal(true)}>
           + Add Book
         </button>
       </div>

@@ -72,12 +72,14 @@ export default function Home() {
     if (books.every((book) => book.status === "finished")) {
       return (
         <div className="no-items-container">
-          <p className="text-sm no-items-text">
-            You are currently reading no books.
-          </p>
-          <p className="text-sm no-items-text">
-            Add another book from the bookshelf page.
-          </p>
+          <div>
+            <p className="text-sm no-items-text">
+              You are currently reading no books.
+            </p>
+            <p className="text-sm no-items-text">
+              Add another book from the bookshelf page.
+            </p>
+          </div>
           <Link to="/bookshelf" className="link-btn link-btn-dark">
             Bookshelf
           </Link>
@@ -86,12 +88,14 @@ export default function Home() {
     } else if (books.length === 0) {
       return (
         <div className="no-items-container">
-          <p className="text-sm no-items-text">
-            You are currently reading no books.
-          </p>
-          <p className="text-sm no-items-text">
-            Add your first book from the bookshelf page.
-          </p>
+          <div>
+            <p className="text-sm no-items-text">
+              You are currently reading no books.
+            </p>
+            <p className="text-sm no-items-text">
+              Add your first book from the bookshelf page.
+            </p>
+          </div>
           <Link to="/bookshelf" className="link-btn link-btn-dark">
             Bookshelf
           </Link>
@@ -101,9 +105,11 @@ export default function Home() {
       return books.map((book) => {
         if (book.status === "reading") {
           return (
-            <div className="card" key={book.id}>
-              <p className="nice-font card-title">{book.title}</p>
-              <p className="text-sm">by {book.author}</p>
+            <div className="card no-items-container" key={book.id}>
+              <div>
+                <p className="nice-font card-title">{book.title}</p>
+                <p className="text-sm">by {book.author}</p>
+              </div>
               <Link
                 to={`/book/${book.id}/log`}
                 className="link-btn link-btn-dark"
@@ -116,20 +122,6 @@ export default function Home() {
       });
     }
   }
-
-  const bookElements = books.map((book) => {
-    if (book.status === "reading") {
-      return (
-        <div className="card" key={book.id}>
-          <p className="nice-font card-title">{book.title}</p>
-          <p className="text-sm">by {book.author}</p>
-          <Link to={`/book/${book.id}/log`} className="link-btn link-btn-dark">
-            Log Notes
-          </Link>
-        </div>
-      );
-    }
-  });
 
   function getRandomCard() {
     let sum = 0;
