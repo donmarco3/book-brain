@@ -77,10 +77,10 @@ export default function Log() {
         </p>
       </div>
 
-      <Form method="post" className="log-note-form" replace>
+      <Form method="post" className="form" replace>
         <h2>New Note</h2>
         {errorMessage && <p className="red error">{errorMessage}</p>}
-        <div className="log-note-form-header">
+        <div className="form-header">
           <div>
             <label htmlFor="note-title" className="bold">
               Title <span className="required-field">*</span>
@@ -94,7 +94,7 @@ export default function Log() {
             <input
               id="book-page"
               name="book-page"
-              placeholder="e.g. 42 or 7-12 or 7-12, 23-45"
+              placeholder="Page or page range"
             />
           </div>
         </div>
@@ -125,8 +125,8 @@ export default function Log() {
           placeholder="What does this make you think? Any connections or reactions?"
           rows={3}
         ></textarea>
-        <div className="log-note-buttons">
-          <button className="btn-dark btn-lg">Save Note</button>
+        <div className="note-buttons">
+          <button className="btn-dark">Save Note</button>
         </div>
       </Form>
     </>

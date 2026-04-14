@@ -174,7 +174,7 @@ export default function Distillation() {
               <div className="buckets-header">
                 <button
                   onClick={() => setShowBuckets(!showBuckets)}
-                  className="btn-dark btn-lg"
+                  className="btn-dark "
                 >
                   Select Buckets
                 </button>
@@ -198,7 +198,7 @@ export default function Distillation() {
                       placeholder="e.g. Mindset"
                     />
                     <button
-                      className="btn-dark btn-lg"
+                      className="btn-dark "
                       onClick={updateSelectedBuckets}
                     >
                       Add
@@ -210,13 +210,13 @@ export default function Distillation() {
           </div>
 
           <div className="distillation-buttons">
-            <button onClick={promoteNote} className="btn-lg success">
+            <button onClick={promoteNote} className=" success">
               Promote
             </button>
-            <button onClick={discardNote} className="btn-lg btn-delete">
+            <button onClick={discardNote} className=" btn-delete">
               Discard
             </button>
-            <button onClick={skipNote} className="btn-lg">
+            <button onClick={skipNote} className="">
               Skip
             </button>
           </div>
@@ -228,15 +228,15 @@ export default function Distillation() {
             You reviewed {notes.length} notes in this session.
           </p>
           <div className="distillation-stats">
-            <div className="stat promoted">
+            <div className="card promoted">
               <p className="nice-font green text-lg">{promoted}</p>
               <p className="text-sm">Promoted</p>
             </div>
-            <div className="stat discarded">
+            <div className="card discarded">
               <p className="nice-font red text-lg">{discarded}</p>
               <p className="text-sm">Discarded</p>
             </div>
-            <div className="stat skipped">
+            <div className="card skipped">
               <p className="nice-font accent text-lg">{skipped}</p>
               <p className="text-sm">Skipped</p>
             </div>

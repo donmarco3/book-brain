@@ -49,7 +49,7 @@ h1, h2 {
 
 h1 {
     margin-block: 1.5rem;
-    font-size: clamp(1rem, calc(5vw + .1rem), 2rem);
+    font-size: clamp(1.25rem, calc(5vw + .1rem), 2rem);
 }
 
 h2 {
@@ -62,6 +62,7 @@ a {
 }
 
 p {
+    font-size: clamp(.75rem, calc(5vw + .1rem), 1rem);
     margin: 0;
 }
 
@@ -136,7 +137,7 @@ header {
 }
 
 header > .site-logo {
-    font-size: clamp(1rem, calc(5vw + .1rem), 2.5rem);
+    font-size: clamp(1.125rem, calc(5vw + .1rem), 2.5rem);
     font-family: var(--font-heading);
     color: var(--color-warm-brown);
     font-weight: 900;
@@ -150,7 +151,7 @@ header > nav {
 header > nav > a {
     color: var(--color-warm-brown);
     font-weight: 600;
-    font-size: clamp(.6rem, calc(1vw + .1rem), 1.125rem)
+    font-size: clamp(.7rem, calc(1vw + .1rem), 1.125rem)
 }
 
 footer {
@@ -179,12 +180,13 @@ main {
 
 button, select, a.link-btn {
     font-size: clamp(.8rem, calc(1vw + .1rem), 1rem);
-    padding-block: clamp(.5rem, calc(1vw + .1rem), .8rem);
+    padding-block: clamp(.4rem, calc(1vw + .1rem), .6rem);
     padding-inline: clamp(.5rem, calc(1vw + .1rem), 1rem);
     border-radius: 10px;
     border: 1px solid var(--color-border);
     background-color: var(--color-white);
     color: var(--color-warm-brown);
+    text-align: center;
     letter-spacing: .3px;
     cursor: pointer;
 }
@@ -261,9 +263,15 @@ a.active {
 
 .main-card-header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
+}
+
+.main-card-header > .card-title {
+    font-size: clamp(1.25rem, calc(1vw + .25rem), 1.5rem);
 }
 
 .main-card-header > div {
@@ -464,6 +472,7 @@ div.books-list {
 
 div.books-list > .card {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     justify-content: center;
     width: 48.5%;
@@ -472,6 +481,7 @@ div.books-list > .card {
 
 .card > .book-card-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
 }
@@ -479,7 +489,6 @@ div.books-list > .card {
 .card > .book-card-links {
     display: flex;
     gap: 5px;
-    flex-wrap: wrap;
     padding-top: 20px;
 }
 
@@ -498,6 +507,7 @@ div.main-card > div.book-buttons {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 div.book-buttons > div {
@@ -530,8 +540,8 @@ aside.sidebar {
     top: 0;
     left: 0;
     height: 100%;
-    width: 360px;
-    padding: 20px;
+    width: max(250px, 25vw);
+    padding: 1.5rem;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -574,42 +584,21 @@ div.filter-options {
 
 div.library-header {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     margin-block: 20px;
-}
-
-div.library-subheader > input {
-    width: 400px;
-}
-
-.filter-container {
-    position: relative;
-}
-
-.filter-dropdown {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    min-width: 150px;
-    background-color: var(--color-cream);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 12px;
-    box-shadow: 0 8px 30px var(--color-shadow);
-    z-index: 1;
-}
-
-.filter-container > button:nth-of-type(2) {
-    margin-left: 10px;
 }
 
 div.library-subheader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+div.library-subheader > input {
+    width: max(490px, 50%);
 }
 
 
@@ -627,27 +616,27 @@ div.log-header > h1 {
     margin-bottom: 10px;
 }
 
-form.log-note-form {
+.form {
+    padding: clamp(1.5rem, calc(5vw + .1rem), 3rem);
     background-color: var(--color-white);
     border: 1px solid var(--color-border);
     box-shadow: 0 8px 30px var(--color-shadow);
     border-radius: 8px;
-    padding: 40px;
 }
 
-form.log-note-form > .log-note-form-header {
+.form > .form-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 20px;
     margin-top: 20px;
 }
 
-.log-note-form-header > div {
+.form-header > div {
     width: 100%;
 }
 
-form.log-note-form input,
-form.log-note-form > textarea {
+.form input,
+.form > textarea {
     margin: 5px 0 20px;
 }
 
@@ -658,6 +647,8 @@ form.log-note-form > textarea {
 
 div.inbox-sub-header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
@@ -677,33 +668,12 @@ div.inbox-sub-header > div {
 
 div.note-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 10px;
     margin-top: 40px;
     border-top: 1px solid var(--color-border);
     padding-top: 20px;
 }
-
-div.note-editing input,
-div.note-editing > textarea {
-    margin: 5px 0 20px;
-}
-
-div.note-editing > p:nth-of-type(1) {
-    margin-bottom: 20px;
-}
-
-div.note-editing-header {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-div.note-editing-header > div {
-    width: 100%;
-}
-
 
 
 /* ============================================
@@ -735,6 +705,8 @@ div.buckets > .buckets-expanded {
 
 div.buckets > .buckets-header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     justify-content: space-between;
     align-items: center;
 }
@@ -768,6 +740,8 @@ div.distillation-buttons {
 }
 
 div.distillation-complete-container {
+    padding-block: clamp(4rem, calc(5vw + .1rem), 7rem);
+    padding-inline: clamp(1rem, calc(5vw + .1rem), 2rem);
     background-color: var(--color-white);
     border: 1px solid var(--color-border);
     box-shadow: 0 8px 30px var(--color-shadow);
@@ -775,19 +749,24 @@ div.distillation-complete-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 50px 0;
+    text-align: center;
 }
 
 div.distillation-complete-container > p:nth-of-type(1) {
-    font-size: 16px;
+    font-size: 1rem;
     margin-top: 10px;
 }
 
 div.distillation-stats {
     display: flex;
+    flex-wrap: wrap;
     text-align: center;
-    gap: 2em;
-    margin: 20px 0 40px;
+    gap: 2rem;
+    margin: 1.5rem 0 2rem;
+}
+
+div.distillation-stats > .card {
+    flex-grow: 1;
 }
 
 
@@ -808,40 +787,7 @@ div.bucket {
    LOG IN / REGISTER
    ============================================ */
 
-form.login-form {
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 8px 30px var(--color-shadow);
-    border-radius: 8px;
-    padding: 30px 40px;
-    margin-bottom: 20px;
-}
-
-form.login-form > p.red {
-    margin-bottom: 10px;
-}
-
-.login-form-header > div {
-    width: 100%;
-}
-
-form.login-form input,
-form.login-form > textarea {
-    margin: 5px 0 20px;
-}
-
-form.login-form > div.login-form-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-}
-
-form.login-form > p.error {
-    margin-bottom: 20px;
-}
-
-form.login-form > div.password-input {
+.form > div.password-input {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -849,7 +795,7 @@ form.login-form > div.password-input {
     position: relative;
 }
 
-form.login-form > div.password-input > input {
+.form > div.password-input > input {
     margin: 0;
 }
 
@@ -862,15 +808,23 @@ div.password-input > button {
     transform: translateY(-50%);
 }
 
+div.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 p.register-message {
     margin-bottom: 10px;
 }
 
-form.login-form > input.update-password {
+.form > input.update-password {
     margin-top: 20px;
 }
 
-form.login-form span.bold {
+.form span.bold {
     margin-left: 20px;
 }
 
@@ -892,12 +846,12 @@ span.green {
    ============================================ */
 
 div.profile-card {
-    margin-bottom: 20px;
-    padding: 20px;
+    padding: clamp(1.5rem, calc(5vw + .1rem), 3rem);
 }
 
 div.profile-buttons {
     justify-content: flex-start;
+    margin-bottom: 10px;
 }
 
 div.avatar {
@@ -914,4 +868,8 @@ div.avatar {
 div.avatar > div {
     color: var(--color-white);
     font-size: 2em;
+}
+
+button.reset-password-btn {
+    margin-block: 10px;
 }

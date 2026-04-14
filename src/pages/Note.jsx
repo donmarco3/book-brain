@@ -67,6 +67,22 @@ export default function Note() {
     }
   }
 
+  const noteButtons = (
+    <div className="note-buttons">
+      <button onClick={handleClick} className="btn-dark">
+        {isEditing ? "Save" : "Edit"}
+      </button>
+      {isEditing ? (
+        <button onClick={() => setIsEditing(false)}>Cancel</button>
+      ) : null}
+      {!isEditing ? (
+        <button onClick={handleDeletion} className="btn-delete">
+          Delete
+        </button>
+      ) : null}
+    </div>
+  );
+
   return (
     <>
       <div className="log-header">
@@ -76,101 +92,86 @@ export default function Note() {
         <h1>{note.note_title}</h1>
       </div>
 
-      <div className="card main-card" key={note.id}>
-        {!isEditing ? (
-          <>
-            <div className="main-card-header">
-              <p className="nice-font card-title">{note.note_title}</p>
-              <div>
-                <p>{book.title}</p>
-                <p>p. {note.page}</p>
-              </div>
+      {!isEditing ? (
+        <div className="card main-card">
+          <div className="main-card-header">
+            <p className="nice-font card-title">{note.note_title}</p>
+            <div>
+              <p>{book.title}</p>
+              <p>p. {note.page}</p>
             </div>
-
-            <div className="main-card-text">
-              <p>
-                <span>Context:</span> {note.context.slice(0, 300)}
-              </p>
-              <p className="italic capture">{note.capture.slice(0, 300)}</p>
-              <div className="pill">
-                <p>{note.spark.slice(0, 300)}</p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="note-editing">
-            <p>
-              <span className="bold">Book:</span>{" "}
-              <span className="nice-font">{book.title}</span>
-            </p>
-            {errorMessage && <p className="red">{errorMessage}</p>}
-            <div className="note-editing-header">
-              <div>
-                <label htmlFor="note-note-title" className="bold">
-                  Note Title <span className="required-field">*</span>
-                </label>
-                <input
-                  id="note-note-title"
-                  defaultValue={note.note_title}
-                  onChange={(e) => setNoteTitle(e.currentTarget.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="note-page" className="bold">
-                  Page <span className="required-field">*</span>
-                </label>
-                <input
-                  id="note-page"
-                  defaultValue={note.page}
-                  onChange={(e) => setPage(e.currentTarget.value)}
-                />
-              </div>
-            </div>
-            <label htmlFor="note-context" className="bold">
-              Context
-            </label>
-            <textarea
-              id="note-context"
-              defaultValue={note.context}
-              onChange={(e) => setContext(e.currentTarget.value)}
-              rows={3}
-            ></textarea>
-            <label htmlFor="note-capture" className="bold">
-              Capture (passage from the book){" "}
-            </label>
-            <textarea
-              id="note-capture"
-              defaultValue={note.capture}
-              onChange={(e) => setCapture(e.currentTarget.value)}
-              rows={3}
-            ></textarea>
-            <label htmlFor="note-spark" className="bold">
-              Spark (your thought/reaction){" "}
-            </label>
-            <textarea
-              id="note-spark"
-              defaultValue={note.spark}
-              onChange={(e) => setSpark(e.currentTarget.value)}
-              rows={3}
-            ></textarea>
           </div>
-        )}
-        <div className="note-buttons">
-          <button onClick={handleClick} className="btn-dark btn-lg">
-            {isEditing ? "Save" : "Edit"}
-          </button>
-          {isEditing ? (
-            <button onClick={() => setIsEditing(false)} className="btn-lg">
-              Cancel
-            </button>
-          ) : null}
-          {!isEditing ? (
-            <button onClick={handleDeletion} className="btn-delete btn-lg">
-              Delete
-            </button>
-          ) : null}
+
+          <div className="main-card-text">
+            <p>
+              <span>Context:</span> {note.context.slice(0, 300)}
+            </p>
+            <p className="italic capture">{note.capture.slice(0, 300)}</p>
+            <div className="pill">
+              <p>{note.spark.slice(0, 300)}</p>
+            </div>
+          </div>
+          {noteButtons}
         </div>
-      </div>
+      ) : (
+        <div className="form">
+          <p>
+            <span className="bold">Book:</span>{" "}
+            <span className="nice-font">{book.title}</span>
+          </p>
+          {errorMessage && <p className="red">{errorMessage}</p>}
+          <div className="form-header">
+            <div>
+              <label htmlFor="note-note-title" className="bold">
+                Note Title <span className="required-field">*</span>
+              </label>
+              <input
+                id="note-note-title"
+                defaultValue={note.note_title}
+                onChange={(e) => setNoteTitle(e.currentTarget.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="note-page" className="bold">
+                Page <span className="required-field">*</span>
+              </label>
+              <input
+                id="note-page"
+                defaultValue={note.page}
+                onChange={(e) => setPage(e.currentTarget.value)}
+              />
+            </div>
+          </div>
+          <label htmlFor="note-context" className="bold">
+            Context
+          </label>
+          <textarea
+            id="note-context"
+            defaultValue={note.context}
+            onChange={(e) => setContext(e.currentTarget.value)}
+            rows={3}
+          ></textarea>
+          <label htmlFor="note-capture" className="bold">
+            Capture (passage from the book){" "}
+          </label>
+          <textarea
+            id="note-capture"
+            defaultValue={note.capture}
+            onChange={(e) => setCapture(e.currentTarget.value)}
+            rows={3}
+          ></textarea>
+          <label htmlFor="note-spark" className="bold">
+            Spark (your thought/reaction){" "}
+          </label>
+          <textarea
+            id="note-spark"
+            defaultValue={note.spark}
+            onChange={(e) => setSpark(e.currentTarget.value)}
+            rows={3}
+          ></textarea>
+          {noteButtons}
+        </div>
+      )}
     </>
   );
 }

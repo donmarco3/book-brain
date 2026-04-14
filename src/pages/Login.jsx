@@ -59,7 +59,7 @@ export default function Login() {
     <>
       <div className="log-header">
         <h1>Login</h1>
-        <Form method="post" className="login-form" replace>
+        <Form method="post" className="form" replace>
           {errorMessage && <p className="red error">{errorMessage}</p>}
           <label htmlFor="user-email" className="bold">
             Email <span className="required-field">*</span>
@@ -88,21 +88,23 @@ export default function Login() {
               <FaEye />
             </button>
           </div>
-          <div className="login-form-buttons">
-            <button type="button" onClick={handleClick} className="btn">
-              Forgot your password?
-            </button>
-            <button type="submit" className="btn-dark btn-lg">
+          <button type="button" onClick={handleClick} className="btn">
+            Forgot your password?
+          </button>
+          <div className="note-buttons">
+            <button type="submit" className="btn-dark ">
               Login
             </button>
           </div>
         </Form>
-        <p className="text-sm register-message">
-          If you don't have an account register here.
-        </p>
-        <Link to="/register" className="link-btn">
-          Register
-        </Link>
+        <div className="register-container">
+          <p className="text-sm register-message">
+            If you don't have an account register here.
+          </p>
+          <Link to="/register" className="link-btn">
+            Register
+          </Link>
+        </div>
       </div>
     </>
   );

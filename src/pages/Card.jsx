@@ -295,10 +295,7 @@ export default function Card() {
                     placeholder="e.g. Mindset"
                     value={userBucket}
                   />
-                  <button
-                    className="btn-dark btn-lg"
-                    onClick={updateSelectedBuckets}
-                  >
+                  <button className="btn-dark " onClick={updateSelectedBuckets}>
                     Add
                   </button>
                 </div>
@@ -308,7 +305,7 @@ export default function Card() {
         )}
         <div className="note-buttons">
           <button
-            className="btn-dark btn-lg"
+            className="btn-dark "
             onClick={
               isEditing ? handleClick : () => setIsEditing((prev) => !prev)
             }
@@ -316,7 +313,7 @@ export default function Card() {
             {isEditing ? "Save" : "Edit"}
           </button>
           {isEditing ? (
-            <button className="btn-lg" onClick={() => setIsEditing(false)}>
+            <button className="" onClick={() => setIsEditing(false)}>
               Cancel
             </button>
           ) : null}

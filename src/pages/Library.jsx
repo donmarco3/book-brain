@@ -216,22 +216,20 @@ export default function Library() {
 
       <h1>Library</h1>
       <p className="text-sm">
-        {cardElements.length} {cardElements.length > 1 ? "cards" : "card"}
+        {cardElements.length} {cardElements.length === 1 ? "card" : "cards"}
       </p>
       <div className="library-header">
-        <div className="filter-container">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="btn-dark btn-lg"
-          >
-            Filter
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="btn-dark "
+        >
+          Filter
+        </button>
+        {selectedBuckets.length > 0 || selectedBooks.length > 0 ? (
+          <button className="" onClick={clearFilters}>
+            Clear
           </button>
-          {selectedBuckets.length > 0 || selectedBooks.length > 0 ? (
-            <button className="btn-lg" onClick={clearFilters}>
-              Clear
-            </button>
-          ) : null}
-        </div>
+        ) : null}
       </div>
 
       <div className="library-subheader">
@@ -240,10 +238,7 @@ export default function Library() {
           placeholder="Search cards..."
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
         />
-        <select
-          className="btn-lg"
-          onChange={(e) => setSelectedValue(e.target.value)}
-        >
+        <select className="" onChange={(e) => setSelectedValue(e.target.value)}>
           <option value="newest">Sort by: Newest</option>
           <option value="oldest">Sort by: Oldest</option>
         </select>

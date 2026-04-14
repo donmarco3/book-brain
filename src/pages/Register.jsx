@@ -4,6 +4,7 @@ import { createNewUser } from "../api";
 import { passwordStrength } from "check-password-strength";
 import clasnames from "classnames";
 import { UserContext } from "..";
+import { FaEye } from "react-icons/fa";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -43,6 +44,7 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = React.useState();
   const [password, setPassword] = React.useState("");
   const [strength, setStrength] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
 
   React.useEffect(() => {
     if (actionData?.error) {
@@ -66,9 +68,9 @@ export default function Register() {
 
   return (
     <>
-      <div className="log-header">
+      <>
         <h1>Register</h1>
-        <Form method="post" className="login-form" replace>
+        <Form method="post" className="form" replace>
           {errorMessage && <p className="red error">{errorMessage}</p>}
           <label htmlFor="user-name" className="bold">
             Name <span className="required-field">*</span>
@@ -87,18 +89,28 @@ export default function Register() {
             Password <span className="required-field">*</span>
             {strength && <span className={classes}>{strength}</span>}
           </label>
-          <input
-            id="user-password"
-            name="password"
-            type="password"
-            onChange={(e) => {
-              setPassword(e.currentTarget.value);
-              setStrength(passwordStrength(password).value);
-            }}
-          />
-          <button className="btn-dark btn-lg">Create Account</button>
+          <div className="password-input">
+            <input
+              id="user-password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => {
+                setPassword(e.currentTarget.value);
+                setStrength(passwordStrength(password).value);
+              }}
+            />
+            <button
+              onClick={() => setShowPassword((prev) => !prev)}
+              type="button"
+            >
+              <FaEye />
+            </button>
+          </div>
+          <div className="note-buttons">
+            <button className="btn-dark ">Create Account</button>
+          </div>
         </Form>
-      </div>
+      </>
     </>
   );
 }

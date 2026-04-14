@@ -64,57 +64,62 @@ export default function Account() {
     }
   }
 
+  const accountButtons = (
+    <>
+      <div className="note-buttons profile-buttons">
+        <button onClick={handleClick} className="btn-dark">
+          {!isEditing ? "Edit Profile" : "Save"}
+        </button>
+        {isEditing ? (
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
+        ) : null}
+      </div>
+    </>
+  );
+
   return (
     <>
       <h1>Hello, {userProfile.name}</h1>
-      <div className="card profile-card">
-        {!isEditing ? (
-          <>
-            <Avatar name={userProfile.name} />
-            <p className="bold">{userProfile.name}</p>
-            <p className="text-sm">{userProfile.email}</p>
-          </>
-        ) : (
-          <div className="note-editing">
-            {errorMessage && <p className="red">{errorMessage}</p>}
-            <label htmlFor="user-name" className="bold">
-              Name
-            </label>
-            <input
-              id="user-name"
-              defaultValue={userProfile.name}
-              onChange={(e) => setUserName(e.currentTarget.value)}
-            />
-            <label htmlFor="user-email" className="bold">
-              Email
-            </label>
-            <input
-              id="user-email"
-              defaultValue={userProfile.email}
-              onChange={(e) => setUserEmail(e.currentTarget.value)}
-            />
-            <p className="text-sm">
-              Check your current email to confirm your updated email.
-            </p>
-            <button type="button" onClick={handlePasswordReset} className="btn">
-              Reset password
-            </button>
-          </div>
-        )}
-        <div className="note-buttons profile-buttons">
-          <button onClick={handleClick} className="btn-dark btn-lg">
-            {!isEditing ? "Edit Profile" : "Save"}
-          </button>
-          {isEditing ? (
-            <button className="btn-lg" onClick={() => setIsEditing(false)}>
-              Cancel
-            </button>
-          ) : null}
+      {!isEditing ? (
+        <div className="card profile-card">
+          <Avatar name={userProfile.name} />
+          <p className="bold">{userProfile.name}</p>
+          <p className="text-sm">{userProfile.email}</p>
+          {accountButtons}
+          <button onClick={handleSignOut}>Logout</button>
         </div>
-      </div>
-      <button onClick={handleSignOut} className="btn-lg">
-        Logout
-      </button>
+      ) : (
+        <div className="form">
+          {errorMessage && <p className="red">{errorMessage}</p>}
+          <label htmlFor="user-name" className="bold">
+            Name
+          </label>
+          <input
+            id="user-name"
+            defaultValue={userProfile.name}
+            onChange={(e) => setUserName(e.currentTarget.value)}
+          />
+          <label htmlFor="user-email" className="bold">
+            Email
+          </label>
+          <input
+            id="user-email"
+            defaultValue={userProfile.email}
+            onChange={(e) => setUserEmail(e.currentTarget.value)}
+          />
+          <button
+            type="button"
+            className="reset-password-btn"
+            onClick={handlePasswordReset}
+          >
+            Reset password
+          </button>
+          <p className="text-sm">
+            Check your current email to confirm your updated email.
+          </p>
+          {accountButtons}
+        </div>
+      )}
     </>
   );
 }

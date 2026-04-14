@@ -59,7 +59,7 @@ export default function UpdatePassword() {
             }}
           />
           <div className="login-form-buttons">
-            <button type="submit" className="btn-dark btn-lg">
+            <button type="submit" className="btn-dark ">
               Login
             </button>
           </div>

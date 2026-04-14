@@ -124,23 +124,18 @@ export default function Book() {
           </div>
         )}
         <div className="note-buttons book-buttons">
-          <button
-            className="btn-lg"
-            onClick={() => changeBookStatus(book.id, book.status)}
-          >
+          <button onClick={() => changeBookStatus(book.id, book.status)}>
             Mark as {book.status === "reading" ? "Finished" : "Reading"}
           </button>
           <div>
-            <button className="btn-dark btn-lg" onClick={handleClick}>
+            <button className="btn-dark" onClick={handleClick}>
               {isEditing ? "Save" : "Edit"}
             </button>
             {isEditing ? (
-              <button className="btn-lg" onClick={() => setIsEditing(false)}>
-                Cancel
-              </button>
+              <button onClick={() => setIsEditing(false)}>Cancel</button>
             ) : null}
             {!isEditing ? (
-              <button className="btn-delete btn-lg" onClick={handleDeletion}>
+              <button className="btn-delete" onClick={handleDeletion}>
                 Delete
               </button>
             ) : null}

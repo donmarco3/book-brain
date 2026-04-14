@@ -26,8 +26,8 @@ export default function ManageBuckets() {
   const bucketElements = buckets.map((bucket) => {
     return (
       <div className="bucket" key={bucket}>
-        <button className="btn-dark btn-lg">{bucket}</button>
-        <button className="btn btn-lg" onClick={() => handleDeletion(bucket)}>
+        <button className="btn-dark ">{bucket}</button>
+        <button className="btn " onClick={() => handleDeletion(bucket)}>
           Delete
         </button>
       </div>

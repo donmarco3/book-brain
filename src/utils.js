@@ -16,16 +16,16 @@ export function validatePageRange(range) {
 
     if (newRange.includes(",")) {
         if (!range.split(",").every(item => validateRange(item.trim()))) {
-            throw new Error("Invalid page format")
+            throw new Error("Invalid page format. Accepted page formats; 42 or 7-12 or 7-12, 23-45")
         }
         return range.split(",").map(item => item.trim()).join(", ")
     } else if (newRange.includes("-") && !newRange.includes(",")) {
         if (!validateRange(range)) {
-            throw new Error("Invalid page format")
+            throw new Error("Invalid page format. Accepted page formats; 42 or 7-12 or 7-12, 23-45")
         }
     } else {
         if (parseInt(range).toString() !== range) {
-            throw new Error("Invalid page format")
+            throw new Error("Invalid page format. Accepted page formats; 42 or 7-12 or 7-12, 23-45")
         }
     }
     return range

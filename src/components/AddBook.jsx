@@ -71,7 +71,6 @@ export default function AddBook({ action, showModal, setShowModal }) {
               <div className="add-book-modal-buttons">
                 <button
                   type="button"
-                  className="btn-lg"
                   onClick={() => {
                     setShowModal(false);
                     setErrorMessage("");
@@ -79,7 +78,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
                 >
                   Cancel
                 </button>
-                <button className="btn-dark btn-lg">Add Book</button>
+                <button className="btn-dark">Add Book</button>
               </div>
             </Form>
           </div>
