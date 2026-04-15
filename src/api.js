@@ -171,6 +171,7 @@ export async function getBooks() {
             .from('books')
             .select()
             .eq('user_id', currentUser.data.user.id)
+            .order('created_at', { ascending: false })
         // console.log(data)
         // console.log(error)
         return data
@@ -280,33 +281,6 @@ export async function updateNoteStatus(id, newStatus) {
 }
 
 // BUCKETS
-
-// export async function addBucket(cardId, bucketName) {
-//     const currentUser = await getCurrentUser()
-//     if (!currentUser) {
-//         return
-//     }
-//     try {
-//         const { data, error: bucketsError } = await supabase
-//             .from('buckets')
-//             .insert({
-//                 name: bucketName,
-//                 user_id: currentUser.data.user.id
-//             })
-//             .select()
-//         console.log(data)
-//         console.log(bucketsError)
-//         const { cardBucketsError } = await supabase
-//             .from("card_buckets")
-//             .insert({
-//                 card_id: cardId,
-//                 bucket_id: data[0].id
-//             })
-//         console.log(cardBucketsError)
-//     } catch(error) {
-//         console.log(error)
-//     }
-// }
 
 export async function getBuckets() {
     const currentUser = await getCurrentUser()
