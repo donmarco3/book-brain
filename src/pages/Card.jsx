@@ -167,6 +167,22 @@ export default function Card() {
     pathNameText = "Home";
   }
 
+  const noteButtons = (
+    <div className="note-buttons">
+      <button onClick={handleClick} className="btn-dark">
+        {isEditing ? "Save" : "Edit"}
+      </button>
+      {isEditing ? (
+        <button onClick={() => setIsEditing(false)}>Cancel</button>
+      ) : null}
+      {!isEditing ? (
+        <button onClick={handleDeletion} className="btn-delete">
+          Delete
+        </button>
+      ) : null}
+    </div>
+  );
+
   return (
     <>
       <div className="log-header">
@@ -178,152 +194,133 @@ export default function Card() {
         </Link>
         <h1>{card.card_title}</h1>
       </div>
-      <div className="card main-card card-content">
-        {!isEditing ? (
-          <>
-            <div className="main-card-header">
-              <p className="nice-font card-title">{card.card_title}</p>
-              <div>
-                <p>p. {card.page}</p>
-              </div>
-            </div>
 
-            <div className="main-card-buckets">{bucketElements}</div>
-
-            <div className="main-card-text">
-              <p>
-                <span className="bold">Context:</span> {card.context}
-              </p>
-              <p className="italic capture">{card.capture}</p>
-              <div className="pill">
-                <p>{card.spark}</p>
-              </div>
-              <p className="bold">{card.question1}</p>
-              <p>{card.response1}</p>
-              <p className="bold">{card.question2}</p>
-              <p>{card.response2}</p>
+      {!isEditing ? (
+        <div className="card main-card">
+          <div className="main-card-header">
+            <p className="nice-font card-title">{card.card_title}</p>
+            <div>
+              <p>p. {card.page}</p>
             </div>
-          </>
-        ) : (
-          <div className="note-editing">
+          </div>
+
+          <div className="main-card-buckets">{bucketElements}</div>
+
+          <div className="main-card-text">
             <p>
-              <span className="bold">Book:</span>{" "}
-              <span className="nice-font">{book.title}</span>
+              <span className="bold">Context:</span> {card.context}
             </p>
-            {errorMessage && <p className="red">{errorMessage}</p>}
-            <div className="note-editing-header">
-              <div>
-                <label htmlFor="card-note-title" className="bold">
-                  Card Title <span className="required-field">*</span>
-                </label>
-                <input
-                  id="card-note-title"
-                  defaultValue={card.card_title}
-                  onChange={(e) => setCardTitle(e.currentTarget.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="card-page" className="bold">
-                  Page <span className="required-field">*</span>
-                </label>
-                <input
-                  id="card-page"
-                  defaultValue={card.page}
-                  onChange={(e) => setPage(e.currentTarget.value)}
-                />
-              </div>
+            <p className="italic capture">{card.capture}</p>
+            <div className="pill">
+              <p>{card.spark}</p>
             </div>
-            <label htmlFor="card-context" className="bold">
-              Context
-            </label>
-            <textarea
-              id="card-context"
-              defaultValue={card.context}
-              onChange={(e) => setContext(e.currentTarget.value)}
-            ></textarea>
-            <label htmlFor="card-capture" className="bold">
-              Capture (passage from the book){" "}
-            </label>
-            <textarea
-              id="card-capture"
-              defaultValue={card.capture}
-              onChange={(e) => setCapture(e.currentTarget.value)}
-            ></textarea>
-            <label htmlFor="card-spark" className="bold">
-              Spark (your thought/reaction){" "}
-            </label>
-            <textarea
-              id="card-spark"
-              defaultValue={card.spark}
-              onChange={(e) => setSpark(e.currentTarget.value)}
-            ></textarea>
-            <label htmlFor="card-question1" className="bold">
-              {card.question1} <span className="required-field">*</span>
-            </label>
-            <textarea
-              id="card-question1"
-              defaultValue={card.response1}
-              onChange={(e) => setResponse1(e.currentTarget.value)}
-            ></textarea>
-            <label htmlFor="card-question2" className="bold">
-              {card.question2} <span className="required-field">*</span>
-            </label>
-            <textarea
-              id="card-question2"
-              defaultValue={card.response2}
-              onChange={(e) => setResponse2(e.currentTarget.value)}
-            ></textarea>
+            <p className="bold">{card.question1}</p>
+            <p>{card.response1}</p>
+            <p className="bold">{card.question2}</p>
+            <p>{card.response2}</p>
+          </div>
+          {noteButtons}
+        </div>
+      ) : (
+        <div className="form">
+          <p>
+            <span className="bold">Book:</span>{" "}
+            <span className="nice-font">{book.title}</span>
+          </p>
+          {errorMessage && <p className="red">{errorMessage}</p>}
+          <div className="form-header">
+            <div>
+              <label htmlFor="card-note-title" className="bold">
+                Card Title <span className="required-field">*</span>
+              </label>
+              <input
+                id="card-note-title"
+                defaultValue={card.card_title}
+                onChange={(e) => setCardTitle(e.currentTarget.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="card-page" className="bold">
+                Page <span className="required-field">*</span>
+              </label>
+              <input
+                id="card-page"
+                defaultValue={card.page}
+                onChange={(e) => setPage(e.currentTarget.value)}
+              />
+            </div>
+          </div>
+          <label htmlFor="card-context" className="bold">
+            Context
+          </label>
+          <textarea
+            id="card-context"
+            defaultValue={card.context}
+            onChange={(e) => setContext(e.currentTarget.value)}
+          ></textarea>
+          <label htmlFor="card-capture" className="bold">
+            Capture (passage from the book){" "}
+          </label>
+          <textarea
+            id="card-capture"
+            defaultValue={card.capture}
+            onChange={(e) => setCapture(e.currentTarget.value)}
+          ></textarea>
+          <label htmlFor="card-spark" className="bold">
+            Spark (your thought/reaction){" "}
+          </label>
+          <textarea
+            id="card-spark"
+            defaultValue={card.spark}
+            onChange={(e) => setSpark(e.currentTarget.value)}
+          ></textarea>
+          <label htmlFor="card-question1" className="bold">
+            {card.question1} <span className="required-field">*</span>
+          </label>
+          <textarea
+            id="card-question1"
+            defaultValue={card.response1}
+            onChange={(e) => setResponse1(e.currentTarget.value)}
+          ></textarea>
+          <label htmlFor="card-question2" className="bold">
+            {card.question2} <span className="required-field">*</span>
+          </label>
+          <textarea
+            id="card-question2"
+            defaultValue={card.response2}
+            onChange={(e) => setResponse2(e.currentTarget.value)}
+          ></textarea>
 
-            <div className="buckets">
-              <div className="buckets-header">
-                <p className="bold">
-                  Select Buckets <span className="required-field">*</span>
-                </p>
-                <Link
-                  to="/manage-buckets"
-                  state={{ from: `/card/${card.id}` }}
-                  className="link-btn"
-                >
-                  Manage Buckets
-                </Link>
-              </div>
-              <div className="buckets-expanded">
-                <div className="bucket-buttons">{allBucketElements}</div>
-                <div className="add-bucket">
-                  <input
-                    onChange={updateUserBucket}
-                    placeholder="e.g. Mindset"
-                    value={userBucket}
-                  />
-                  <button className="btn-dark " onClick={updateSelectedBuckets}>
-                    Add
-                  </button>
-                </div>
+          <div className="buckets">
+            <div className="buckets-header">
+              <p className="bold">
+                Select Buckets <span className="required-field">*</span>
+              </p>
+              <Link
+                to="/manage-buckets"
+                state={{ from: `/card/${card.id}` }}
+                className="link-btn"
+              >
+                Manage Buckets
+              </Link>
+            </div>
+            <div className="buckets-expanded">
+              <div className="bucket-buttons">{allBucketElements}</div>
+              <div className="add-bucket">
+                <input
+                  onChange={updateUserBucket}
+                  placeholder="e.g. Mindset"
+                  value={userBucket}
+                />
+                <button className="btn-dark " onClick={updateSelectedBuckets}>
+                  Add
+                </button>
               </div>
             </div>
           </div>
-        )}
-        <div className="note-buttons">
-          <button
-            className="btn-dark "
-            onClick={
-              isEditing ? handleClick : () => setIsEditing((prev) => !prev)
-            }
-          >
-            {isEditing ? "Save" : "Edit"}
-          </button>
-          {isEditing ? (
-            <button className="" onClick={() => setIsEditing(false)}>
-              Cancel
-            </button>
-          ) : null}
-          {!isEditing ? (
-            <button className="btn-delete" onClick={handleDeletion}>
-              Delete
-            </button>
-          ) : null}
+          {noteButtons}
         </div>
-      </div>
+      )}
     </>
   );
 }
