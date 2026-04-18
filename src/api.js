@@ -434,13 +434,13 @@ export async function getCards() {
 
 export async function getBookCards(id) {
     try {
-        const { count, error } = await supabase
+        const { data, error } = await supabase
             .from('cards')
-            .select('*', { count: 'exact', head: true })
+            .select()
             .eq('book_id', id)
-        // console.log(count)
+        // console.log(data)
         // console.log(error)
-        return count
+        return data
     } catch(error) {
         console.log(error)
     }
@@ -509,4 +509,22 @@ export async function deleteCard(id) {
         .from('cards')
         .delete()
         .eq('id', id)
+}
+
+
+// VERCEL
+
+export async function vercelFunction(card) {
+    console.log(card)
+    try {
+        const response = await fetch('http://localhost:3000/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ card })
+        })
+        const data = await response.text()
+        console.log(data)
+    } catch(error) {
+        console.log(error)
+    }
 }

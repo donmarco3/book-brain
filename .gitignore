@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 src/keys.js
 .env
+.vercel
+.env*.local
