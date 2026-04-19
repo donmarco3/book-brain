@@ -24,10 +24,15 @@ export default function Inbox() {
           </div>
 
           <div className="main-card-text">
-            <p>
-              <span className="bold">Context:</span> {sliceString(note.context)}
-            </p>
-            <p className="italic capture">{sliceString(note.capture)}</p>
+            {note.context && (
+              <p>
+                <span className="bold">Context:</span>{" "}
+                {sliceString(note.context)}
+              </p>
+            )}
+            {note.capture && (
+              <p className="italic capture">{sliceString(note.capture)}</p>
+            )}
             <div className="pill">
               <p>{sliceString(note.spark)}</p>
             </div>

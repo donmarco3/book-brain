@@ -103,10 +103,14 @@ export default function Note() {
           </div>
 
           <div className="main-card-text">
-            <p>
-              <span>Context:</span> {note.context.slice(0, 300)}
-            </p>
-            <p className="italic capture">{note.capture.slice(0, 300)}</p>
+            {note.context && (
+              <p>
+                <span className="bold">Context:</span> {note.context}
+              </p>
+            )}
+            {note.capture && (
+              <p className="italic capture">{note.capture.slice(0, 300)}</p>
+            )}
             <div className="pill">
               <p>{note.spark.slice(0, 300)}</p>
             </div>

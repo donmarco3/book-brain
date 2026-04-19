@@ -128,9 +128,12 @@ export default function Library() {
           <div className="main-card-buckets">{bucketElements}</div>
 
           <div className="main-card-text">
-            <p>
-              <span className="bold">Context:</span> {sliceString(card.context)}
-            </p>
+            {card.context && (
+              <p>
+                <span className="bold">Context:</span>{" "}
+                {sliceString(card.context)}
+              </p>
+            )}
             <p className="italic capture">{sliceString(card.capture)}</p>
             <div className="pill">
               <p>{sliceString(card.spark)}</p>

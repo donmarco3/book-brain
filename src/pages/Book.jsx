@@ -18,7 +18,6 @@ export async function loader({ params }) {
 
 export default function Book() {
   const { book, cards } = useLoaderData();
-  console.log(cards);
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);

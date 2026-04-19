@@ -207,9 +207,11 @@ export default function Card() {
           <div className="main-card-buckets">{bucketElements}</div>
 
           <div className="main-card-text">
-            <p>
-              <span className="bold">Context:</span> {card.context}
-            </p>
+            {card.context && (
+              <p>
+                <span className="bold">Context:</span> {card.context}
+              </p>
+            )}
             <p className="italic capture">{card.capture}</p>
             <div className="pill">
               <p>{card.spark}</p>

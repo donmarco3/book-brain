@@ -169,7 +169,10 @@ export async function getBooks() {
     try {
         const { data, error } = await supabase
             .from('books')
-            .select()
+            .select(`
+                *,
+                notes ( * )
+            `)
             .eq('user_id', currentUser.data.user.id)
             .order('created_at', { ascending: false })
         // console.log(data)

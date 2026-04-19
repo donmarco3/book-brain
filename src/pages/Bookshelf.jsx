@@ -46,7 +46,7 @@ export default function Bookshelf() {
             Log Notes
           </Link>
           <Link className="link-btn" to={`/book/${book.id}/inbox`}>
-            Inbox
+            Inbox ({book.notes.length})
           </Link>
           <Link className="link-btn" to={`/library?book=${book.id}`}>
             View Cards
