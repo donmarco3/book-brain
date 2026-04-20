@@ -2,8 +2,6 @@ import React from "react";
 import {
   deleteBook,
   getBook,
-  getBookCards,
-  getCards,
   updateBook,
   updateBookStatus,
   vercelFunction,
@@ -12,12 +10,11 @@ import { Link, useLoaderData, useRevalidator } from "react-router";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
-  const cards = await getBookCards(params.id);
-  return { book, cards };
+  return { book };
 }
 
 export default function Book() {
-  const { book, cards } = useLoaderData();
+  const { book } = useLoaderData();
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -93,14 +90,16 @@ export default function Book() {
                 {creationDate}
               </p>
               <p className="text-sm">
-                {cards.length} {cards.length === 1 ? "Card" : "Cards"}
+                {book.cards.length} {book.cards.length === 1 ? "Card" : "Cards"}
               </p>
               <Link className="link-btn" to={`/library?book=${book.id}`}>
-                View Cards
+                View Cards ({book.cards.length})
               </Link>
-              <button onClick={() => vercelFunction(cards[0])}>
-                Generate Synthesis
-              </button>
+              {book.cards.length > 0 && (
+                <button onClick={() => vercelFunction(book.cards)}>
+                  Generate Synthesis
+                </button>
+              )}
             </div>
           </>
         ) : (

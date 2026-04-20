@@ -171,7 +171,8 @@ export async function getBooks() {
             .from('books')
             .select(`
                 *,
-                notes ( * )
+                notes ( * ),
+                cards ( * )
             `)
             .eq('user_id', currentUser.data.user.id)
             .order('created_at', { ascending: false })
@@ -186,7 +187,11 @@ export async function getBooks() {
 export async function getBook(id) {
     const { data, error } = await supabase
         .from('books')
-        .select()
+        .select(`
+            *,
+            notes ( * ),
+            cards ( * )
+        `)
         .eq('id', id)
     // console.log(data)
     // console.log(error)
@@ -517,13 +522,13 @@ export async function deleteCard(id) {
 
 // VERCEL
 
-export async function vercelFunction(card) {
-    console.log(card)
+export async function vercelFunction(cards) {
+    console.log(cards)
     try {
         const response = await fetch('http://localhost:3000/api', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({ card })
+            body: JSON.stringify(cards)
         })
         const data = await response.text()
         console.log(data)

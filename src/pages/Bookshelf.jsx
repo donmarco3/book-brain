@@ -49,7 +49,7 @@ export default function Bookshelf() {
             Inbox ({book.notes.length})
           </Link>
           <Link className="link-btn" to={`/library?book=${book.id}`}>
-            View Cards
+            View Cards ({book.cards.length})
           </Link>
         </div>
         <div className="note-buttons book-buttons">
