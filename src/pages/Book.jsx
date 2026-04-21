@@ -1,7 +1,9 @@
 import React from "react";
 import {
+  addSynthesis,
   deleteBook,
   getBook,
+  getSyntheses,
   updateBook,
   updateBookStatus,
   vercelFunction,
@@ -10,16 +12,18 @@ import { Link, useLoaderData, useRevalidator } from "react-router";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
-  return { book };
+  const syntheses = await getSyntheses(params.id);
+  return { book, syntheses };
 }
 
 export default function Book() {
-  const { book } = useLoaderData();
+  const { book, syntheses } = useLoaderData();
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [bookTitle, setBookTitle] = React.useState(book?.title);
   const [bookAuthor, setBookAuthor] = React.useState(book?.author);
+  const [synthesis, setSynthesis] = React.useState();
   const [errorMessage, setErrorMessage] = React.useState();
 
   function handleClick() {
@@ -55,6 +59,12 @@ export default function Book() {
       deleteBook(book.id);
       return navigate("/bookshelf");
     }
+  }
+
+  async function generateSynthesis() {
+    const response = await vercelFunction(book.cards);
+    addSynthesis(book.id, response);
+    setSynthesis(response);
   }
 
   const creationDate = new Date(book.created_at).toLocaleDateString("en-US", {
@@ -96,9 +106,17 @@ export default function Book() {
                 View Cards ({book.cards.length})
               </Link>
               {book.cards.length > 0 && (
-                <button onClick={() => vercelFunction(book.cards)}>
-                  Generate Synthesis
-                </button>
+                <div>
+                  <div className="syntheses-buttons">
+                    <Link className="link-btn" to={`/syntheses/${book.id}`}>
+                      View Syntheses
+                    </Link>
+                    <button className="btn-dark" onClick={generateSynthesis}>
+                      {synthesis ? "Regenerate" : "Generate"} Synthesis
+                    </button>
+                  </div>
+                  {synthesis && <p>{synthesis}</p>}
+                </div>
               )}
             </div>
           </>

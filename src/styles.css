@@ -869,3 +869,12 @@ div.avatar > div {
 button.reset-password-btn {
     margin-block: 10px;
 }
+
+/* ============================================
+   SYNTHESES
+   ============================================ */
+
+div.syntheses-buttons {
+    display: flex;
+    gap: 10px;
+}

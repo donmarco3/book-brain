@@ -62,9 +62,9 @@ export default async function handler(req, res) {
             { role: "user", content: `Here are all the notes from the user: ${cards}` }
             ],
         })
-        console.log(completion.choices[0].message.content)
+        // console.log(completion.choices[0].message.content)
 
-        res.status(200).send(`here is the card`)
+        res.status(200).send(completion.choices[0].message.content)
     } else {
         res.status(405).send('Method not allowed')
     }

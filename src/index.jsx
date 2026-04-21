@@ -32,6 +32,8 @@ import UpdatePassword, {
 import Account, { loader as accountLoader } from "./pages/Account";
 import AuthRequired from "./components/AuthRequired";
 import Book, { loader as bookLoader } from "./pages/Book";
+import Syntheses, { loader as synthesesLoader } from "./pages/Syntheses";
+import Synthesis, { loader as synthesisLoader } from "./pages/Synthesis";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -65,6 +67,7 @@ const router = createBrowserRouter(
           errorElement={<Error />}
           hydrateFallbackElement={<h1>Loading Bookshelf...</h1>}
         />
+        <Route element={<AddBook />} action={addBookAction} />
         <Route
           path="book/:id"
           element={<Book />}
@@ -119,7 +122,20 @@ const router = createBrowserRouter(
           errorElement={<Error />}
           hydrateFallbackElement={<h1>Loading Distillation...</h1>}
         />
-        <Route element={<AddBook />} action={addBookAction} />
+        <Route
+          path="syntheses/:id"
+          element={<Syntheses />}
+          loader={synthesesLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Syntheses...</h1>}
+        />
+        <Route
+          path="synthesis/:id"
+          element={<Synthesis />}
+          loader={synthesisLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<h1>Loading Synthesis...</h1>}
+        />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Route>,

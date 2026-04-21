@@ -520,6 +520,53 @@ export async function deleteCard(id) {
 }
 
 
+// SYNTHESES
+
+export async function addSynthesis(id, synthesis) {
+    try {
+        const { data, error } = await supabase
+            .from('syntheses')
+            .insert({
+                book_id: id,
+                synthesis
+            })
+            .select()
+        // console.log(data)
+        // console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+export async function getSyntheses(id) {
+    try {
+        const { data, error } = await supabase
+            .from('syntheses')
+            .select()
+            .eq('book_id', id)
+        // console.log(data)
+        // console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+export async function getSynthesis(id) {
+    try {
+        const { data, error } = await supabase
+            .from('syntheses')
+            .select()
+            .eq('id', id)
+        console.log(data)
+        console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+
 // VERCEL
 
 export async function vercelFunction(cards) {
@@ -531,7 +578,8 @@ export async function vercelFunction(cards) {
             body: JSON.stringify(cards)
         })
         const data = await response.text()
-        console.log(data)
+        // console.log(data)
+        return data
     } catch(error) {
         console.log(error)
     }
