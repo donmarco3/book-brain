@@ -4,8 +4,8 @@ change profile image
 
 generate synthesis of cards using ai
 
-- save synthesis
 - length of synthesis
+- loading synthesis button/indicator
 
 ai generated note title
 

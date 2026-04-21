@@ -42,3 +42,7 @@ function validateRange(range) {
         return true
     }
 }
+
+export function splitOnNewLine(string) {
+    return string.split("\n\n")
+}

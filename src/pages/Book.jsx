@@ -9,6 +9,7 @@ import {
   vercelFunction,
 } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
+import { splitOnNewLine } from "../utils";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
@@ -63,8 +64,12 @@ export default function Book() {
 
   async function generateSynthesis() {
     const response = await vercelFunction(book.cards);
-    addSynthesis(book.id, response);
     setSynthesis(response);
+  }
+
+  function saveSynthesis() {
+    addSynthesis(book.id, synthesis);
+    revalidator.revalidate();
   }
 
   const creationDate = new Date(book.created_at).toLocaleDateString("en-US", {
@@ -109,13 +114,23 @@ export default function Book() {
                 <div>
                   <div className="syntheses-buttons">
                     <Link className="link-btn" to={`/syntheses/${book.id}`}>
-                      View Syntheses
+                      View Syntheses ({syntheses.length})
                     </Link>
                     <button className="btn-dark" onClick={generateSynthesis}>
                       {synthesis ? "Regenerate" : "Generate"} Synthesis
                     </button>
                   </div>
-                  {synthesis && <p>{synthesis}</p>}
+                  {synthesis && (
+                    <div className="synthesis-generation">
+                      <p className="bold">
+                        Here is your personalised synthesis of {book.title}
+                      </p>
+                      {splitOnNewLine(synthesis).map((section) => (
+                        <p>{section}</p>
+                      ))}
+                      <button onClick={saveSynthesis}>Save Synthesis</button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

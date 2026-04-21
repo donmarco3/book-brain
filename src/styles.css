@@ -878,3 +878,11 @@ div.syntheses-buttons {
     display: flex;
     gap: 10px;
 }
+
+div.synthesis-generation {
+    margin-block: 1.5rem;
+}
+
+div.synthesis-generation > p {
+    margin-bottom: 1.5rem;
+}

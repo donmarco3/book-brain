@@ -558,8 +558,8 @@ export async function getSynthesis(id) {
             .from('syntheses')
             .select()
             .eq('id', id)
-        console.log(data)
-        console.log(error)
+        // console.log(data)
+        // console.log(error)
         return data
     } catch(error) {
         console.log(error)
@@ -570,7 +570,6 @@ export async function getSynthesis(id) {
 // VERCEL
 
 export async function vercelFunction(cards) {
-    console.log(cards)
     try {
         const response = await fetch('http://localhost:3000/api', {
             method: 'POST',
@@ -578,7 +577,7 @@ export async function vercelFunction(cards) {
             body: JSON.stringify(cards)
         })
         const data = await response.text()
-        // console.log(data)
+        console.log(data)
         return data
     } catch(error) {
         console.log(error)

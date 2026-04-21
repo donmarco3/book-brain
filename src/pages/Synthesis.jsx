@@ -9,7 +9,6 @@ export async function loader({ params }) {
 
 export default function Synthesis() {
   const { synthesis } = useLoaderData();
-  console.log(synthesis);
 
   return (
     <>
@@ -18,7 +17,18 @@ export default function Synthesis() {
           &larr; Back to Syntheses
         </Link>
         <h1>Synthesis</h1>
-        {synthesis.synthesis}
+      </div>
+      <div className="card main-card">
+        <div className="main-card-header">
+          <p className="text-sm">
+            {new Date(synthesis.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+        <p>{synthesis.synthesis}</p>
       </div>
     </>
   );
