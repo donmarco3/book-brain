@@ -522,13 +522,14 @@ export async function deleteCard(id) {
 
 // SYNTHESES
 
-export async function addSynthesis(id, synthesis) {
+export async function addSynthesis(id, synthesis, type) {
     try {
         const { data, error } = await supabase
             .from('syntheses')
             .insert({
                 book_id: id,
-                synthesis
+                synthesis,
+                type
             })
             .select()
         // console.log(data)
@@ -569,12 +570,13 @@ export async function getSynthesis(id) {
 
 // VERCEL
 
-export async function vercelFunction(cards) {
+export async function vercelFunction(cards, type) {
+    console.log(type)
     try {
         const response = await fetch('http://localhost:3000/api', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(cards)
+            body: JSON.stringify({ cards, type })
         })
         const data = await response.text()
         console.log(data)

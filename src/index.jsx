@@ -34,6 +34,7 @@ import AuthRequired from "./components/AuthRequired";
 import Book, { loader as bookLoader } from "./pages/Book";
 import Syntheses, { loader as synthesesLoader } from "./pages/Syntheses";
 import Synthesis, { loader as synthesisLoader } from "./pages/Synthesis";
+import Loading from "./components/Loading";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -51,13 +52,13 @@ const router = createBrowserRouter(
           element={<Home />}
           loader={homeLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Home...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="/account"
           element={<Account />}
           loader={accountLoader}
-          hydrateFallbackElement={<h1>Loading Account...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="bookshelf"
@@ -65,33 +66,33 @@ const router = createBrowserRouter(
           loader={bookshelfLoader}
           action={addBookAction}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Bookshelf...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route element={<AddBook />} action={addBookAction} />
         <Route
           path="book/:id"
           element={<Book />}
           loader={bookLoader}
-          hydrateFallbackElement={<h1>Loading Book...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="library"
           element={<Library />}
           loader={libraryLoader}
-          hydrateFallbackElement={<h1>Loading Library...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="manage-buckets"
           element={<ManageBuckets />}
           loader={manageBucketsLoader}
-          hydrateFallbackElement={<h1>Loading Buckets...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="card/:id"
           element={<Card />}
           loader={cardLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Card...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="book/:id/log"
@@ -99,42 +100,42 @@ const router = createBrowserRouter(
           loader={logLoader}
           action={logAction}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Log...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="book/:id/inbox"
           element={<Inbox />}
           loader={inboxLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Inbox...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="note/:id"
           element={<Note />}
           loader={noteLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Note...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="book/:id/distillation"
           element={<Distillation />}
           loader={distillationLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Distillation...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="syntheses/:id"
           element={<Syntheses />}
           loader={synthesesLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Syntheses...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
         <Route
           path="synthesis/:id"
           element={<Synthesis />}
           loader={synthesisLoader}
           errorElement={<Error />}
-          hydrateFallbackElement={<h1>Loading Synthesis...</h1>}
+          hydrateFallbackElement={<Loading />}
         />
       </Route>
       <Route path="*" element={<NotFound />} />

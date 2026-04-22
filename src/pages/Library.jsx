@@ -229,9 +229,7 @@ export default function Library() {
           Filter
         </button>
         {selectedBuckets.length > 0 || selectedBooks.length > 0 ? (
-          <button className="" onClick={clearFilters}>
-            Clear
-          </button>
+          <button onClick={clearFilters}>Clear</button>
         ) : null}
       </div>
 
@@ -241,7 +239,7 @@ export default function Library() {
           placeholder="Search cards..."
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
         />
-        <select className="" onChange={(e) => setSelectedValue(e.target.value)}>
+        <select onChange={(e) => setSelectedValue(e.target.value)}>
           <option value="newest">Sort by: Newest</option>
           <option value="oldest">Sort by: Oldest</option>
         </select>

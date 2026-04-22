@@ -10,6 +10,7 @@ import {
 } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
 import { splitOnNewLine } from "../utils";
+import Loading from "../components/Loading";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
@@ -24,6 +25,8 @@ export default function Book() {
   const [isEditing, setIsEditing] = React.useState(false);
   const [bookTitle, setBookTitle] = React.useState(book?.title);
   const [bookAuthor, setBookAuthor] = React.useState(book?.author);
+  const [selectedValue, setSelectedValue] = React.useState("standard");
+  const [isLoading, setIsLoading] = React.useState(false);
   const [synthesis, setSynthesis] = React.useState();
   const [errorMessage, setErrorMessage] = React.useState();
 
@@ -63,12 +66,15 @@ export default function Book() {
   }
 
   async function generateSynthesis() {
-    const response = await vercelFunction(book.cards);
-    setSynthesis(response);
+    setIsLoading(true);
+    vercelFunction(book.cards, selectedValue).then((response) => {
+      setSynthesis(response);
+      setIsLoading(false);
+    });
   }
 
   function saveSynthesis() {
-    addSynthesis(book.id, synthesis);
+    addSynthesis(book.id, synthesis, selectedValue);
     revalidator.revalidate();
   }
 
@@ -112,25 +118,41 @@ export default function Book() {
               </Link>
               {book.cards.length > 0 && (
                 <div>
+                  <Link className="link-btn" to={`/syntheses/${book.id}`}>
+                    View Syntheses ({syntheses.length})
+                  </Link>
                   <div className="syntheses-buttons">
-                    <Link className="link-btn" to={`/syntheses/${book.id}`}>
-                      View Syntheses ({syntheses.length})
-                    </Link>
-                    <button className="btn-dark" onClick={generateSynthesis}>
+                    <button
+                      className="btn-dark"
+                      onClick={generateSynthesis}
+                      disabled={isLoading}
+                    >
                       {synthesis ? "Regenerate" : "Generate"} Synthesis
                     </button>
+                    <select
+                      onChange={(e) => setSelectedValue(e.target.value)}
+                      defaultValue="standard"
+                      disabled={isLoading}
+                    >
+                      <option value="brief">Brief (1 paragraph)</option>
+                      <option value="standard">Standard (3 paragraphs)</option>
+                      <option value="in-depth">In-Depth (5 paragraphs)</option>
+                    </select>
                   </div>
-                  {synthesis && (
-                    <div className="synthesis-generation">
-                      <p className="bold">
-                        Here is your personalised synthesis of {book.title}
-                      </p>
-                      {splitOnNewLine(synthesis).map((section) => (
-                        <p>{section}</p>
-                      ))}
-                      <button onClick={saveSynthesis}>Save Synthesis</button>
-                    </div>
-                  )}
+                  <div className="synthesis-generation">
+                    {isLoading && <Loading />}
+                    {synthesis && (
+                      <div>
+                        <p className="bold">
+                          Here is your personalised synthesis of {book.title}
+                        </p>
+                        {splitOnNewLine(synthesis).map((section) => (
+                          <p key={section}>{section}</p>
+                        ))}
+                        <button onClick={saveSynthesis}>Save Synthesis</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

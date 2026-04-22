@@ -210,6 +210,12 @@ button.btn-delete {
     border-color: var(--color-danger);
 }
 
+button:disabled,
+select:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
 p.success,
 button.success {
     background-color: var(--color-success);
@@ -343,6 +349,12 @@ textarea:-webkit-autofill:focus {
   box-shadow: 0 0 0px 1000px white inset !important;
 }
 
+div.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-block: 2rem;
+}
 
 
 
@@ -877,12 +889,13 @@ button.reset-password-btn {
 div.syntheses-buttons {
     display: flex;
     gap: 10px;
+    margin-top: 1.5rem;
 }
 
 div.synthesis-generation {
     margin-block: 1.5rem;
 }
 
-div.synthesis-generation > p {
+div.synthesis-generation > div > p {
     margin-bottom: 1.5rem;
 }
