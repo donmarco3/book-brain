@@ -29,6 +29,7 @@ export default function Book() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [synthesis, setSynthesis] = React.useState();
   const [errorMessage, setErrorMessage] = React.useState();
+  const [saveSynthesisMessage, setSaveSynthesisMessage] = React.useState();
 
   function handleClick() {
     if (!bookTitle) {
@@ -73,8 +74,13 @@ export default function Book() {
     });
   }
 
-  function saveSynthesis() {
-    addSynthesis(book.id, synthesis, selectedValue);
+  async function saveSynthesis() {
+    const response = await addSynthesis(book.id, synthesis, selectedValue);
+    if (response) {
+      setSaveSynthesisMessage("Synthesis already saved");
+    } else {
+      setSaveSynthesisMessage("Synthesis saved");
+    }
     revalidator.revalidate();
   }
 
@@ -83,6 +89,29 @@ export default function Book() {
     month: "long",
     day: "numeric",
   });
+
+  const bookButtons = (
+    <div className="note-buttons book-buttons">
+      {!isEditing ? (
+        <button onClick={() => changeBookStatus(book.id, book.status)}>
+          Mark as {book.status === "reading" ? "Finished" : "Reading"}
+        </button>
+      ) : null}
+      <div>
+        <button className="btn-dark" onClick={handleClick}>
+          {isEditing ? "Save" : "Edit"}
+        </button>
+        {isEditing ? (
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
+        ) : null}
+        {!isEditing ? (
+          <button className="btn-delete" onClick={handleDeletion}>
+            Delete
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -93,54 +122,52 @@ export default function Book() {
         <h1>{book.title}</h1>
       </div>
 
-      <div className="card main-card">
-        {!isEditing ? (
-          <>
-            <div className="book-card-header">
-              <p className="nice-font card-title">{book.title}</p>
-              <p
-                className={book.status === "finished" ? "pill success" : "pill"}
-              >
-                {book.status === "finished" ? "Finished" : "Reading"}
-              </p>
-            </div>
-            <p className="text-sm">by {book.author}</p>
-            <div className="book-info">
-              <p className="text-sm">
-                <span className="bold">Date added: </span>
-                {creationDate}
-              </p>
-              <p className="text-sm">
-                {book.cards.length} {book.cards.length === 1 ? "Card" : "Cards"}
-              </p>
-              <Link className="link-btn" to={`/library?book=${book.id}`}>
-                View Cards ({book.cards.length})
-              </Link>
-              {book.cards.length > 0 && (
-                <div>
-                  <Link className="link-btn" to={`/syntheses/${book.id}`}>
-                    View Syntheses ({syntheses.length})
-                  </Link>
-                  <div className="syntheses-buttons">
-                    <button
-                      className="btn-dark"
-                      onClick={generateSynthesis}
-                      disabled={isLoading}
-                    >
-                      {synthesis ? "Regenerate" : "Generate"} Synthesis
-                    </button>
-                    <select
-                      onChange={(e) => setSelectedValue(e.target.value)}
-                      defaultValue="standard"
-                      disabled={isLoading}
-                    >
-                      <option value="brief">Brief (1 paragraph)</option>
-                      <option value="standard">Standard (3 paragraphs)</option>
-                      <option value="in-depth">In-Depth (5 paragraphs)</option>
-                    </select>
-                  </div>
+      {!isEditing ? (
+        <div className="card main-card">
+          <div className="book-card-header">
+            <p className="nice-font card-title">{book.title}</p>
+            <p className={book.status === "finished" ? "pill success" : "pill"}>
+              {book.status === "finished" ? "Finished" : "Reading"}
+            </p>
+          </div>
+          <p className="text-sm">by {book.author}</p>
+          <div className="book-info">
+            <p className="text-sm">
+              <span className="bold">Date added: </span>
+              {creationDate}
+            </p>
+            <p className="text-sm">
+              {book.cards.length} {book.cards.length === 1 ? "Card" : "Cards"}
+            </p>
+            <Link className="link-btn" to={`/library?book=${book.id}`}>
+              View Cards ({book.cards.length})
+            </Link>
+            {book.cards.length > 0 && (
+              <div className="book-synthesis">
+                <Link className="link-btn" to={`/syntheses/${book.id}`}>
+                  View Syntheses ({syntheses.length})
+                </Link>
+                <div className="syntheses-buttons">
+                  <button
+                    className="btn-dark"
+                    onClick={generateSynthesis}
+                    disabled={isLoading}
+                  >
+                    {synthesis ? "Regenerate" : "Generate"} Synthesis
+                  </button>
+                  <select
+                    onChange={(e) => setSelectedValue(e.target.value)}
+                    defaultValue="standard"
+                    disabled={isLoading}
+                  >
+                    <option value="brief">Brief (1 paragraph)</option>
+                    <option value="standard">Standard (3 paragraphs)</option>
+                    <option value="in-depth">In-Depth (5 paragraphs)</option>
+                  </select>
+                </div>
+                {isLoading && <Loading />}
+                {!isLoading && (
                   <div className="synthesis-generation">
-                    {isLoading && <Loading />}
                     {synthesis && (
                       <div>
                         <p className="bold">
@@ -150,57 +177,52 @@ export default function Book() {
                           <p key={section}>{section}</p>
                         ))}
                         <button onClick={saveSynthesis}>Save Synthesis</button>
+                        {synthesis && (
+                          <p
+                            className={
+                              saveSynthesisMessage === "Synthesis saved"
+                                ? "green"
+                                : "red"
+                            }
+                          >
+                            {saveSynthesisMessage}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
-                </div>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className="note-editing">
-            {errorMessage && <p className="red">{errorMessage}</p>}
-            <div>
-              <label htmlFor="card-book-title" className="bold">
-                Book Title <span className="required-field">*</span>
-              </label>
-              <input
-                id="card-book-title"
-                defaultValue={book.title}
-                onChange={(e) => setBookTitle(e.currentTarget.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="card-author" className="bold">
-                Author <span className="required-field">*</span>
-              </label>
-              <input
-                id="card-author"
-                defaultValue={book.author}
-                onChange={(e) => setBookAuthor(e.currentTarget.value)}
-              />
-            </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
-        <div className="note-buttons book-buttons">
-          <button onClick={() => changeBookStatus(book.id, book.status)}>
-            Mark as {book.status === "reading" ? "Finished" : "Reading"}
-          </button>
-          <div>
-            <button className="btn-dark" onClick={handleClick}>
-              {isEditing ? "Save" : "Edit"}
-            </button>
-            {isEditing ? (
-              <button onClick={() => setIsEditing(false)}>Cancel</button>
-            ) : null}
-            {!isEditing ? (
-              <button className="btn-delete" onClick={handleDeletion}>
-                Delete
-              </button>
-            ) : null}
-          </div>
+          {bookButtons}
         </div>
-      </div>
+      ) : (
+        <div className="form">
+          {errorMessage && <p className="red">{errorMessage}</p>}
+          <div>
+            <label htmlFor="card-book-title" className="bold">
+              Book Title <span className="required-field">*</span>
+            </label>
+            <input
+              id="card-book-title"
+              defaultValue={book.title}
+              onChange={(e) => setBookTitle(e.currentTarget.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="card-author" className="bold">
+              Author <span className="required-field">*</span>
+            </label>
+            <input
+              id="card-author"
+              defaultValue={book.author}
+              onChange={(e) => setBookAuthor(e.currentTarget.value)}
+            />
+          </div>
+          {bookButtons}
+        </div>
+      )}
     </>
   );
 }

@@ -534,6 +534,9 @@ export async function addSynthesis(id, synthesis, type) {
             .select()
         // console.log(data)
         // console.log(error)
+        if (error) {
+            return error
+        }
     } catch(error) {
         console.log(error)
     }
@@ -571,7 +574,6 @@ export async function getSynthesis(id) {
 // VERCEL
 
 export async function vercelFunction(cards, type) {
-    console.log(type)
     try {
         const response = await fetch('http://localhost:3000/api', {
             method: 'POST',

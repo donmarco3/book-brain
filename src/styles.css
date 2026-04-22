@@ -896,6 +896,14 @@ div.synthesis-generation {
     margin-block: 1.5rem;
 }
 
+div.synthesis-generation p.text-sm {
+    margin-top: 1rem;
+}
+
 div.synthesis-generation > div > p {
     margin-bottom: 1.5rem;
+}
+
+div.book-synthesis {
+    width: 100%;
 }
