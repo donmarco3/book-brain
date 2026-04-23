@@ -3,7 +3,6 @@ import {
   addSynthesis,
   deleteBook,
   getBook,
-  getSyntheses,
   updateBook,
   updateBookStatus,
   vercelFunction,
@@ -14,12 +13,11 @@ import Loading from "../components/Loading";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
-  const syntheses = await getSyntheses(params.id);
-  return { book, syntheses };
+  return { book };
 }
 
 export default function Book() {
-  const { book, syntheses } = useLoaderData();
+  const { book } = useLoaderData();
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -144,8 +142,11 @@ export default function Book() {
             </Link>
             {book.cards.length > 0 && (
               <div className="book-synthesis">
-                <Link className="link-btn" to={`/syntheses/${book.id}`}>
-                  View Syntheses ({syntheses.length})
+                <Link
+                  className="link-btn"
+                  to={`/syntheses/${book.id}?page=1&sort=newest`}
+                >
+                  View Syntheses ({book.syntheses.length})
                 </Link>
                 <div className="syntheses-buttons">
                   <button

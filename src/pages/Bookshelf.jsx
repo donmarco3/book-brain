@@ -1,17 +1,56 @@
 import React from "react";
-import { useLoaderData, useRevalidator, Link } from "react-router-dom";
-import { getBooks, deleteBook, updateBookStatus } from "../api";
+import {
+  useLoaderData,
+  useRevalidator,
+  Link,
+  useSearchParams,
+} from "react-router-dom";
+import { getBooks, deleteBook, updateBookStatus, getAllBooks } from "../api";
 import AddBook from "../components/AddBook";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
-export function loader() {
-  return getBooks();
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") ?? "1";
+  const sort = url.searchParams.get("sort") ?? "newest";
+
+  const books = await getBooks(page, sort);
+  const allBooks = await getAllBooks();
+  return { books, allBooks };
 }
 
 export default function Bookshelf() {
-  const books = useLoaderData();
+  const { books, allBooks } = useLoaderData();
   const revalidator = useRevalidator();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [showModal, setShowModal] = React.useState(false);
+
+  const defaultPage = searchParams.get("page") ?? "1";
+  const currentPage = Number(defaultPage);
+  const currentSort = searchParams.get("sort") ?? "newest";
+
+  function updatePage(type) {
+    if (type === "right") {
+      setSearchParams({
+        page: currentPage + 1,
+        sort: currentSort,
+      });
+    } else {
+      setSearchParams({
+        page: currentPage - 1 === 0 ? 1 : currentPage - 1,
+        sort: currentSort,
+      });
+    }
+  }
+
+  function updateSort(type) {
+    if (type === "newest") {
+      setSearchParams({ page: 1, sort: "newest" });
+    } else {
+      setSearchParams({ page: 1, sort: "oldest" });
+    }
+  }
 
   function handleDeletion(id) {
     if (
@@ -81,7 +120,7 @@ export default function Bookshelf() {
       <h1>Bookshelf</h1>
       <div className="bookshelf-header">
         <p className="text-sm">
-          {books.length} {books.length === 1 ? "book" : "books"}
+          {allBooks.length} {allBooks.length === 1 ? "book" : "books"}
         </p>
         <button className="btn-dark" onClick={() => setShowModal(true)}>
           + Add Book
@@ -95,8 +134,29 @@ export default function Bookshelf() {
       {books.length > 0 ? (
         <div className="books-list">{bookElements}</div>
       ) : (
-        <p>You have no books. Click add book to add your first.</p>
+        <div className="no-items-container">
+          {currentPage === 1 ? (
+            <p>You have no books. Click add book to add your first.</p>
+          ) : null}
+        </div>
       )}
+      <div className="pagination">
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("left")}
+          disabled={currentPage === 1}
+        >
+          <FaAngleLeft />
+        </button>
+        <p>Page {currentPage}</p>
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("right")}
+          disabled={allBooks.length <= currentPage * 5}
+        >
+          <FaAngleRight />
+        </button>
+      </div>
     </>
   );
 }

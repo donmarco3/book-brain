@@ -1,18 +1,24 @@
 import React from "react";
-import { getBooks, getBuckets, getCards } from "../api";
+import { getAllBooks, getBuckets, getAllCards, getCards } from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { sliceString } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
-export async function loader() {
-  const cards = await getCards();
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") ?? "1";
+  const sort = url.searchParams.get("sort") ?? "newest";
+
+  const cards = await getCards(page, sort);
+  const allCards = await getAllCards();
   const buckets = await getBuckets();
-  const books = await getBooks();
-  return { cards, buckets, books };
+  const books = await getAllBooks();
+  return { cards, allCards, buckets, books };
 }
 
 export default function Library() {
-  const { cards, buckets, books } = useLoaderData();
+  const { cards, allCards, buckets, books } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = React.useRef(null);
 
@@ -32,6 +38,32 @@ export default function Library() {
   const [bucketFilter, setBucketFilter] = React.useState(false);
 
   useClickOutside(sidebarRef, () => setShowFilters(false));
+
+  const defaultPage = searchParams.get("page") ?? "1";
+  const currentPage = Number(defaultPage);
+  const currentSort = searchParams.get("sort") ?? "newest";
+
+  function updatePage(type) {
+    if (type === "right") {
+      setSearchParams({
+        page: currentPage + 1,
+        sort: currentSort,
+      });
+    } else {
+      setSearchParams({
+        page: currentPage - 1 === 0 ? 1 : currentPage - 1,
+        sort: currentSort,
+      });
+    }
+  }
+
+  function updateSort(type) {
+    if (type === "newest") {
+      setSearchParams({ page: 1, sort: "newest" });
+    } else {
+      setSearchParams({ page: 1, sort: "oldest" });
+    }
+  }
 
   function toggle(bucketName, bookId) {
     const newParams = new URLSearchParams(searchParams);
@@ -253,6 +285,23 @@ export default function Library() {
           </p>
         </div>
       )}
+      <div className="pagination">
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("left")}
+          disabled={currentPage === 1}
+        >
+          <FaAngleLeft />
+        </button>
+        <p>Page {currentPage}</p>
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("right")}
+          disabled={allCards.length <= currentPage * 5}
+        >
+          <FaAngleRight />
+        </button>
+      </div>
     </>
   );
 }

@@ -210,6 +210,11 @@ button.btn-delete {
     border-color: var(--color-danger);
 }
 
+button.btn-transparent {
+    border: none;
+    background-color: transparent;
+}
+
 button:disabled,
 select:disabled {
     opacity: .5;
@@ -354,6 +359,14 @@ div.loading-indicator {
     justify-content: center;
     align-items: center;
     margin-block: 2rem;
+}
+
+div.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
 }
 
 

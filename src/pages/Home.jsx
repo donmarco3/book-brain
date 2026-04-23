@@ -1,11 +1,11 @@
 import React from "react";
-import { getAllNotes, getBooks, getBuckets, getCards } from "../api";
+import { getAllBooks, getAllNotes, getAllCards } from "../api";
 import { Link, useLoaderData } from "react-router";
 import { sliceString } from "../utils";
 
 export async function loader() {
-  const books = await getBooks();
-  const cards = await getCards();
+  const books = await getAllBooks();
+  const cards = await getAllCards();
   const notes = await getAllNotes();
   return { books, cards, notes };
 }

@@ -1,27 +1,48 @@
 import React from "react";
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import { getBook, getSyntheses } from "../api";
 import { sliceString } from "../utils";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
-export async function loader({ params }) {
-  const syntheses = await getSyntheses(params.id);
+export async function loader({ params, request }) {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") ?? "1";
+  const sort = url.searchParams.get("sort") ?? "newest";
+
+  const syntheses = await getSyntheses(params.id, page, sort);
   const book = await getBook(params.id);
   return { syntheses, book };
 }
 
 export default function Syntheses() {
   const { syntheses, book } = useLoaderData();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [selectedValue, setSelectedValue] = React.useState("newest");
+  const defaultPage = searchParams.get("page") ?? "1";
+  const currentPage = Number(defaultPage);
+  const currentSort = searchParams.get("sort") ?? "newest";
 
-  const sortedSyntheses = [...syntheses].sort((a, b) => {
-    if (selectedValue === "newest") {
-      return new Date(b.created_at) - new Date(a.created_at);
-    } else if (selectedValue === "oldest") {
-      return new Date(a.created_at) - new Date(b.created_at);
+  function updatePage(type) {
+    if (type === "right") {
+      setSearchParams({
+        page: currentPage + 1,
+        sort: currentSort,
+      });
+    } else {
+      setSearchParams({
+        page: currentPage - 1 === 0 ? 1 : currentPage - 1,
+        sort: currentSort,
+      });
     }
-    return;
-  });
+  }
+
+  function updateSort(type) {
+    if (type === "newest") {
+      setSearchParams({ page: 1, sort: "newest" });
+    } else {
+      setSearchParams({ page: 1, sort: "oldest" });
+    }
+  }
 
   const creationDate = new Date(book.created_at).toLocaleDateString("en-US", {
     year: "numeric",
@@ -29,7 +50,7 @@ export default function Syntheses() {
     day: "numeric",
   });
 
-  const synthesesElements = sortedSyntheses.map((synthesis) => {
+  const synthesesElements = syntheses.map((synthesis) => {
     return (
       <Link
         to={`/synthesis/${synthesis.id}`}
@@ -39,6 +60,7 @@ export default function Syntheses() {
       >
         <div className="card main-card">
           <div className="main-card-header">
+            <p>Synthesis {synthesis.id}</p>
             <p className="text-sm">
               {new Date(synthesis.created_at).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -65,7 +87,7 @@ export default function Syntheses() {
         </p>
       </div>
       <div className="library-subheader">
-        <select className="" onChange={(e) => setSelectedValue(e.target.value)}>
+        <select onChange={(e) => updateSort(e.target.value)}>
           <option value="newest">Sort by: Newest</option>
           <option value="oldest">Sort by: Oldest</option>
         </select>
@@ -74,9 +96,28 @@ export default function Syntheses() {
         synthesesElements
       ) : (
         <div className="no-items-container">
-          <p>You have no syntheses for this book.</p>
+          {currentPage === 1 ? (
+            <p>You have no syntheses for this book.</p>
+          ) : null}
         </div>
       )}
+      <div className="pagination">
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("left")}
+          disabled={currentPage === 1}
+        >
+          <FaAngleLeft />
+        </button>
+        <p>Page {currentPage}</p>
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("right")}
+          disabled={book.syntheses.length <= currentPage * 5}
+        >
+          <FaAngleRight />
+        </button>
+      </div>
     </>
   );
 }

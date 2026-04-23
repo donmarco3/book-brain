@@ -161,11 +161,12 @@ export async function deleteBook(id) {
     }
 }
 
-export async function getBooks() {
+export async function getAllBooks() {
     const currentUser = await getCurrentUser()
     if (!currentUser) {
         return
     }
+
     try {
         const { data, error } = await supabase
             .from('books')
@@ -184,13 +185,42 @@ export async function getBooks() {
     }
 }
 
+export async function getBooks(page, sort) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
+
+    const pageSize = 5
+    const startRange = (page - 1) * pageSize
+    const endRange = startRange + pageSize - 1
+    try {
+        const { data, error } = await supabase
+            .from('books')
+            .select(`
+                *,
+                notes ( * ),
+                cards ( * )
+            `)
+            .range(startRange, endRange)
+            .order('created_at', { ascending: sort === "oldest" ? true : false })
+            .eq('user_id', currentUser.data.user.id)
+        // console.log(data)
+        // console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
+}
+
 export async function getBook(id) {
     const { data, error } = await supabase
         .from('books')
         .select(`
             *,
             notes ( * ),
-            cards ( * )
+            cards ( * ),
+            syntheses ( * )
         `)
         .eq('id', id)
     // console.log(data)
@@ -419,7 +449,7 @@ export async function addCard(note, response1, response2, buckets) {
     }
 }
 
-export async function getCards() {
+export async function getAllCards() {
     const currentUser = await getCurrentUser()
     if (!currentUser) {
         return
@@ -431,6 +461,33 @@ export async function getCards() {
                 *,
                 buckets ( * )
             `)
+            .eq('user_id', currentUser.data.user.id)
+        // console.log(data)
+        // console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+export async function getCards(page, sort) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
+
+    const pageSize = 5
+    const startRange = (page - 1) * pageSize
+    const endRange = startRange + pageSize - 1
+    try {
+        const { data, error } = await supabase
+            .from('cards')
+            .select(`
+                *,
+                buckets ( * )
+            `)
+            .range(startRange, endRange)
+            .order('created_at', { ascending: sort === "oldest" ? true : false })
             .eq('user_id', currentUser.data.user.id)
         // console.log(data)
         // console.log(error)
@@ -542,11 +599,16 @@ export async function addSynthesis(id, synthesis, type) {
     }
 }
 
-export async function getSyntheses(id) {
+export async function getSyntheses(id, page, sort) {
+    const pageSize = 5
+    const startRange = (page - 1) * pageSize
+    const endRange = startRange + pageSize - 1
     try {
         const { data, error } = await supabase
             .from('syntheses')
             .select()
+            .range(startRange, endRange)
+            .order('created_at', { ascending: sort === "oldest" ? true : false })
             .eq('book_id', id)
         // console.log(data)
         // console.log(error)
