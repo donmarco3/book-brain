@@ -52,23 +52,29 @@ export default function Library() {
 
   function updatePage(type) {
     if (type === "right") {
-      setSearchParams({
-        page: currentPage + 1,
-        sort: currentSort,
+      setSearchParams((prevParams) => {
+        prevParams.set("page", currentPage + 1);
+        return prevParams;
       });
     } else {
-      setSearchParams({
-        page: currentPage - 1 === 0 ? 1 : currentPage - 1,
-        sort: currentSort,
+      setSearchParams((prevParams) => {
+        prevParams.set("page", currentPage - 1 === 0 ? 1 : currentPage - 1);
+        return prevParams;
       });
     }
   }
 
   function updateSort(type) {
     if (type === "newest") {
-      setSearchParams({ page: 1, sort: "newest" });
+      setSearchParams((prevParams) => {
+        prevParams.set("sort", "newest");
+        return prevParams;
+      });
     } else {
-      setSearchParams({ page: 1, sort: "oldest" });
+      setSearchParams((prevParams) => {
+        prevParams.set("sort", "oldest");
+        return prevParams;
+      });
     }
   }
 
