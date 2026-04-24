@@ -470,28 +470,38 @@ export async function getAllCards() {
     }
 }
 
-export async function getCards(page, sort) {
-    const currentUser = await getCurrentUser()
-    if (!currentUser) {
-        return
-    }
-
+export async function getCards(page, sort, books, buckets) {
     const pageSize = 5
     const startRange = (page - 1) * pageSize
     const endRange = startRange + pageSize - 1
+
+    let selectQuery
+    if (buckets.length !== 0) {
+        selectQuery = `*, buckets!inner(*)`
+    } else {
+        selectQuery = `*, buckets ( * )`
+    }
+
+    let query = supabase
+        .from('cards')
+        .select(selectQuery, { count: 'exact' })
+        .range(startRange, endRange)
+        .order('created_at', { ascending: sort === "oldest" ? true : false })
+
+    if (books.length !== 0) {
+        query = query.in('book_id', books)
+    }
+
+    if (buckets.length !== 0) {
+        query = query.in('buckets.name', buckets)
+    }
+
     try {
-        const { data, error } = await supabase
-            .from('cards')
-            .select(`
-                *,
-                buckets ( * )
-            `)
-            .range(startRange, endRange)
-            .order('created_at', { ascending: sort === "oldest" ? true : false })
-            .eq('user_id', currentUser.data.user.id)
+        const { data, error, count } = await query
         // console.log(data)
         // console.log(error)
-        return data
+        // console.log(count)
+        return { data, count }
     } catch(error) {
         console.log(error)
     }

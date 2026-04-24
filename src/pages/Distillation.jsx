@@ -138,13 +138,11 @@ export default function Distillation() {
             <div className="main-card-text">
               <p>
                 <span className="bold">Context:</span>{" "}
-                {notes[currentIndex].context.slice(0, 300)}
+                {notes[currentIndex].context}
               </p>
-              <p className="italic capture">
-                {notes[currentIndex].capture.slice(0, 300)}
-              </p>
+              <p className="italic capture">{notes[currentIndex].capture}</p>
               <div className="pill">
-                <p>{notes[currentIndex].spark.slice(0, 300)}</p>
+                <p>{notes[currentIndex].spark}</p>
               </div>
             </div>
 

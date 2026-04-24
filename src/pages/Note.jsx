@@ -108,11 +108,9 @@ export default function Note() {
                 <span className="bold">Context:</span> {note.context}
               </p>
             )}
-            {note.capture && (
-              <p className="italic capture">{note.capture.slice(0, 300)}</p>
-            )}
+            {note.capture && <p className="italic capture">{note.capture}</p>}
             <div className="pill">
-              <p>{note.spark.slice(0, 300)}</p>
+              <p>{note.spark}</p>
             </div>
           </div>
           {noteButtons}

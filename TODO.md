@@ -5,9 +5,12 @@ change profile image
 ai generated note title
 ai generated synthesis title
 
+loading text
+
 bugs:
 note stays on library page after deletion (need to re-render / revalidate)
 scroll up on phone
+distillation bug --- fix after refactoring of app
 
 For Book Brain to be complete:
 

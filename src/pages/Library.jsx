@@ -1,5 +1,5 @@
 import React from "react";
-import { getAllBooks, getBuckets, getAllCards, getCards } from "../api";
+import { getAllBooks, getAllCards, getBuckets, getCards } from "../api";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { sliceString } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
@@ -9,16 +9,24 @@ export async function loader({ request }) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") ?? "1";
   const sort = url.searchParams.get("sort") ?? "newest";
+  const bookFilter = url.searchParams.getAll("book");
+  const bucketFilter = url.searchParams.getAll("bucket");
 
-  const cards = await getCards(page, sort);
+  const response = await getCards(page, sort, bookFilter, bucketFilter);
   const allCards = await getAllCards();
   const buckets = await getBuckets();
   const books = await getAllBooks();
-  return { cards, allCards, buckets, books };
+  return {
+    cards: response.data,
+    count: response.count,
+    allCards,
+    buckets,
+    books,
+  };
 }
 
 export default function Library() {
-  const { cards, allCards, buckets, books } = useLoaderData();
+  const { cards, count, allCards, buckets, books } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = React.useRef(null);
 
@@ -32,7 +40,6 @@ export default function Library() {
     initialBuckets[0],
   );
   const [selectedBooks, setSelectedBooks] = React.useState(initialBooks[0]);
-  const [selectedValue, setSelectedValue] = React.useState("newest");
   const [showFilters, setShowFilters] = React.useState(false);
   const [bookFilter, setBookFilter] = React.useState(false);
   const [bucketFilter, setBucketFilter] = React.useState(false);
@@ -64,6 +71,12 @@ export default function Library() {
       setSearchParams({ page: 1, sort: "oldest" });
     }
   }
+
+  const isFiltered =
+    searchParams.getAll("book").length === 0 &&
+    searchParams.getAll("bucket").length === 0
+      ? false
+      : true;
 
   function toggle(bucketName, bookId) {
     const newParams = new URLSearchParams(searchParams);
@@ -111,28 +124,10 @@ export default function Library() {
       card.question1.toLowerCase().includes(searchQuery) ||
       card.question2.toLowerCase().includes(searchQuery);
 
-    const cardBuckets = card.buckets.map((bucket) => bucket.name);
-    const matchesBuckets =
-      selectedBuckets.length === 0 ||
-      selectedBuckets.some((bucket) => cardBuckets.includes(bucket));
-
-    const matchesBooks =
-      selectedBooks.length === 0 ||
-      selectedBooks.some((book) => card.book_id.toString() === book);
-
-    return matchesSearch && matchesBuckets && matchesBooks;
+    return matchesSearch;
   });
 
-  const sortedCards = [...filteredCards].sort((a, b) => {
-    if (selectedValue === "newest") {
-      return new Date(b.created_at) - new Date(a.created_at);
-    } else if (selectedValue === "oldest") {
-      return new Date(a.created_at) - new Date(b.created_at);
-    }
-    return;
-  });
-
-  const cardElements = sortedCards.map((card) => {
+  const cardElements = filteredCards.map((card) => {
     const book = books.find((book) => book.id === card.book_id);
 
     const bucketElements = card.buckets.map((bucket) => (
@@ -251,12 +246,12 @@ export default function Library() {
 
       <h1>Library</h1>
       <p className="text-sm">
-        {cardElements.length} {cardElements.length === 1 ? "card" : "cards"}
+        {count} {count === 1 ? "card" : "cards"}
       </p>
       <div className="library-header">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="btn-dark "
+          className="btn-dark"
         >
           Filter
         </button>
@@ -271,17 +266,19 @@ export default function Library() {
           placeholder="Search cards..."
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
         />
-        <select onChange={(e) => setSelectedValue(e.target.value)}>
+        <select onChange={(e) => updateSort(e.target.value)}>
           <option value="newest">Sort by: Newest</option>
           <option value="oldest">Sort by: Oldest</option>
         </select>
       </div>
-      {cards.length > 0 ? (
+      {count > 0 ? (
         cardElements
       ) : (
         <div className="no-items-container">
           <p>
-            Your library is empty. Start by adding books and distilling notes.
+            {allCards.length === 0
+              ? "Your library is empty. Start by adding books and distilling notes."
+              : "You have no cards that match the filters."}
           </p>
         </div>
       )}
@@ -297,7 +294,7 @@ export default function Library() {
         <button
           className="btn-transparent"
           onClick={() => updatePage("right")}
-          disabled={allCards.length <= currentPage * 5}
+          disabled={cardElements.length !== 5}
         >
           <FaAngleRight />
         </button>
