@@ -1,7 +1,7 @@
 import React from "react";
 import OrbitProgress from "react-loading-indicators/OrbitProgress";
 
-export default function Loading() {
+export default function Loading({ text }) {
   return (
     <div className="loading-indicator">
       <OrbitProgress
@@ -10,6 +10,7 @@ export default function Loading() {
         size="small"
         style={{ fontSize: "8px" }}
       />
+      <p className="text-sm">{text}</p>
     </div>
   );
 }

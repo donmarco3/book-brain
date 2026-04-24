@@ -166,7 +166,7 @@ export default function Book() {
                     <option value="in-depth">In-Depth (5 paragraphs)</option>
                   </select>
                 </div>
-                {isLoading && <Loading />}
+                {isLoading && <Loading text="Generating synthesis..." />}
                 {!isLoading && (
                   <div className="synthesis-generation">
                     {synthesis && (
