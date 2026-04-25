@@ -1,0 +1,310 @@
+import React from "react";
+import { getAllBooks, getAllNotes, getBuckets, getNotes } from "../api";
+import { Link, useLoaderData, useSearchParams } from "react-router";
+import { sliceString } from "../utils";
+import useClickOutside from "../components/hooks/useClickOutside";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") ?? "1";
+  const sort = url.searchParams.get("sort") ?? "newest";
+  const bookFilter = url.searchParams.getAll("book");
+  const bucketFilter = url.searchParams.getAll("bucket");
+
+  const response = await getNotes(page, sort, bookFilter, bucketFilter);
+  const allNotes = await getAllNotes();
+  const buckets = await getBuckets();
+  const books = await getAllBooks();
+  return {
+    notes: response.data,
+    count: response.count,
+    allNotes,
+    buckets,
+    books,
+  };
+}
+
+export default function Notes() {
+  const { notes, count, allNotes, buckets, books } = useLoaderData();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sidebarRef = React.useRef(null);
+
+  const bookParam = searchParams.getAll("book");
+  const initialBooks = bookParam ? [bookParam] : [];
+  const bucketParam = searchParams.getAll("bucket");
+  const initialBuckets = bucketParam ? [bucketParam] : [];
+
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [selectedBuckets, setSelectedBuckets] = React.useState(
+    initialBuckets[0],
+  );
+  const [selectedBooks, setSelectedBooks] = React.useState(initialBooks[0]);
+  const [showFilters, setShowFilters] = React.useState(false);
+  const [bookFilter, setBookFilter] = React.useState(false);
+  const [bucketFilter, setBucketFilter] = React.useState(false);
+
+  useClickOutside(sidebarRef, () => setShowFilters(false));
+
+  const defaultPage = searchParams.get("page") ?? "1";
+  const currentPage = Number(defaultPage);
+  const currentSort = searchParams.get("sort") ?? "newest";
+
+  function updatePage(type) {
+    if (type === "right") {
+      setSearchParams((prevParams) => {
+        prevParams.set("page", currentPage + 1);
+        return prevParams;
+      });
+    } else {
+      setSearchParams((prevParams) => {
+        prevParams.set("page", currentPage - 1 === 0 ? 1 : currentPage - 1);
+        return prevParams;
+      });
+    }
+  }
+
+  function updateSort(type) {
+    if (type === "newest") {
+      setSearchParams((prevParams) => {
+        prevParams.set("sort", "newest");
+        return prevParams;
+      });
+    } else {
+      setSearchParams((prevParams) => {
+        prevParams.set("sort", "oldest");
+        return prevParams;
+      });
+    }
+  }
+
+  const isFiltered =
+    searchParams.getAll("book").length === 0 &&
+    searchParams.getAll("bucket").length === 0
+      ? false
+      : true;
+
+  function toggle(bucketName, bookId) {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (!bookId) {
+      if (selectedBuckets.includes(bucketName)) {
+        setSelectedBuckets(
+          selectedBuckets.filter((bucket) => bucket !== bucketName),
+        );
+        newParams.delete("bucket", bucketName);
+      } else {
+        setSelectedBuckets([...selectedBuckets, bucketName]);
+        newParams.append("bucket", bucketName);
+      }
+    }
+
+    if (!bucketName) {
+      if (selectedBooks.includes(bookId.toString())) {
+        setSelectedBooks(
+          selectedBooks.filter((book) => book !== bookId.toString()),
+        );
+        newParams.delete("book", bookId);
+      } else {
+        setSelectedBooks([...selectedBooks, bookId.toString()]);
+        newParams.append("book", bookId);
+      }
+    }
+
+    setSearchParams(newParams);
+  }
+
+  function clearFilters() {
+    setSelectedBuckets([]);
+    setSelectedBooks([]);
+    setSearchParams({});
+  }
+
+  const filteredNotes = notes.filter((note) => {
+    const matchesSearch =
+      searchQuery.toLowerCase() === "" ||
+      note.note_title.toLowerCase().includes(searchQuery) ||
+      note.context.toLowerCase().includes(searchQuery) ||
+      note.capture.toLowerCase().includes(searchQuery) ||
+      note.spark.toLowerCase().includes(searchQuery) ||
+      note.question1.toLowerCase().includes(searchQuery) ||
+      note.question2.toLowerCase().includes(searchQuery);
+
+    return matchesSearch;
+  });
+
+  const noteElements = filteredNotes.map((note) => {
+    const book = books.find((book) => book.id === note.book_id);
+
+    const bucketElements = note.buckets.map((bucket) => (
+      <p key={bucket.id} className="pill">
+        {bucket.name}
+      </p>
+    ));
+
+    return (
+      <Link
+        to={`/note/${note.id}`}
+        state={{ from: "/notes", search: `?${searchParams.toString()}` }}
+        className="link"
+        key={note.id}
+      >
+        <div className="card main-card">
+          <div className="main-card-header">
+            <p className="nice-font card-title">{note.note_title}</p>
+            <div>
+              <p>{book.title}</p>
+              <p>p. {note.page}</p>
+            </div>
+          </div>
+
+          <div className="main-card-buckets">{bucketElements}</div>
+
+          <div className="main-card-text">
+            {note.context && (
+              <p>
+                <span className="bold">Context:</span>{" "}
+                {sliceString(note.context)}
+              </p>
+            )}
+            <p className="italic capture">{sliceString(note.capture)}</p>
+            <div className="pill">
+              <p>{sliceString(note.spark)}</p>
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  });
+
+  const bucketButtonElements = buckets.map((bucket) => {
+    return (
+      <button
+        className={
+          selectedBuckets.includes(bucket)
+            ? "filter-item-btn"
+            : "filter-item-btn btn-dark"
+        }
+        key={bucket}
+        onClick={() => toggle(bucket, null)}
+      >
+        {bucket}
+      </button>
+    );
+  });
+
+  const bookButtonElements = books.map((book) => {
+    return (
+      <button
+        className={
+          selectedBooks.includes(book.id.toString())
+            ? "filter-item-btn"
+            : "filter-item-btn btn-dark"
+        }
+        key={book.id}
+        onClick={() => toggle(null, book.id)}
+      >
+        {book.title}
+      </button>
+    );
+  });
+
+  return (
+    <>
+      <aside
+        ref={sidebarRef}
+        className="sidebar"
+        style={{
+          transform: showFilters ? "translateX(0)" : "translateX(-100%",
+        }}
+      >
+        <div className="sidebar-header">
+          <h2>Filter</h2>
+          <button onClick={() => setShowFilters((prev) => !prev)}>X</button>
+        </div>
+
+        <div className="filter-option-container">
+          <div
+            className="filter-option"
+            onClick={() => setBookFilter((prev) => !prev)}
+          >
+            <p>Books</p>
+            <p>{!bookFilter ? "+" : "-"}</p>
+          </div>
+          {bookFilter && (
+            <div className="filter-options">{bookButtonElements}</div>
+          )}
+        </div>
+
+        <div className="filter-option-container">
+          <div
+            className="filter-option"
+            onClick={() => setBucketFilter((prev) => !prev)}
+          >
+            <p>Buckets</p>
+            <p>{!bucketFilter ? "+" : "-"}</p>
+          </div>
+          {bucketFilter && (
+            <div className="filter-options">{bucketButtonElements}</div>
+          )}
+        </div>
+      </aside>
+
+      <h1>Notes</h1>
+      <p className="text-sm">
+        {count} {count === 1 ? "note" : "notes"}
+      </p>
+      <div className="library-header">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="btn-dark"
+        >
+          Filter
+        </button>
+        {selectedBuckets.length > 0 || selectedBooks.length > 0 ? (
+          <button onClick={clearFilters}>Clear</button>
+        ) : null}
+      </div>
+
+      <div className="library-subheader">
+        <input
+          name="search-query"
+          placeholder="Search notes..."
+          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+        />
+        <select onChange={(e) => updateSort(e.target.value)}>
+          <option value="newest">Sort by: Newest</option>
+          <option value="oldest">Sort by: Oldest</option>
+        </select>
+      </div>
+      {count > 0 ? (
+        noteElements
+      ) : (
+        <div className="no-items-container">
+          <p>
+            {allNotes.length === 0
+              ? "You have no notes."
+              : "You have no notes that match the filters."}
+          </p>
+        </div>
+      )}
+      <div className="pagination">
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("left")}
+          disabled={currentPage === 1}
+        >
+          <FaAngleLeft />
+        </button>
+        <p>Page {currentPage}</p>
+        <button
+          className="btn-transparent"
+          onClick={() => updatePage("right")}
+          disabled={noteElements.length !== 5}
+        >
+          <FaAngleRight />
+        </button>
+      </div>
+    </>
+  );
+}

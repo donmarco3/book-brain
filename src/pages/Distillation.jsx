@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  addCard,
-  getBook,
-  getBuckets,
-  getNotes,
-  updateNoteStatus,
-} from "../api";
+import { getBook, getBuckets, getNotes } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
 
 export async function loader({ params }) {

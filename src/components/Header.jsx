@@ -12,16 +12,16 @@ export default function Header() {
       </Link>
       <nav>
         <NavLink
-          to="bookshelf"
-          className={({ isActive }) => (isActive ? "active" : null)}
-        >
-          Bookshelf
-        </NavLink>
-        <NavLink
           to="library"
           className={({ isActive }) => (isActive ? "active" : null)}
         >
           Library
+        </NavLink>
+        <NavLink
+          to="notes"
+          className={({ isActive }) => (isActive ? "active" : null)}
+        >
+          Notes
         </NavLink>
         <NavLink
           to={user ? "account" : "login"}

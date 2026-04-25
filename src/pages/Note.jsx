@@ -1,19 +1,29 @@
 import React from "react";
-import { deleteNote, getBook, getNote, updateNote } from "../api";
+import {
+  deleteNote,
+  getBook,
+  getNote,
+  getNoteBuckets,
+  getBuckets,
+  updateNote,
+} from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
 import { validatePageRange } from "../utils";
 
 export async function loader({ params }) {
   const note = await getNote(params.id);
-  if (!note) {
-    return { note: null };
+  if (note.length === 0) {
+    return { note: null, buckets: [] };
   }
+
   const book = await getBook(note.book_id);
-  return { note, book };
+  const noteBuckets = await getNoteBuckets(note.id);
+  const userBuckets = await getBuckets();
+  return { note, noteBuckets, userBuckets, book };
 }
 
 export default function Note() {
-  const { note, book } = useLoaderData();
+  const { note, noteBuckets, userBuckets, book } = useLoaderData();
   const revalidator = useRevalidator();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -22,14 +32,19 @@ export default function Note() {
   const [context, setContext] = React.useState(note?.context);
   const [capture, setCapture] = React.useState(note?.capture);
   const [spark, setSpark] = React.useState(note?.spark);
+  const [userBucket, setUserBucket] = React.useState("");
+  const [allBuckets, setAllBuckets] = React.useState(userBuckets);
+  const [selectedBuckets, setSelectedBuckets] = React.useState(
+    noteBuckets || [],
+  );
   const [errorMessage, setErrorMessage] = React.useState("");
 
   if (!note) {
     return (
       <>
         <h1>Note not found.</h1>
-        <Link to="/bookshelf" className="link-btn link-btn-dark">
-          Back to Bookshelf
+        <Link to="/library" className="link-btn link-btn-dark">
+          Back to Library
         </Link>
       </>
     );
@@ -51,7 +66,15 @@ export default function Note() {
 
     try {
       validatePageRange(page);
-      updateNote(note.id, noteTitle, page, context, capture, spark);
+      updateNote(
+        note.id,
+        noteTitle,
+        page,
+        context,
+        capture,
+        spark,
+        selectedBuckets,
+      );
       setIsEditing((prev) => !prev);
       revalidator.revalidate();
     } catch (error) {
@@ -60,10 +83,29 @@ export default function Note() {
     }
   }
 
+  function updateSelectedBuckets() {
+    if (userBucket !== "") {
+      setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setUserBucket("");
+      revalidator.revalidate();
+    } else {
+      setErrorMessage("Bucket must have a name");
+    }
+  }
+
+  function toggleBucket(name) {
+    if (selectedBuckets.includes(name)) {
+      setSelectedBuckets(selectedBuckets.filter((bucket) => bucket !== name));
+    } else {
+      setSelectedBuckets([...selectedBuckets, name]);
+    }
+  }
+
   function handleDeletion() {
     if (window.confirm("Are you sure you want to delete this note?")) {
       deleteNote(note.id);
-      return navigate(`/book/${note.book_id}/inbox`);
+      return navigate(`/bookshelf`);
     }
   }
 
@@ -83,11 +125,38 @@ export default function Note() {
     </div>
   );
 
+  const allBucketElements = allBuckets.map((bucket) => {
+    return (
+      <button
+        className={
+          selectedBuckets.includes(bucket) ? "bucket btn-dark" : "bucket"
+        }
+        key={bucket}
+        onClick={() => toggleBucket(bucket)}
+      >
+        {bucket}
+      </button>
+    );
+  });
+
+  const search = location.state ? location.state.search : "";
+  const pathName = location.state ? location.state.from : "/notes";
+
+  let pathNameText;
+  if (pathName === "/notes") {
+    pathNameText = "Notes";
+  } else {
+    pathNameText = "Home";
+  }
+
   return (
     <>
       <div className="log-header">
-        <Link to={`/book/${note.book_id}/inbox`} className="link-btn">
-          &larr; Back to Inbox
+        <Link
+          to={pathName === "/notes" ? `/notes${search}` : "/"}
+          className="link-btn"
+        >
+          &larr; Back to {pathNameText}
         </Link>
         <h1>{note.note_title}</h1>
       </div>
@@ -171,6 +240,35 @@ export default function Note() {
             onChange={(e) => setSpark(e.currentTarget.value)}
             rows={3}
           ></textarea>
+
+          <div className="buckets">
+            <div className="buckets-header">
+              <p className="bold">
+                Select Buckets <span className="required-field">*</span>
+              </p>
+              <Link
+                to="/manage-buckets"
+                state={{ from: `/note/${note.id}` }}
+                className="link-btn"
+              >
+                Manage Buckets
+              </Link>
+            </div>
+            <div className="buckets-expanded">
+              <div className="bucket-buttons">{allBucketElements}</div>
+              <div className="add-bucket">
+                <input
+                  onChange={(e) => setUserBucket(e.currentTarget.value)}
+                  placeholder="e.g. Mindset"
+                  value={userBucket}
+                />
+                <button className="btn-dark" onClick={updateSelectedBuckets}>
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+
           {noteButtons}
         </div>
       )}

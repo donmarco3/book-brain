@@ -1,17 +1,16 @@
 import React from "react";
-import { getAllBooks, getAllNotes, getAllCards } from "../api";
+import { getAllBooks, getAllNotes } from "../api";
 import { Link, useLoaderData } from "react-router";
 import { sliceString } from "../utils";
 
 export async function loader() {
   const books = await getAllBooks();
-  const cards = await getAllCards();
   const notes = await getAllNotes();
-  return { books, cards, notes };
+  return { books, notes };
 }
 
 export default function Home() {
-  const { books, cards, notes } = useLoaderData();
+  const { books, notes } = useLoaderData();
 
   const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
 
@@ -50,7 +49,7 @@ export default function Home() {
     return streak;
   }
 
-  function getNumberOfCards() {
+  function getNumberOfNotes() {
     const now = new Date();
     let cutoffDate;
 
@@ -77,11 +76,11 @@ export default function Home() {
               You are currently reading no books.
             </p>
             <p className="text-sm no-items-text">
-              Add another book from the bookshelf page.
+              Add another book from the library page.
             </p>
           </div>
-          <Link to="/bookshelf" className="link-btn link-btn-dark">
-            Bookshelf
+          <Link to="/library" className="link-btn link-btn-dark">
+            Library
           </Link>
         </div>
       );
@@ -93,11 +92,11 @@ export default function Home() {
               You are currently reading no books.
             </p>
             <p className="text-sm no-items-text">
-              Add your first book from the bookshelf page.
+              Add your first book from the library page.
             </p>
           </div>
-          <Link to="/bookshelf" className="link-btn link-btn-dark">
-            Bookshelf
+          <Link to="/library" className="link-btn link-btn-dark">
+            Library
           </Link>
         </div>
       );
@@ -123,35 +122,35 @@ export default function Home() {
     }
   }
 
-  function getRandomCard() {
+  function getRandomNote() {
     let sum = 0;
     for (let i = 0; i < formattedDate.length; i++) {
       sum += formattedDate.charCodeAt(i);
     }
 
-    const randomIndex = sum % cards.length;
-    const bucketElements = cards[randomIndex].buckets.map((bucket) => (
+    const randomIndex = sum % notes.length;
+    const bucketElements = notes[randomIndex].buckets.map((bucket) => (
       <p key={bucket.id} className="pill">
         {bucket.name}
       </p>
     ));
 
-    const book = books.find((book) => book.id === cards[randomIndex].book_id);
+    const book = books.find((book) => book.id === notes[randomIndex].book_id);
 
     return (
       <Link
-        to={`/card/${cards[randomIndex].id}`}
+        to={`/note/${notes[randomIndex].id}`}
         state={{ from: "/" }}
         className="link"
       >
-        <div className="card main-card" key={cards[randomIndex].id}>
+        <div className="card main-card" key={notes[randomIndex].id}>
           <div className="main-card-header">
             <p className="nice-font card-title">
-              {cards[randomIndex].card_title}
+              {notes[randomIndex].note_title}
             </p>
             <div>
               <p>{book.title}</p>
-              <p>p. {cards[randomIndex].page}</p>
+              <p>p. {notes[randomIndex].page}</p>
             </div>
           </div>
 
@@ -160,13 +159,13 @@ export default function Home() {
           <div className="main-card-text">
             <p>
               <span className="bold">Context:</span>{" "}
-              {sliceString(cards[randomIndex].context)}
+              {sliceString(notes[randomIndex].context)}
             </p>
             <p className="italic capture">
-              {sliceString(cards[randomIndex].capture)}
+              {sliceString(notes[randomIndex].capture)}
             </p>
             <div className="pill">
-              <p>{sliceString(cards[randomIndex].spark)}</p>
+              <p>{sliceString(notes[randomIndex].spark)}</p>
             </div>
           </div>
         </div>
@@ -183,15 +182,15 @@ export default function Home() {
           <p>Total Books</p>
         </div>
         <div className="card">
-          <p className="nice-font text-lg">{cards.length}</p>
-          <p>Total Cards</p>
+          <p className="nice-font text-lg">{notes.length}</p>
+          <p>Total Notes</p>
         </div>
         <div className="card">
           <p className="nice-font text-lg">{getStreak()}</p>
           <p>Day Streak</p>
         </div>
         <div className="card">
-          <p className="nice-font text-lg">{getNumberOfCards()}</p>
+          <p className="nice-font text-lg">{getNumberOfNotes()}</p>
           <div>
             <button
               className={selectedPeriod === "Week" ? "btn-dark" : null}
@@ -213,7 +212,7 @@ export default function Home() {
             </button>
           </div>
           <p>
-            {getNumberOfCards() === 1 ? "Note" : "Notes"} This {selectedPeriod}
+            {getNumberOfNotes() === 1 ? "Note" : "Notes"} This {selectedPeriod}
           </p>
         </div>
       </div>
@@ -223,12 +222,12 @@ export default function Home() {
         <div className="currently-reading-books">{getCurrentlyReading()}</div>
       </div>
 
-      <h2 className="home-heading">Daily Random Card</h2>
-      {cards.length > 0 ? (
-        <div>{getRandomCard()}</div>
+      <h2 className="home-heading">Daily Random Note</h2>
+      {notes.length > 0 ? (
+        <div>{getRandomNote()}</div>
       ) : (
         <p className="text-sm">
-          No cards yet. Distill some notes to see your daily card.
+          No notes yet. Distill some notes to see your daily note.
         </p>
       )}
     </>

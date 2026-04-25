@@ -7,11 +7,13 @@ import {
   useLoaderData,
   useLocation,
 } from "react-router";
-import { addNote, getBook } from "../api";
+import { addNote, getBook, getBuckets } from "../api";
 import { validatePageRange } from "../utils";
 
-export function loader({ params }) {
-  return getBook(params.id);
+export async function loader({ params }) {
+  const book = await getBook(params.id);
+  const buckets = await getBuckets();
+  return { book, buckets };
 }
 
 export async function action({ request, params }) {
@@ -22,6 +24,8 @@ export async function action({ request, params }) {
   const context = formData.get("note-context");
   const capture = formData.get("note-capture");
   const spark = formData.get("note-spark");
+  const buckets = formData.getAll("buckets");
+
   if (!title) {
     return { error: "Title is required" };
   }
@@ -34,18 +38,22 @@ export async function action({ request, params }) {
 
   try {
     await validatePageRange(page);
-    await addNote({ title, page, context, capture, spark }, book);
-    return redirect(`/book/${book.id}/inbox`);
+    await addNote({ title, page, context, capture, spark }, book, buckets);
+    return redirect(`/library`);
   } catch (error) {
     return { error: error.message };
   }
 }
 
 export default function Log() {
-  const book = useLoaderData();
+  const { book, buckets } = useLoaderData();
   const actionData = useActionData();
   const location = useLocation();
 
+  const [userBucket, setUserBucket] = React.useState("");
+  const [allBuckets, setAllBuckets] = React.useState(buckets);
+  const [selectedBuckets, setSelectedBuckets] = React.useState([]);
+  const [showBuckets, setShowBuckets] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
 
   React.useEffect(() => {
@@ -54,16 +62,51 @@ export default function Log() {
     }
   }, [actionData]);
 
-  const pathName = location.state ? location.state.from : "/bookshelf";
+  function updateUserBucket(event) {
+    setUserBucket(event.currentTarget.value);
+  }
+
+  function updateSelectedBuckets() {
+    if (userBucket !== "") {
+      setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      revalidator.revalidate();
+    } else {
+      setErrorMessage("Bucket must have a name");
+    }
+  }
+
+  function toggleBucket(name) {
+    if (selectedBuckets.includes(name)) {
+      setSelectedBuckets(selectedBuckets.filter((bucket) => bucket !== name));
+    } else {
+      setSelectedBuckets([...selectedBuckets, name]);
+    }
+  }
+
+  const pathName = location.state ? location.state.from : "/library";
 
   let pathNameText;
-  if (pathName === "/") {
-    pathNameText = "Home";
-  } else if (pathName === "/bookshelf") {
-    pathNameText = "Bookshelf";
+  if (pathName === "/library") {
+    pathNameText = "Library";
   } else {
-    pathNameText = "Inbox";
+    pathNameText = "Home";
   }
+
+  const bucketElements = allBuckets.map((bucket) => {
+    return (
+      <button
+        className={
+          selectedBuckets.includes(bucket) ? "bucket btn-dark" : "bucket"
+        }
+        key={bucket}
+        onClick={() => toggleBucket(bucket)}
+        type="button"
+      >
+        {bucket}
+      </button>
+    );
+  });
 
   return (
     <>
@@ -71,7 +114,7 @@ export default function Log() {
         <Link to={pathName} className="link-btn">
           &larr; Back to {pathNameText}
         </Link>
-        <h1>Log Notes</h1>
+        <h1>Log Note</h1>
         <p>
           {book.title} by {book.author}
         </p>
@@ -125,8 +168,56 @@ export default function Log() {
           placeholder="What does this make you think? Any connections or reactions?"
           rows={3}
         ></textarea>
+        {selectedBuckets.map((bucket) => (
+          <input
+            key={bucket}
+            type="hidden"
+            name="buckets"
+            value={bucket}
+          ></input>
+        ))}
+
+        <div className="buckets">
+          <div className="buckets-header">
+            <button
+              onClick={() => setShowBuckets(!showBuckets)}
+              className="btn-dark"
+              type="button"
+            >
+              Select Buckets
+            </button>
+            <Link
+              to="/manage-buckets"
+              state={{
+                from: `/book/${book.id}/log`,
+              }}
+              className="link-btn"
+            >
+              Manage Buckets
+            </Link>
+          </div>
+
+          {showBuckets && (
+            <div className="buckets-expanded">
+              <div className="bucket-buttons">{bucketElements}</div>
+              <div className="add-bucket">
+                <input onChange={updateUserBucket} placeholder="e.g. Mindset" />
+                <button
+                  className="btn-dark "
+                  onClick={updateSelectedBuckets}
+                  type="button"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="note-buttons">
-          <button className="btn-dark">Save Note</button>
+          <button className="btn-dark" type="submit">
+            Save Note
+          </button>
         </div>
       </Form>
     </>

@@ -56,17 +56,17 @@ export default function Book() {
   function handleDeletion() {
     if (
       window.confirm(
-        "Are you sure you want to delete this book? Deleting this book will also delete any associated notes and cards. Do you wish to continue?",
+        "Are you sure you want to delete this book? Deleting this book will also delete any associated notes. Do you wish to continue?",
       )
     ) {
       deleteBook(book.id);
-      return navigate("/bookshelf");
+      return navigate("/library");
     }
   }
 
   async function generateSynthesis() {
     setIsLoading(true);
-    vercelFunction(book.cards, selectedValue).then((response) => {
+    vercelFunction(book.notes, selectedValue).then((response) => {
       setSynthesis(response);
       setIsLoading(false);
     });
@@ -114,8 +114,8 @@ export default function Book() {
   return (
     <>
       <div className="log-header">
-        <Link to={`/bookshelf`} className="link-btn">
-          &larr; Back to Bookshelf
+        <Link to={`/library`} className="link-btn">
+          &larr; Back to Library
         </Link>
         <h1>{book.title}</h1>
       </div>
@@ -135,12 +135,12 @@ export default function Book() {
               {creationDate}
             </p>
             <p className="text-sm">
-              {book.cards.length} {book.cards.length === 1 ? "Card" : "Cards"}
+              {book.notes.length} {book.notes.length === 1 ? "Note" : "Notes"}
             </p>
-            <Link className="link-btn" to={`/library?book=${book.id}`}>
-              View Cards ({book.cards.length})
+            <Link className="link-btn" to={`/notes?book=${book.id}`}>
+              View Notes ({book.notes.length})
             </Link>
-            {book.cards.length > 0 && (
+            {book.notes.length > 0 && (
               <div className="book-synthesis">
                 <Link
                   className="link-btn"

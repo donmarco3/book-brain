@@ -1,11 +1,10 @@
 import React from "react";
 import {
-  deleteCard,
-  deleteCardBucket,
+  deleteNote,
+  deleteNoteBucket,
   getBook,
   getBuckets,
-  getCard,
-  getCardBuckets,
+  getNoteBuckets,
   updateCard,
 } from "../api";
 import {
