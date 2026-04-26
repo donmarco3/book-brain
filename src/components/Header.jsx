@@ -8,9 +8,15 @@ export default function Header() {
   return (
     <header>
       <Link to="/" className="site-logo">
-        BookBrain
+        Book Brain
       </Link>
       <nav>
+        <NavLink
+          to="/"
+          className={({ isActive }) => (isActive ? "active" : null)}
+        >
+          Dashboard
+        </NavLink>
         <NavLink
           to="library"
           className={({ isActive }) => (isActive ? "active" : null)}
@@ -27,7 +33,7 @@ export default function Header() {
           to={user ? "account" : "login"}
           className={({ isActive }) => (isActive ? "active" : null)}
         >
-          {user ? "Account" : "Login"}
+          {user ? "Settings" : "Login"}
         </NavLink>
       </nav>
     </header>

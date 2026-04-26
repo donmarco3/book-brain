@@ -14,7 +14,7 @@ export async function loader() {
   return { userProfile };
 }
 
-export default function Account() {
+export default function Settings() {
   const { userProfile } = useLoaderData();
   const { setUser } = React.useContext(UserContext);
   const navigate = useNavigate();

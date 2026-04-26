@@ -12,7 +12,7 @@ export async function loader() {
 export default function Home() {
   const { books, notes } = useLoaderData();
 
-  const [selectedPeriod, setSelectedPeriod] = React.useState("Week");
+  const [selectedPeriod, setSelectedPeriod] = React.useState("Month");
 
   let streak = 0;
 
@@ -104,17 +104,11 @@ export default function Home() {
       return books.map((book) => {
         if (book.status === "reading") {
           return (
-            <div className="card no-items-container" key={book.id}>
+            <div key={book.id}>
               <div>
-                <p className="nice-font card-title">{book.title}</p>
-                <p className="text-sm">by {book.author}</p>
+                <h3 className="card-title">{book.title}</h3>
+                <p className="text-sm italic">{book.author}</p>
               </div>
-              <Link
-                to={`/book/${book.id}/log`}
-                className="link-btn link-btn-dark"
-              >
-                Log Notes
-              </Link>
             </div>
           );
         }
@@ -144,29 +138,21 @@ export default function Home() {
         className="link"
       >
         <div className="card main-card" key={notes[randomIndex].id}>
+          <h3 className="gold">Note from your library</h3>
           <div className="main-card-header">
-            <p className="nice-font card-title">
-              {notes[randomIndex].note_title}
-            </p>
-            <div>
-              <p>{book.title}</p>
-              <p>p. {notes[randomIndex].page}</p>
-            </div>
+            <h3 className="card-title">{notes[randomIndex].note_title}</h3>
           </div>
 
-          <div className="main-card-buckets">{bucketElements}</div>
-
           <div className="main-card-text">
-            <p>
-              <span className="bold">Context:</span>{" "}
-              {sliceString(notes[randomIndex].context)}
-            </p>
             <p className="italic capture">
-              {sliceString(notes[randomIndex].capture)}
+              "{sliceString(notes[randomIndex].capture)}"
             </p>
-            <div className="pill">
+            <div>
               <p>{sliceString(notes[randomIndex].spark)}</p>
             </div>
+            <p>
+              --- {book.title} * {book.author} * logged 3 days ago
+            </p>
           </div>
         </div>
       </Link>
@@ -175,61 +161,56 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="home-heading">Home</h1>
-      <div className="home-stats">
-        <div className="card">
-          <p className="nice-font text-lg">{books.length}</p>
-          <p>Total Books</p>
-        </div>
-        <div className="card">
-          <p className="nice-font text-lg">{notes.length}</p>
-          <p>Total Notes</p>
-        </div>
-        <div className="card">
-          <p className="nice-font text-lg">{getStreak()}</p>
-          <p>Day Streak</p>
-        </div>
-        <div className="card">
-          <p className="nice-font text-lg">{getNumberOfNotes()}</p>
-          <div>
-            <button
-              className={selectedPeriod === "Week" ? "btn-dark" : null}
-              onClick={() => setSelectedPeriod("Week")}
-            >
-              Week
-            </button>
-            <button
-              className={selectedPeriod === "Month" ? "btn-dark" : null}
-              onClick={() => setSelectedPeriod("Month")}
-            >
-              Month
-            </button>
-            <button
-              className={selectedPeriod === "Year" ? "btn-dark" : null}
-              onClick={() => setSelectedPeriod("Year")}
-            >
-              Year
-            </button>
-          </div>
-          <p>
-            {getNumberOfNotes() === 1 ? "Note" : "Notes"} This {selectedPeriod}
-          </p>
-        </div>
-      </div>
-
-      <h2 className="home-heading">Currently Reading</h2>
-      <div className="currently-reading">
-        <div className="currently-reading-books">{getCurrentlyReading()}</div>
-      </div>
-
-      <h2 className="home-heading">Daily Random Note</h2>
-      {notes.length > 0 ? (
-        <div>{getRandomNote()}</div>
-      ) : (
-        <p className="text-sm">
-          No notes yet. Distill some notes to see your daily note.
+      <div className="heading">
+        <h1>Dashboard</h1>
+        <p>
+          {new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </p>
-      )}
+      </div>
+      <div className="home-stats container">
+        <div className="card">
+          <h3>Books Read</h3>
+          <p className="number">{books.length}</p>
+          <p className="italic">this year</p>
+        </div>
+        <div className="card">
+          <h3>Notes Logged</h3>
+          <p className="number">{notes.length}</p>
+          <p className="italic">{getNumberOfNotes()} this month</p>
+        </div>
+        <div className="card">
+          <h3>This Week</h3>
+          <p className="number">{getNumberOfNotes()}</p>
+          <p className="italic">notes logged</p>
+        </div>
+        <div className="card">
+          <h3>Current Streak</h3>
+          <p className="number gold">{getStreak()}</p>
+          <p className="italic">days</p>
+        </div>
+      </div>
+
+      <div className="currently-reading container">
+        <div className="card">
+          <div>
+            <h3>Currently Reading</h3>
+          </div>
+          <div>{getCurrentlyReading()}</div>
+        </div>
+        <div className="card">
+          <div>
+            <h3>Reading Streak</h3>
+          </div>
+        </div>
+      </div>
+
+      {notes.length > 0 ? (
+        <div className="container">{getRandomNote()}</div>
+      ) : null}
     </>
   );
 }

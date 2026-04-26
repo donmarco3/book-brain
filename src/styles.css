@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+
 *, ::before, ::after {
     box-sizing: border-box;
 }
@@ -21,9 +23,51 @@
     --color-shadow-md: rgba(92, 64, 51, 0.12);
     --color-overlay: rgba(92, 64, 51, 0.4);
 
+    /* Main sidebar background (dark) and book cover accents */
+    --roman-burgundy-dark: #4A1220;
+
+    /* Sidebar active nav, section headers, stat card top border accent, add button, progress bars */
+    --roman-burgundy: #6B1E2E;
+
+    /* Hover states on burgundy elements */
+    --roman-burgundy-light: #8B2A3E;
+
+    /* Nav active text, section header titles, note tag text, gold ornament details, streak "today" dot, stat numbers on streak */
+    --roman-gold: #C9A84C;
+
+    /* Hover states on gold elements */
+    --roman-gold-light: #E8C96A;
+
+    /* Book spine accents, secondary decorative elements */
+    --roman-brown: #7A5C3A;
+
+    /* Hover states on brown elements */
+    --roman-brown-light: #A07848;
+
+    /* Main page background behind all content */
+    --roman-cream: #F2EAD8;
+
+    /* Card backgrounds, note blocks, sidebar list panel, stat cards */
+    --roman-parchment: #EDE3CC;
+
+    /* All primary text — headings, book titles, note quotes, stat numbers */
+    --roman-ink: #2C1810;
+
+    /* Secondary text — authors, dates, page numbers, labels, muted metadata */
+    --roman-ink-muted: #5C3D2A;
+
+    /* Inactive nav link text */
+    --roman-nav-text: #99857A; /* muted cream */
+
+    /* Inactive nav link hover text */
+    --roman-nav-text-hover: #F2EAD8; /* full cream */
+
+    /* Active nav link background */
+    --roman-nav-active-bg: rgba(201, 168, 76, 0.1);
+
     /* Fonts */
-    --font-heading: Georgia, 'Times New Roman', serif;
-    --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-heading: 'Cinzel', 'Trajan Pro', 'Times New Roman', Georgia, serif;
+    --font-body: 'Playfair Display', Georgia, 'Book Antiqua', Palatino, 'Palatino Linotype', serif; 
 }
 
 html, body {
@@ -31,8 +75,8 @@ html, body {
     min-width: 320px;
     min-height: 100vh;
     padding: 0;
-    background-color: var(--color-cream);
-    color: var(--color-warm-brown);
+    background-color: var(--roman-cream);
+    color: var(--roman-ink);
     font-family: var(--font-body);
     line-height: 1.6;
 }
@@ -42,7 +86,7 @@ html, body {
    ============================================ */
 
 
-h1, h2 {
+h1, h2, h3 {
     font-family: var(--font-heading);
     margin: 0;
 }
@@ -72,9 +116,10 @@ p {
     font-weight: 400;
 }
 
-.text-lg {
-    font-size: 32px;
+.number {
+    font-size: 2rem;
     font-weight: 800;
+    color: var(--roman-burgundy-dark);
 }
 
 .nice-font {
@@ -108,6 +153,10 @@ p {
     margin-top: 10px;
 }
 
+.gold {
+    color: var(--roman-gold);
+}
+
 /* ============================================
    LAYOUT
    ============================================ */
@@ -126,7 +175,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--color-white);
+    background-color: var(--roman-burgundy-dark);
     border-bottom: 1px solid var(--color-border);
     box-shadow: 0 1px 3px var(--color-shadow);
     position: sticky;
@@ -139,24 +188,40 @@ header {
 header > .site-logo {
     font-size: clamp(1.125rem, calc(5vw + .1rem), 2.5rem);
     font-family: var(--font-heading);
-    color: var(--color-warm-brown);
+    color: var(--roman-gold);
     font-weight: 900;
 }
 
 header > nav {
     display: flex;
-    gap: min(4rem, 3vw)
+    align-items: center;
+    height: 100%;
 }
 
 header > nav > a {
-    color: var(--color-warm-brown);
+    color: var(--roman-nav-text);
     font-weight: 600;
-    font-size: clamp(.7rem, calc(1vw + .1rem), 1.125rem)
+    font-size: clamp(.7rem, calc(1vw + .1rem), 1.125rem);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-inline: 1.5rem;
+}
+
+header > nav > a:hover {
+    color: var(--roman-nav-text-hover);
+}
+
+header > nav > a.active {
+    background-color: var(--roman-nav-active-bg);
+    color: var(--roman-gold);
+    border-top: 3px solid var(--roman-gold);
 }
 
 footer {
     height: clamp(3rem, calc(6vh + 1rem), 7rem);
-    background-color: var(--color-white);
+    background-color: var(--roman-burgundy-dark);
+    color: var(--roman-parchment);
     border-top: 1px solid var(--color-border);
     padding-block: 10px;
     display: flex;
@@ -177,6 +242,13 @@ main {
 /* ============================================
    RESUABLE ELEMENTS / COMPONENTS
    ============================================ */
+
+div.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--roman-gold);
+}
 
 button, select, a.link-btn {
     font-size: clamp(.8rem, calc(1vw + .1rem), 1rem);
@@ -238,10 +310,6 @@ a.link {
     color: var(--color-warm-brown);
 }
 
-a.active {
-    font-weight: 800;
-}
-
 .pill {
     font-size: clamp(.8rem, calc(1vw + .1rem), 1rem);
     padding-block: clamp(.3rem, calc(1vw + .1rem), .5rem);
@@ -254,8 +322,8 @@ a.active {
 .card {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
+    background-color: var(--roman-parchment);
+    border: 1px solid var(--roman-gold);
     box-shadow: 0 8px 30px var(--color-shadow);
     border-radius: 10px;
 }
@@ -270,6 +338,7 @@ a.active {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
     margin-bottom: 1.5rem;
+    border-left: 5px solid var(--roman-gold);
 }
 
 .main-card-header {
@@ -305,7 +374,9 @@ a.active {
 }
 
 .main-card-text > .capture {
-    border-left: 5px solid var(--color-cream-dark);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-left: 5px solid var(--roman-gold);
     padding-left: 1.5rem;
 }
 
@@ -371,15 +442,16 @@ div.pagination {
     margin-top: 3rem;
 }
 
+div.container {
+    margin-block: 2rem;
+}
+
 
 
 /* ============================================
    HOME
    ============================================ */
 
-.home-heading {
-    margin-block: 1.5rem;
-}
 
 div.home-stats {
     display: flex;
@@ -391,14 +463,8 @@ div.home-stats {
 div.home-stats > .card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     flex-grow: 1;
-}
-
-div.home-stats > .card > p.nice-font {
-    color: var(--color-accent);
-    margin-bottom: .75rem;
+    border-top: 5px solid var(--roman-gold);
 }
 
 div.home-stats > .card > div {
@@ -407,14 +473,27 @@ div.home-stats > .card > div {
     margin-bottom: .5rem;
 }
 
-div.currently-reading-books {
+div.currently-reading {
     display: flex;
-    flex-wrap: wrap;
     gap: 1.5rem;
 }
 
-div.currently-reading-books > div {
-    flex-grow: 1;
+div.currently-reading > div {
+    padding: 0;
+}
+
+div.currently-reading > div > div:nth-of-type(1) {
+    background-color: var(--roman-burgundy);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    color: var(--roman-gold);
+    padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
+    padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
+}
+
+div.currently-reading > div > div:nth-of-type(2) {
+    padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
+    padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
 }
 
 div.no-items-container > div {
