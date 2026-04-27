@@ -138,7 +138,7 @@ export async function addBook(bookTitle, bookAuthor) {
 }
 
 export async function updateBookStatus(id, currentStatus) {
-    const newStatus = currentStatus === "reading" ? "finished" : "reading" 
+    const newStatus = currentStatus === "reading" ? "read" : "reading" 
     try {
         await supabase
             .from('books')

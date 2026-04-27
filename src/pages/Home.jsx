@@ -2,6 +2,8 @@ import React from "react";
 import { getAllBooks, getAllNotes } from "../api";
 import { Link, useLoaderData } from "react-router";
 import { sliceString } from "../utils";
+import { FaPenNib } from "react-icons/fa";
+import Pill from "../components/Pill";
 
 export async function loader() {
   const books = await getAllBooks();
@@ -138,7 +140,10 @@ export default function Home() {
         className="link"
       >
         <div className="card main-card" key={notes[randomIndex].id}>
-          <h3 className="gold">Note from your library</h3>
+          <div className="icon-pill gold">
+            <FaPenNib />
+            <h3>Note from your library</h3>
+          </div>
           <div className="main-card-header">
             <h3 className="card-title">{notes[randomIndex].note_title}</h3>
           </div>

@@ -65,6 +65,9 @@
     /* Active nav link background */
     --roman-nav-active-bg: rgba(201, 168, 76, 0.1);
 
+    /* Border colour */
+    --roman-border: rgba(201, 168, 76, 0.4);
+
     /* Fonts */
     --font-heading: 'Cinzel', 'Trajan Pro', 'Times New Roman', Georgia, serif;
     --font-body: 'Playfair Display', Georgia, 'Book Antiqua', Palatino, 'Palatino Linotype', serif; 
@@ -254,10 +257,10 @@ button, select, a.link-btn {
     font-size: clamp(.8rem, calc(1vw + .1rem), 1rem);
     padding-block: clamp(.4rem, calc(1vw + .1rem), .6rem);
     padding-inline: clamp(.5rem, calc(1vw + .1rem), 1rem);
+    background-color: var(--roman-parchment);
+    border: 1px solid var(--roman-border);
     border-radius: 10px;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-white);
-    color: var(--color-warm-brown);
+    color: var(--roman-ink);
     text-align: center;
     letter-spacing: .3px;
     cursor: pointer;
@@ -312,18 +315,40 @@ a.link {
 
 .pill {
     font-size: clamp(.8rem, calc(1vw + .1rem), 1rem);
-    padding-block: clamp(.3rem, calc(1vw + .1rem), .5rem);
-    padding-inline: clamp(.5rem, calc(1vw + .1rem), 1rem);
-    border-radius: 10px;
-    background-color: var(--color-cream-dark);
-    letter-spacing: .3px;
+    font-weight: 800;
+    padding: .05rem .7rem;
+    width: fit-content;
+    color: var(--roman-ink-muted);
+    border: none;
+    border-radius: 20px;
+    letter-spacing: .5px;
+}
+
+
+.pill-red {
+    background-color: rgba(107, 30, 46, 0.12);
+    color: var(--roman-burgundy)
+}
+.pill-brown {
+    background-color: rgba(122, 92, 58, 0.15);
+    color: var(--roman-brown)
+}
+.pill-gold {
+    background-color: rgba(201, 168, 76, 0.1);
+    color: var(--roman-gold)
+}
+
+.selected {
+    background-color: var(--roman-burgundy);
+    color: var(--roman-gold);
+    border-color: var(--roman-burgundy);
 }
 
 .card {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
     background-color: var(--roman-parchment);
-    border: 1px solid var(--roman-gold);
+    border: 1px solid var(--roman-border);
     box-shadow: 0 8px 30px var(--color-shadow);
     border-radius: 10px;
 }
@@ -373,12 +398,12 @@ a.link {
     margin-top: 1.5rem;
 }
 
-.main-card-text > .capture {
+/* .main-card-text > .capture {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-left: 5px solid var(--roman-gold);
     padding-left: 1.5rem;
-}
+} */
 
 .main-card-text > .pill {
     font-size: 1rem;
@@ -445,7 +470,25 @@ div.pagination {
 div.container {
     margin-block: 2rem;
 }
+div.container-sm {
+    margin-block: 1rem;
+}
 
+div.icon-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+div.flex-row {
+    display: flex;
+    gap: 5px;
+}
+div.flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 
 
 /* ============================================
@@ -558,7 +601,7 @@ div.add-book-modal-buttons {
 
 
 /* ============================================
-   BOOKSHELF
+   LIBRARY
    ============================================ */
 
 
@@ -604,11 +647,50 @@ div.book-card > .book-buttons {
     margin: 20px 0 10px;
 }
 
+label.pill {
+    background-color: var(--roman-parchment);
+}
+
 /* ============================================
    BOOK
    ============================================ */
 
+div.book-filters {
+    align-items: center;
+    gap: 10px;
+}
 
+div.book-filters > button {
+    border-radius: 20px;
+}
+
+div.book {
+    padding: 0;
+    width: 250px;
+}
+
+div.book-image {
+    background-color: var(--roman-ink-muted);
+    color: var(--roman-cream);
+    height: 150px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: .3rem .7rem;
+    display: flex;
+    align-items: flex-end;
+}
+
+div.books {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+div.book-info {
+    padding: 0 1rem;
+}
+   
 div.main-card > div.book-buttons {
     display: flex;
     justify-content: space-between;
@@ -621,20 +703,8 @@ div.book-buttons > div {
     gap: 10px;
 }
 
-div.book-info {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-}
-
-div.book-info > .link-btn {
-    display: inline;
-}
-
 /* ============================================
-   LIBRARY
+   NOTES
    ============================================ */
 
 

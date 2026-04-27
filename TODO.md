@@ -15,3 +15,19 @@ For Book Brain to be complete:
 - refactor the app (is the notes process neccesary?) - brainstorm with claude
 - update the UI to be much more appealing to the eye
 - user security
+
+DASHBOARD
+
+- currently reading feature
+- reading streak feature
+- roman numeral date
+
+LIBRARY
+
+- filter pills (all, reading, read)
+- progress bar
+- search for book
+
+NOTES
+
+- two-panel layout (like apple notes)
