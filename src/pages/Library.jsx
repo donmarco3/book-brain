@@ -102,7 +102,7 @@ export default function Library() {
   });
 
   return (
-    <>
+    <div className="margin-inline">
       <div className="heading">
         <h1>Library</h1>
         <button onClick={() => setShowModal(true)}>
@@ -171,6 +171,6 @@ export default function Library() {
           ) : null}
         </div>
       )}
-    </>
+    </div>
   );
 }

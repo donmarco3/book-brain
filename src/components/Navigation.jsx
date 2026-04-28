@@ -1,16 +1,18 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { UserContext } from "..";
-import { FaBookOpen, FaThLarge, FaPenNib, FaHome, FaCog } from "react-icons/fa";
+import { FaBookOpen, FaThLarge, FaPenNib, FaCog } from "react-icons/fa";
 
 export default function Header() {
   const { user } = React.useContext(UserContext);
 
   return (
     <header>
-      <Link to="/" className="site-logo">
-        Book Brain
-      </Link>
+      <div>
+        <Link to="/" className="site-logo">
+          Book Brain
+        </Link>
+      </div>
       <nav>
         <NavLink
           to="/"

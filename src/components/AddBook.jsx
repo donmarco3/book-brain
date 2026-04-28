@@ -38,7 +38,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
   return (
     <>
       {showModal ? (
-        <div className="add-book-modal-overlay">
+        <div className="modal-overlay">
           <div className="add-book-modal" ref={modalRef}>
             <Form
               method="post"

@@ -297,9 +297,9 @@ export async function getNotes(page, sort, books, buckets) {
 
     let selectQuery
     if (buckets.length !== 0) {
-        selectQuery = `*, buckets!inner(*)`
+        selectQuery = `*, buckets!inner(*), books ( * )`
     } else {
-        selectQuery = `*, buckets ( * )`
+        selectQuery = `*, buckets ( * ), books ( * )`
     }
 
     let query = supabase

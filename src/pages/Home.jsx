@@ -156,7 +156,7 @@ export default function Home() {
               <p>{sliceString(notes[randomIndex].spark)}</p>
             </div>
             <p>
-              --- {book.title} * {book.author} * logged 3 days ago
+              {book.title} &middot; {book.author} &middot; logged 3 days ago
             </p>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div className="margin-inline">
       <div className="heading">
         <h1>Dashboard</h1>
         <p>
@@ -216,6 +216,6 @@ export default function Home() {
       {notes.length > 0 ? (
         <div className="container">{getRandomNote()}</div>
       ) : null}
-    </>
+    </div>
   );
 }
