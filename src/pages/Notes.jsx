@@ -13,15 +13,16 @@ import {
   FaPlus,
   FaTimes,
 } from "react-icons/fa";
+import Pill from "../components/Pill";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") ?? "1";
   const sort = url.searchParams.get("sort") ?? "newest";
-  const bookFilter = url.searchParams.getAll("book");
-  const bucketFilter = url.searchParams.getAll("bucket");
+  const bookParam = url.searchParams.getAll("book");
+  const bucketParam = url.searchParams.getAll("bucket");
 
-  const response = await getNotes(page, sort, bookFilter, bucketFilter);
+  const response = await getNotes(page, sort, bookParam, bucketParam);
   const allNotes = await getAllNotes();
   const buckets = await getBuckets();
   const books = await getAllBooks();
@@ -31,30 +32,30 @@ export async function loader({ request }) {
     allNotes,
     buckets,
     books,
+    bookParam,
+    bucketParam,
   };
 }
 
 export default function Notes() {
-  const { notes, count, allNotes, buckets, books } = useLoaderData();
+  const { notes, count, allNotes, buckets, books, bookParam, bucketParam } =
+    useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = React.useRef(null);
 
-  const bookParam = searchParams.getAll("book");
   const initialBooks = bookParam ? [bookParam] : [];
-  const bucketParam = searchParams.getAll("bucket");
   const initialBuckets = bucketParam ? [bucketParam] : [];
+  const initialNote = count === 0 ? null : notes[0];
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedBuckets, setSelectedBuckets] = React.useState(
     initialBuckets[0],
   );
   const [selectedBooks, setSelectedBooks] = React.useState(initialBooks[0]);
-  const [showFilters, setShowFilters] = React.useState(true);
+  const [showFilters, setShowFilters] = React.useState(false);
   const [bookFilter, setBookFilter] = React.useState(false);
   const [bucketFilter, setBucketFilter] = React.useState(false);
-  const [activeNote, setActiveNote] = React.useState(notes[0]);
-
-  console.log(activeNote);
+  const [activeNote, setActiveNote] = React.useState(initialNote);
 
   useClickOutside(sidebarRef, () => setShowFilters(false));
 
@@ -90,12 +91,6 @@ export default function Notes() {
     }
   }
 
-  const isFiltered =
-    searchParams.getAll("book").length === 0 &&
-    searchParams.getAll("bucket").length === 0
-      ? false
-      : true;
-
   function toggle(bucketName, bookId) {
     const newParams = new URLSearchParams(searchParams);
 
@@ -130,6 +125,7 @@ export default function Notes() {
     setSelectedBuckets([]);
     setSelectedBooks([]);
     setSearchParams({});
+    setSearchQuery("");
   }
 
   const filteredNotes = notes.filter((note) => {
@@ -138,72 +134,78 @@ export default function Notes() {
       note.note_title.toLowerCase().includes(searchQuery) ||
       note.context.toLowerCase().includes(searchQuery) ||
       note.capture.toLowerCase().includes(searchQuery) ||
-      note.spark.toLowerCase().includes(searchQuery) ||
-      note.question1.toLowerCase().includes(searchQuery) ||
-      note.question2.toLowerCase().includes(searchQuery);
+      note.spark.toLowerCase().includes(searchQuery);
 
     return matchesSearch;
   });
 
+  const isFiltered =
+    bookParam.length === 0 &&
+    bucketParam.length === 0 &&
+    searchQuery.length === 0
+      ? false
+      : true;
+
+  React.useEffect(() => {
+    if (isFiltered) {
+      setActiveNote(filteredNotes[0]);
+    }
+  }, [filteredNotes]);
+
   const noteElements = filteredNotes.map((note) => {
     const book = books.find((book) => book.id === note.book_id);
 
-    const bucketElements = note.buckets.map((bucket) => (
-      <p key={bucket.id} className="pill">
-        {bucket.name}
-      </p>
-    ));
-
-    if (note.id === activeNote.id) {
-      console.log("active note");
+    if (activeNote) {
+      return (
+        <div
+          key={note.id}
+          className={note.id === activeNote.id ? "active-note" : undefined}
+          onClick={() => setActiveNote(note)}
+        >
+          <p className="gold">{book.title}</p>
+          <h3>{note.note_title}</h3>
+          <p className="italic capture">{sliceString(note.capture)}</p>
+          <p>
+            {new Date(note.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}{" "}
+            &middot; p. {note.page}
+          </p>
+        </div>
+      );
+    } else {
+      setActiveNote(notes[0]);
     }
-
-    return (
-      <div
-        key={note.id}
-        className={note.id === activeNote.id && "active-note"}
-        onClick={() => setActiveNote(note)}
-      >
-        <p className="gold">{book.title}</p>
-        <h3>{note.note_title}</h3>
-        <p className="italic capture">{sliceString(note.capture)}</p>
-        <p>
-          {new Date(note.created_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}{" "}
-          &middot; p. {note.page}
-        </p>
-      </div>
-    );
   });
 
   const bookButtonElements = books.map((book) => {
     return (
-      <button
-        className={
-          selectedBooks.includes(book.id.toString())
-            ? "filter-item-btn"
-            : "filter-item-btn btn-dark"
-        }
-        key={book.id}
-        onClick={() => toggle(null, book.id)}
-      >
-        {book.title}
-      </button>
+      <div key={book.id}>
+        <input
+          type="checkbox"
+          checked={selectedBooks.includes(book.id.toString())}
+          readOnly
+          id={book}
+        />
+        <label onClick={() => toggle(null, book.id)} htmlFor={book.id}>
+          {book.title}
+        </label>
+      </div>
     );
   });
 
   const bucketButtonElements = buckets.map((bucket) => {
     return (
-      <div key={bucket} className="filter-item flex-row">
-        <input id={bucket} type="checkbox" />
-        <label
-          onClick={() => toggle(bucket, null)}
-          className={selectedBuckets.includes(bucket) ? "" : ""}
-          htmlFor={bucket}
-        >
+      <div key={bucket}>
+        <input
+          type="checkbox"
+          checked={selectedBuckets.includes(bucket)}
+          readOnly
+          id={bucket}
+        />
+        <label onClick={() => toggle(bucket, null)} htmlFor={bucket}>
           {bucket}
         </label>
       </div>
@@ -221,10 +223,13 @@ export default function Notes() {
           name="search-query"
           placeholder="Search notes..."
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          value={searchQuery}
         />
-        {selectedBuckets.length > 0 || selectedBooks.length > 0 ? (
+        {(selectedBuckets.length > 0 ||
+          selectedBooks.length > 0 ||
+          searchQuery.length > 0) && (
           <button onClick={clearFilters}>Clear</button>
-        ) : null}
+        )}
         <button onClick={() => setShowFilters(true)}>
           <div className="icon-pill">
             <FaFilter />
@@ -249,7 +254,10 @@ export default function Notes() {
                   className="filter-option"
                   onClick={() => setBookFilter((prev) => !prev)}
                 >
-                  <p className="gold">Books</p>
+                  <p className="gold">
+                    Books{" "}
+                    {selectedBooks.length > 0 && `(${selectedBooks.length})`}
+                  </p>
                   <p>{!bookFilter ? <FaPlus /> : <FaMinus />}</p>
                 </div>
                 {bookFilter && (
@@ -262,7 +270,11 @@ export default function Notes() {
                   className="filter-option"
                   onClick={() => setBucketFilter((prev) => !prev)}
                 >
-                  <p className="gold">Buckets</p>
+                  <p className="gold">
+                    Buckets{" "}
+                    {selectedBuckets.length > 0 &&
+                      `(${selectedBuckets.length})`}
+                  </p>
                   <p>{!bucketFilter ? <FaPlus /> : <FaMinus />}</p>
                 </div>
                 {bucketFilter && (
@@ -270,16 +282,41 @@ export default function Notes() {
                 )}
               </div>
 
-              <select onChange={(e) => updateSort(e.target.value)}>
-                <option value="newest">Sort by: Newest</option>
-                <option value="oldest">Sort by: Oldest</option>
-              </select>
+              <div className="filter-option-container">
+                <p className="gold">Sort By</p>
+                <div className="filter-options">
+                  <input
+                    type="checkbox"
+                    checked={currentSort === "newest"}
+                    id="newest"
+                    readOnly
+                  />
+                  <label onClick={() => updateSort("newest")} htmlFor="newest">
+                    Newest
+                  </label>
+                  <input
+                    type="checkbox"
+                    checked={currentSort === "oldest"}
+                    id="oldest"
+                    readOnly
+                  />
+                  <label onClick={() => updateSort("oldest")} htmlFor="oldest">
+                    Oldest
+                  </label>
+                </div>
+              </div>
             </aside>
           </div>
         )}
 
-        <div className="notes-col">
-          <div className="notes-count padding-inline">{count} notes</div>
+        <div className={!activeNote ? "notes-col padding-inline" : "notes-col"}>
+          {activeNote && (
+            <div className="notes-count padding-inline">
+              {searchQuery.length > 0
+                ? `${filteredNotes.length} notes`
+                : `${count} notes`}
+            </div>
+          )}
           {count > 0 ? (
             <div className="notes">{noteElements}</div>
           ) : (
@@ -291,50 +328,63 @@ export default function Notes() {
               </p>
             </div>
           )}
-          <div className="pagination">
-            <button
-              className="btn-transparent"
-              onClick={() => updatePage("left")}
-              disabled={currentPage === 1}
-            >
-              <FaAngleLeft />
-            </button>
-            <p>Page {currentPage}</p>
-            <button
-              className="btn-transparent"
-              onClick={() => updatePage("right")}
-              disabled={noteElements.length !== 5}
-            >
-              <FaAngleRight />
-            </button>
-          </div>
+
+          {activeNote && (
+            <div className="pagination">
+              <button
+                className="btn-transparent"
+                onClick={() => updatePage("left")}
+                disabled={currentPage === 1}
+              >
+                <FaAngleLeft />
+              </button>
+              <p>Page {currentPage}</p>
+              <button
+                className="btn-transparent"
+                onClick={() => updatePage("right")}
+                disabled={noteElements ? noteElements.length !== 5 : true}
+              >
+                <FaAngleRight />
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="padding-inline notes-col">
-          <div className="heading">
-            <div className="icon-pill gold">
-              <FaBookOpen />
-              <p>{activeNote.books.title}</p>
+        {activeNote && (
+          <div className="padding-inline notes-col">
+            <div className="heading">
+              <div className="icon-pill gold">
+                <FaBookOpen />
+                <p>{activeNote.books.title}</p>
+              </div>
+              <h3>{activeNote.note_title}</h3>
+              <p>
+                {new Date(activeNote.created_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}{" "}
+                &middot; p. {activeNote.page}
+              </p>
             </div>
-            <h3>{activeNote.note_title}</h3>
-            <p>
-              {new Date(activeNote.created_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}{" "}
-              &middot; p. {activeNote.page}
-            </p>
-          </div>
 
-          <div className="card main-card" key={activeNote.id}>
-            <div className="flex-col">
-              <p className="italic capture">"{activeNote.capture}"</p>
-              <div className="border margin-block"></div>
-              <p>{activeNote.spark}</p>
+            <div className="margin-block flex-row">
+              {activeNote.buckets.map((bucket) => (
+                <Pill key={bucket.id} colour="red">
+                  {bucket.name}
+                </Pill>
+              ))}
+            </div>
+
+            <div className="card main-card" key={activeNote.id}>
+              <div className="flex-col">
+                <p className="italic capture">"{activeNote.capture}"</p>
+                <div className="border margin-block"></div>
+                <p>{activeNote.spark}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
