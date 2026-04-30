@@ -27,7 +27,3 @@ LIBRARY
 - filter pills (all, reading, read)
 - progress bar
 - search for book
-
-NOTES
-
-- two-panel layout (like apple notes)

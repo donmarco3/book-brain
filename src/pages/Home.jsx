@@ -166,7 +166,7 @@ export default function Home() {
 
   return (
     <div className="margin-inline">
-      <div className="heading">
+      <div className="page-heading">
         <h1>Dashboard</h1>
         <p>
           {new Date().toLocaleDateString("en-US", {

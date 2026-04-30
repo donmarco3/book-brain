@@ -1,7 +1,19 @@
 import React from "react";
-import { getAllBooks, getAllNotes, getBuckets, getNotes } from "../api";
-import { Link, useLoaderData, useSearchParams } from "react-router";
-import { sliceString } from "../utils";
+import {
+  deleteNoteBucket,
+  getAllBooks,
+  getAllNotes,
+  getBuckets,
+  getNotes,
+  updateNote,
+} from "../api";
+import {
+  Link,
+  useLoaderData,
+  useRevalidator,
+  useSearchParams,
+} from "react-router";
+import { sliceString, validatePageRange } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
 import {
   FaAngleLeft,
@@ -42,6 +54,8 @@ export default function Notes() {
     useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = React.useRef(null);
+  const addBucketRef = React.useRef(null);
+  const revalidator = useRevalidator();
 
   const initialBooks = bookParam ? [bookParam] : [];
   const initialBuckets = bucketParam ? [bucketParam] : [];
@@ -56,8 +70,27 @@ export default function Notes() {
   const [bookFilter, setBookFilter] = React.useState(false);
   const [bucketFilter, setBucketFilter] = React.useState(false);
   const [activeNote, setActiveNote] = React.useState(initialNote);
+  const [isClicked, setIsClicked] = React.useState(false);
+
+  const activeNoteBuckets = activeNote?.buckets.map((bucket) => bucket.name);
+
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [bucketErrorMessage, setBucketErrorMessage] = React.useState("");
+  const [noteTitle, setNoteTitle] =
+    React.useState(activeNote?.note_title) || "";
+  const [page, setPage] = React.useState(activeNote?.page || null);
+  const [context, setContext] = React.useState(activeNote?.context || "");
+  const [capture, setCapture] = React.useState(activeNote?.capture || "");
+  const [spark, setSpark] = React.useState(activeNote?.spark || "");
+  const [userBucket, setUserBucket] = React.useState("");
+  const [allBuckets, setAllBuckets] = React.useState(buckets);
+  const [selectedNoteBuckets, setSelectedNoteBuckets] =
+    React.useState(activeNoteBuckets);
+  const [showBucketInput, setShowBucketInput] = React.useState(false);
 
   useClickOutside(sidebarRef, () => setShowFilters(false));
+  useClickOutside(addBucketRef, () => updateSelectedNoteBuckets());
 
   const defaultPage = searchParams.get("page") ?? "1";
   const currentPage = Number(defaultPage);
@@ -75,6 +108,8 @@ export default function Notes() {
         return prevParams;
       });
     }
+    setIsEditing(false);
+    setIsClicked(false);
   }
 
   function updateSort(type) {
@@ -89,6 +124,8 @@ export default function Notes() {
         return prevParams;
       });
     }
+    setIsEditing(false);
+    setIsClicked(false);
   }
 
   function toggle(bucketName, bookId) {
@@ -119,13 +156,100 @@ export default function Notes() {
     }
 
     setSearchParams(newParams);
+    setIsEditing(false);
+    setIsClicked(false);
   }
+
+  function handleClick() {
+    if (isEditing) {
+      if (!noteTitle) {
+        setErrorMessage("Title is required");
+        return;
+      }
+      if (!page) {
+        setErrorMessage("Page is required");
+        return;
+      }
+      if (!context && !capture && !spark) {
+        setErrorMessage(
+          "At least one of context, capture, or spark is required",
+        );
+        return;
+      }
+      if (selectedNoteBuckets.length === 0 && isEditing) {
+        setErrorMessage("At least one bucket is required");
+        return;
+      }
+
+      activeNote.buckets.map((bucket) => {
+        if (!selectedNoteBuckets.includes(bucket.name)) {
+          deleteNoteBucket(bucket.name);
+        }
+      });
+
+      validatePageRange(page);
+      updateNote(
+        activeNote.id,
+        noteTitle,
+        page,
+        context,
+        capture,
+        spark,
+        selectedNoteBuckets,
+      ).then(() => revalidator.revalidate());
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+    }
+    setIsClicked(false);
+  }
+
+  function handleDeletion() {
+    if (window.confirm("Are you sure you want to delete this note?")) {
+      deleteCard(card.id);
+      revalidator.revalidate();
+    }
+  }
+
+  function updateUserBucket(event) {
+    setUserBucket(event.currentTarget.value);
+  }
+
+  function updateSelectedNoteBuckets() {
+    if (userBucket !== "") {
+      setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setSelectedNoteBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setUserBucket("");
+      setShowBucketInput(false);
+      setBucketErrorMessage("");
+      revalidator.revalidate();
+    } else {
+      setBucketErrorMessage("Bucket must have a name");
+    }
+  }
+
+  function toggleBucket(name) {
+    if (selectedNoteBuckets.includes(name)) {
+      setSelectedNoteBuckets(
+        selectedNoteBuckets.filter((bucket) => bucket !== name),
+      );
+    } else {
+      setSelectedNoteBuckets([...selectedNoteBuckets, name]);
+    }
+  }
+
+  React.useEffect(() => {
+    if (addBucketRef.current) {
+      addBucketRef.current.focus();
+    }
+  }, [showBucketInput]);
 
   function clearFilters() {
     setSelectedBuckets([]);
     setSelectedBooks([]);
     setSearchParams({});
     setSearchQuery("");
+    setActiveNote(initialNote);
   }
 
   const filteredNotes = notes.filter((note) => {
@@ -139,15 +263,15 @@ export default function Notes() {
     return matchesSearch;
   });
 
-  const isFiltered =
-    bookParam.length === 0 &&
-    bucketParam.length === 0 &&
-    searchQuery.length === 0
-      ? false
-      : true;
+  // const isFiltered =
+  //   bookParam.length === 0 &&
+  //   bucketParam.length === 0 &&
+  //   searchQuery.length === 0
+  //     ? false
+  //     : true;
 
   React.useEffect(() => {
-    if (isFiltered) {
+    if (!isClicked) {
       setActiveNote(filteredNotes[0]);
     }
   }, [filteredNotes]);
@@ -160,7 +284,11 @@ export default function Notes() {
         <div
           key={note.id}
           className={note.id === activeNote.id ? "active-note" : undefined}
-          onClick={() => setActiveNote(note)}
+          onClick={() => {
+            setActiveNote(note);
+            setIsEditing(false);
+            setIsClicked(true);
+          }}
         >
           <p className="gold">{book.title}</p>
           <h3>{note.note_title}</h3>
@@ -212,6 +340,41 @@ export default function Notes() {
     );
   });
 
+  const noteButtons = (
+    <div className="note-buttons">
+      <button onClick={handleClick}>{isEditing ? "Save" : "Edit"}</button>
+      {isEditing ? (
+        <button
+          onClick={() => {
+            setIsEditing(false);
+            setShowBucketInput(false);
+            setBucketErrorMessage("");
+          }}
+        >
+          Cancel
+        </button>
+      ) : null}
+      {!isEditing ? (
+        <button onClick={handleDeletion} className="btn-delete">
+          Delete
+        </button>
+      ) : null}
+    </div>
+  );
+
+  const allBucketElements = allBuckets.map((bucket) => {
+    return (
+      <Pill
+        colour={selectedNoteBuckets.includes(bucket) ? "gold" : "std"}
+        border="border"
+        key={bucket}
+        onClick={() => toggleBucket(bucket)}
+      >
+        {bucket}
+      </Pill>
+    );
+  });
+
   return (
     <>
       <div className="page-heading margin-inline">
@@ -222,7 +385,11 @@ export default function Notes() {
         <input
           name="search-query"
           placeholder="Search notes..."
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={(e) => {
+            setSearchQuery(e.currentTarget.value);
+            setIsEditing(false);
+            setIsClicked(false);
+          }}
           value={searchQuery}
         />
         {(selectedBuckets.length > 0 ||
@@ -351,39 +518,149 @@ export default function Notes() {
         </div>
 
         {activeNote && (
-          <div className="padding-inline notes-col">
-            <div className="heading">
-              <div className="icon-pill gold">
-                <FaBookOpen />
-                <p>{activeNote.books.title}</p>
+          <>
+            <div className="padding-inline notes-col">
+              <div className="heading">
+                <div className="icon-pill gold">
+                  <FaBookOpen />
+                  <p>{activeNote.books.title}</p>
+                </div>
+                <h3>{activeNote.note_title}</h3>
+                <p>
+                  {new Date(activeNote.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}{" "}
+                  &middot; p. {activeNote.page}
+                </p>
               </div>
-              <h3>{activeNote.note_title}</h3>
-              <p>
-                {new Date(activeNote.created_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}{" "}
-                &middot; p. {activeNote.page}
-              </p>
-            </div>
+              {!isEditing ? (
+                <>
+                  <div className="margin-block flex-row">
+                    {activeNote.buckets.map((bucket) => (
+                      <Pill key={bucket.id} colour="gold">
+                        {bucket.name}
+                      </Pill>
+                    ))}
+                  </div>
 
-            <div className="margin-block flex-row">
-              {activeNote.buckets.map((bucket) => (
-                <Pill key={bucket.id} colour="red">
-                  {bucket.name}
-                </Pill>
-              ))}
-            </div>
+                  <div className="card main-card" key={activeNote.id}>
+                    <div className="flex-col">
+                      {activeNote.context && (
+                        <>
+                          <p>{activeNote.context}</p>
+                          <div className="border margin-block"></div>
+                        </>
+                      )}
+                      <p className="italic capture">"{activeNote.capture}"</p>
+                      {activeNote.spark && (
+                        <>
+                          <div className="border margin-block"></div>
+                          <p>{activeNote.spark}</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {noteButtons}
+                </>
+              ) : (
+                <div className="form">
+                  {errorMessage && <p className="red">{errorMessage}</p>}
+                  <div className="form-header">
+                    <div>
+                      <label htmlFor="note-title" className="gold">
+                        Note Title
+                      </label>
+                      <input
+                        id="note-title"
+                        defaultValue={activeNote.note_title}
+                        onChange={(e) => setNoteTitle(e.currentTarget.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="page" className="gold">
+                        Page
+                      </label>
+                      <input
+                        id="page"
+                        defaultValue={activeNote.page}
+                        onChange={(e) => setPage(e.currentTarget.value)}
+                      />
+                    </div>
+                  </div>
+                  <label htmlFor="context" className="gold">
+                    Context
+                  </label>
+                  <textarea
+                    id="context"
+                    defaultValue={activeNote.context}
+                    onChange={(e) => setContext(e.currentTarget.value)}
+                  ></textarea>
+                  <label htmlFor="capture" className="gold">
+                    Capture (passage from the book){" "}
+                  </label>
+                  <textarea
+                    id="capture"
+                    defaultValue={activeNote.capture}
+                    onChange={(e) => setCapture(e.currentTarget.value)}
+                  ></textarea>
+                  <label htmlFor="spark" className="gold">
+                    Spark (your thought/reaction){" "}
+                  </label>
+                  <textarea
+                    id="spark"
+                    defaultValue={activeNote.spark}
+                    onChange={(e) => setSpark(e.currentTarget.value)}
+                  ></textarea>
 
-            <div className="card main-card" key={activeNote.id}>
-              <div className="flex-col">
-                <p className="italic capture">"{activeNote.capture}"</p>
-                <div className="border margin-block"></div>
-                <p>{activeNote.spark}</p>
-              </div>
+                  <div className="buckets">
+                    <div className="buckets-header">
+                      <p className="gold">Buckets</p>
+                      <Link
+                        to="/manage-buckets"
+                        state={{ from: `/notes` }}
+                        className="gold"
+                      >
+                        Manage Buckets
+                      </Link>
+                    </div>
+
+                    <div className="bucket-buttons">{allBucketElements}</div>
+                    <div className="add-bucket">
+                      {!showBucketInput ? (
+                        <Pill
+                          colour="std"
+                          className="icon-pill"
+                          border="border"
+                          onClick={() => setShowBucketInput(true)}
+                        >
+                          <FaPlus />
+                          New bucket
+                        </Pill>
+                      ) : (
+                        <input
+                          ref={addBucketRef}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              updateSelectedNoteBuckets();
+                            }
+                          }}
+                          onChange={updateUserBucket}
+                          placeholder="Bucket name..."
+                          value={userBucket}
+                        />
+                      )}
+                    </div>
+                    {bucketErrorMessage && (
+                      <p className="red">{bucketErrorMessage}</p>
+                    )}
+                  </div>
+                  {noteButtons}
+                </div>
+              )}
             </div>
-          </div>
+          </>
         )}
       </div>
     </>

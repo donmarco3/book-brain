@@ -42,7 +42,7 @@ export default function Header() {
           </div>
         </NavLink>
         <NavLink
-          to={user ? "account" : "login"}
+          to={user ? "settings" : "login"}
           className={({ isActive }) => (isActive ? "active" : null)}
         >
           <div className="icon-pill">

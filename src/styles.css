@@ -71,6 +71,9 @@
     /* Fonts */
     --font-heading: 'Cinzel', 'Trajan Pro', 'Times New Roman', Georgia, serif;
     --font-body: 'Playfair Display', Georgia, 'Book Antiqua', Palatino, 'Palatino Linotype', serif; 
+
+    /* Dimensions */
+    --heading-height-lg: 195px;
 }
 
 html, body {
@@ -289,9 +292,9 @@ button.btn-dark,
 }
 
 button.btn-delete {
-    background-color: var(--color-danger);
+    background-color: var(--roman-burgundy-light);
     color: var(--color-white);
-    border-color: var(--color-danger);
+    border-color: var(--roman-burgundy-light);
 }
 
 button.btn-transparent {
@@ -333,7 +336,12 @@ a.link {
     letter-spacing: .5px;
 }
 
-
+.pill-border {
+    border: 1px solid var(--roman-border);
+}
+.pill-std {
+    background-color: var(--roman-parchment);
+}
 .pill-red {
     background-color: rgba(107, 30, 46, 0.12);
     color: var(--roman-burgundy)
@@ -789,7 +797,6 @@ input[type="checkbox"]:checked + label::before {
 }
 
 
-
 div.notes-header {
     display: flex;
     gap: 10px;
@@ -804,16 +811,14 @@ div.notes-count {
 }
 
 div.notes-container {
-    height: calc(100vh - 160);
-    align-items: stretch;
     gap: 0;
     position: relative;
+    min-height: calc(100vh - var(--heading-height-lg));
 }
 
 div.notes-col {
     width: 50%;
     border-right: 1px solid var(--roman-border);
-
 }
 
 
@@ -852,11 +857,6 @@ div.log-header > h1 {
 }
 
 .form {
-    padding: clamp(1.5rem, calc(5vw + .1rem), 3rem);
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 8px 30px var(--color-shadow);
-    border-radius: 8px;
 }
 
 .form > .form-header {
@@ -903,10 +903,10 @@ div.inbox-sub-header > div {
 
 div.note-buttons {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 10px;
     margin-top: 40px;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid var(--roman-gold);
     padding-top: 20px;
 }
 
@@ -946,62 +946,20 @@ div.buckets > .buckets-header {
     align-items: center;
 }
 
-div.buckets input {
-    width: 200px;
-}
-
 .bucket-buttons {
     margin-block: 10px;
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 10px;
 }
 
-div.buckets-expanded > .add-bucket {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
+.add-bucket .pill,
+.bucket-buttons > .pill {
+    cursor: pointer;
 }
 
 div.buckets-expanded > .add-bucket > input {
     margin: 0;
-}
-
-div.distillation-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-div.distillation-complete-container {
-    padding-block: clamp(4rem, calc(5vw + .1rem), 7rem);
-    padding-inline: clamp(1rem, calc(5vw + .1rem), 2rem);
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 8px 30px var(--color-shadow);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-div.distillation-complete-container > p:nth-of-type(1) {
-    font-size: 1rem;
-    margin-top: 10px;
-}
-
-div.distillation-stats {
-    display: flex;
-    flex-wrap: wrap;
-    text-align: center;
-    gap: 2rem;
-    margin: 1.5rem 0 2rem;
-}
-
-div.distillation-stats > .card {
-    flex-grow: 1;
 }
 
 

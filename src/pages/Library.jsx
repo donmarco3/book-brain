@@ -103,7 +103,7 @@ export default function Library() {
 
   return (
     <div className="margin-inline">
-      <div className="heading">
+      <div className="page-heading">
         <h1>Library</h1>
         <button onClick={() => setShowModal(true)}>
           <div className="icon-pill">

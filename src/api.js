@@ -297,7 +297,7 @@ export async function getNotes(page, sort, books, buckets) {
 
     let selectQuery
     if (buckets.length !== 0) {
-        selectQuery = `*, buckets!inner(*), books ( * )`
+        selectQuery = `*, buckets!inner( * ), books ( * )`
     } else {
         selectQuery = `*, buckets ( * ), books ( * )`
     }
@@ -395,9 +395,11 @@ export async function getAllNotes() {
 
                     const { data: noteBucketData, error: noteBucketError } = await supabase
                         .from('note_buckets')
-                        .insert({
+                        .upsert({
                             note_id: noteData[0].id,
                             bucket_id: bucketData[0].id
+                        }, {
+                            onConflict: 'note_id,bucket_id'
                         })
                         .select()
                     // console.log(noteBucketData)
@@ -417,7 +419,7 @@ export async function getAllNotes() {
     }
 
 
-    // BUCKETS
+// BUCKETS
     
     export async function getBuckets() {
         const currentUser = await getCurrentUser()
@@ -429,6 +431,7 @@ export async function getAllNotes() {
             .from('buckets')
             .select()
             .eq('user_id', currentUser.data.user.id)
+            .order('name')
         // console.log(data)
         // console.log(error)
         const buckets = data.map(bucket => bucket.name)
@@ -478,8 +481,8 @@ export async function deleteNoteBucket(bucket) {
         .select()
         .eq('name', bucket)
         .eq('user_id', currentUser.data.user.id)
-    console.log(data)
-    console.log(error)
+    // console.log(data)
+    // console.log(error)
 
     await Promise.all(
         data.map(async (bucket) => {
@@ -487,8 +490,8 @@ export async function deleteNoteBucket(bucket) {
                 .from('note_buckets')
                 .delete()
                 .eq('bucket_id', bucket.id)
-            console.log(data)
-            console.log(error)
+            // console.log(data)
+            // console.log(error)
             return data
         })  
     )

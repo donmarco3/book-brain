@@ -1,6 +1,7 @@
 import React from "react";
 import { deleteBucket, getBuckets } from "../api";
 import { Link, useLoaderData, useLocation, useRevalidator } from "react-router";
+import Pill from "../components/Pill";
 
 export async function loader() {
   const buckets = await getBuckets();
@@ -26,8 +27,8 @@ export default function ManageBuckets() {
   const bucketElements = buckets.map((bucket) => {
     return (
       <div className="bucket" key={bucket}>
-        <button className="btn-dark ">{bucket}</button>
-        <button className="btn " onClick={() => handleDeletion(bucket)}>
+        <Pill colour="gold">{bucket}</Pill>
+        <button className="btn-delete" onClick={() => handleDeletion(bucket)}>
           Delete
         </button>
       </div>
@@ -46,13 +47,11 @@ export default function ManageBuckets() {
   }
 
   return (
-    <>
-      <div className="log-header">
-        <Link to={pathName} className="link-btn">
-          &larr; Back to {pathNameText}
-        </Link>
+    <div className="margin-inline">
+      <div className="page-heading">
         <h1>Manage Buckets</h1>
       </div>
+
       <div className="bookshelf-header">
         <p className="text-sm">
           {buckets.length > 0
@@ -61,6 +60,6 @@ export default function ManageBuckets() {
         </p>
       </div>
       <div className="buckets">{bucketElements}</div>
-    </>
+    </div>
   );
 }
