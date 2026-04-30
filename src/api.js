@@ -126,13 +126,14 @@ export async function updateUserProfile(newName, newEmail) {
 
 // BOOKS
 
-export async function addBook(bookTitle, bookAuthor) {
+export async function addBook(bookTitle, bookAuthor, pages) {
     const currentUser = await getCurrentUser()
     const { error } = await supabase
         .from('books')
         .insert({
             title: bookTitle,
             author: bookAuthor,
+            pages,
             user_id: currentUser.data.user.id
         })
 }

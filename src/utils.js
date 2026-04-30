@@ -46,3 +46,7 @@ function validateRange(range) {
 export function splitOnNewLine(string) {
     return string.split("\n\n")
 }
+
+export function calculateProgress(progress, totalPages) {
+    return progress / totalPages
+}

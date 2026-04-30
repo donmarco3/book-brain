@@ -166,7 +166,7 @@ export default function Home() {
 
   return (
     <div className="margin-inline">
-      <div className="page-heading">
+      <div className="page-heading space-between">
         <h1>Dashboard</h1>
         <p>
           {new Date().toLocaleDateString("en-US", {
@@ -200,13 +200,13 @@ export default function Home() {
       </div>
 
       <div className="currently-reading container">
-        <div className="card">
+        <div className="card card-red">
           <div>
             <h3>Currently Reading</h3>
           </div>
           <div>{getCurrentlyReading()}</div>
         </div>
-        <div className="card">
+        <div className="card card-red">
           <div>
             <h3>Reading Streak</h3>
           </div>

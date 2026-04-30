@@ -7,13 +7,17 @@ export async function action({ request }) {
   const formData = await request.formData();
   const title = formData.get("book-title");
   const author = formData.get("book-author");
+  const pages = formData.get("book-pages");
 
   if (!title || !author) {
     return { error: "Must include title and author" };
   }
+  if (pages < 1) {
+    return { error: "Pages must be greater than 0" };
+  }
 
   try {
-    await addBook(title, author);
+    await addBook(title, author, pages);
     return { success: true };
   } catch (error) {
     return { error: error.message };
@@ -46,25 +50,36 @@ export default function AddBook({ action, showModal, setShowModal }) {
               className="add-book-form"
               replace
             >
-              <h2>Add a Book</h2>
+              <h2>Add Book</h2>
               {errorMessage && <p className="red">{errorMessage}</p>}
               <div className="add-book-modal-inputs">
-                <label htmlFor="book-title" className="bold">
-                  Title <span className="required-field">*</span>
+                <label htmlFor="book-title" className="gold">
+                  Title
                 </label>
                 <input
                   id="book-title"
                   name="book-title"
-                  placeholder="Enter book title"
+                  placeholder="Book title..."
+                  type="text"
                   autoFocus
                 />
-                <label htmlFor="book-author" className="bold">
-                  Author <span className="required-field">*</span>
+                <label htmlFor="book-author" className="gold">
+                  Author
                 </label>
                 <input
                   id="book-author"
                   name="book-author"
-                  placeholder="Enter author name"
+                  placeholder="Author name..."
+                  type="text"
+                />
+                <label htmlFor="book-author" className="gold">
+                  Pages
+                </label>
+                <input
+                  id="book-pages"
+                  name="book-pages"
+                  placeholder="Total number of pages..."
+                  type="number"
                 />
               </div>
 

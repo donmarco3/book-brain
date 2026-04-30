@@ -65,7 +65,7 @@ const router = createBrowserRouter(
         />
         <Route element={<AddBook />} action={addBookAction} />
         <Route
-          path="book/:id"
+          path="library/book/:id"
           element={<Book />}
           loader={bookLoader}
           hydrateFallbackElement={<Loading text="Loading book..." />}

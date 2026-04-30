@@ -8,8 +8,10 @@ import {
   vercelFunction,
 } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
-import { splitOnNewLine } from "../utils";
+import { calculateProgress, splitOnNewLine } from "../utils";
 import Loading from "../components/Loading";
+import { FaAngleRight, FaPenNib } from "react-icons/fa";
+import ProgressBar from "../components/ProgressBar";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
@@ -112,50 +114,70 @@ export default function Book() {
   );
 
   return (
-    <>
-      <div className="log-header">
-        <Link to={`/library`} className="link-btn">
+    <div className="margin-inline">
+      <div className="page-heading flex-row">
+        <Link to={`/library`} className="link-btn margin-block">
           &larr; Back to Library
         </Link>
-        <h1>{book.title}</h1>
+        <FaAngleRight />
+        <p className="italic">{book.title}</p>
       </div>
 
       {!isEditing ? (
-        <div className="card main-card">
-          <div className="book-card-header">
-            <p className="nice-font card-title">{book.title}</p>
-            <p className={book.status === "finished" ? "pill success" : "pill"}>
-              {book.status === "finished" ? "Finished" : "Reading"}
-            </p>
+        <>
+          <div className="flex-row margin-block">
+            <div className="book-image"></div>
+
+            <div className="padding-inline book-info">
+              <p className="gold">
+                {book.status === "read" ? "Read" : "Reading"}
+              </p>
+              <h3>{book.title}</h3>
+              <p className="italic">{book.author}</p>
+              <div className="flex-row margin-block">
+                <button onClick={() => setIsEditing(true)}>Edit</button>
+                <button onClick={() => changeBookStatus(book.id, book.status)}>
+                  Mark as {book.status === "reading" ? "read" : "reading"}
+                </button>
+                <button>Update progress</button>
+              </div>
+              <div className="flex-col progress">
+                <p>Progress</p>
+                <ProgressBar
+                  progress={calculateProgress(book.progress, book.pages)}
+                />
+                <p>
+                  {calculateProgress(book.progress, book.pages)}% &middot; p.{" "}
+                  {book.progress} of {book.pages}
+                </p>
+              </div>
+            </div>
           </div>
-          <p className="text-sm">by {book.author}</p>
-          <div className="book-info">
-            <p className="text-sm">
-              <span className="bold">Date added: </span>
-              {creationDate}
-            </p>
-            <p className="text-sm">
-              {book.notes.length} {book.notes.length === 1 ? "Note" : "Notes"}
-            </p>
-            <Link className="link-btn" to={`/notes?book=${book.id}`}>
-              View Notes ({book.notes.length})
-            </Link>
-            {book.notes.length > 0 && (
-              <div className="book-synthesis">
-                <Link
-                  className="link-btn"
-                  to={`/syntheses/${book.id}?page=1&sort=newest`}
-                >
-                  View Syntheses ({book.syntheses.length})
+
+          <div className="border margin-block"></div>
+
+          <div className="margin-block">
+            <h3>Notes</h3>
+            <div className="card flex-row space-between">
+              <div>
+                <p className="number">{book.notes.length}</p>
+                <p>notes logged for this book</p>
+              </div>
+              <div className="icon-pill">
+                <Link to={`/notes?book=${book.id}`} className="link">
+                  View all notes <FaAngleRight />
                 </Link>
-                <div className="syntheses-buttons">
-                  <button
-                    className="btn-dark"
-                    onClick={generateSynthesis}
-                    disabled={isLoading}
-                  >
-                    {synthesis ? "Regenerate" : "Generate"} Synthesis
-                  </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="border margin-block"></div>
+
+          <div className="card card-red margin-block">
+            <div className="flex-row space-between">
+              <h3 className="gold">Your Synthesis</h3>
+              <div className="flex-row">
+                {book.notes.length > 0 && (
                   <select
                     onChange={(e) => setSelectedValue(e.target.value)}
                     defaultValue="standard"
@@ -165,39 +187,60 @@ export default function Book() {
                     <option value="standard">Standard (3 paragraphs)</option>
                     <option value="in-depth">In-Depth (5 paragraphs)</option>
                   </select>
-                </div>
-                {isLoading && <Loading text="Generating synthesis..." />}
-                {!isLoading && (
-                  <div className="synthesis-generation">
+                )}
+                <button
+                  onClick={generateSynthesis}
+                  disabled={isLoading || book.notes.length === 0}
+                >
+                  {synthesis ? "Regenerate" : "Generate"} Synthesis
+                </button>
+              </div>
+            </div>
+            {isLoading && <Loading text="Generating synthesis..." />}
+            {!isLoading && (
+              <div className="synthesis-generation">
+                {book.notes.length > 0
+                  ? "No synthesis generated yet. Hit Generate to create a personalised summary based on your notes for this book."
+                  : "Add notes for this book to generate a synthesis."}
+                {synthesis && (
+                  <div>
+                    <p className="bold">
+                      Here is your personalised synthesis of {book.title}
+                    </p>
+                    {splitOnNewLine(synthesis).map((section) => (
+                      <p key={section}>{section}</p>
+                    ))}
+                    <button onClick={saveSynthesis}>Save Synthesis</button>
                     {synthesis && (
-                      <div>
-                        <p className="bold">
-                          Here is your personalised synthesis of {book.title}
-                        </p>
-                        {splitOnNewLine(synthesis).map((section) => (
-                          <p key={section}>{section}</p>
-                        ))}
-                        <button onClick={saveSynthesis}>Save Synthesis</button>
-                        {synthesis && (
-                          <p
-                            className={
-                              saveSynthesisMessage === "Synthesis saved"
-                                ? "green"
-                                : "red"
-                            }
-                          >
-                            {saveSynthesisMessage}
-                          </p>
-                        )}
-                      </div>
+                      <p
+                        className={
+                          saveSynthesisMessage === "Synthesis saved"
+                            ? "green"
+                            : "red"
+                        }
+                      >
+                        {saveSynthesisMessage}
+                      </p>
                     )}
                   </div>
                 )}
               </div>
             )}
           </div>
-          {bookButtons}
-        </div>
+
+          <div className="book-info">
+            {book.notes.length > 0 && (
+              <div className="book-synthesis">
+                <Link
+                  className="link-btn"
+                  to={`/syntheses/${book.id}?page=1&sort=newest`}
+                >
+                  View Syntheses ({book.syntheses.length})
+                </Link>
+              </div>
+            )}
+          </div>
+        </>
       ) : (
         <div className="form">
           {errorMessage && <p className="red">{errorMessage}</p>}
@@ -224,6 +267,6 @@ export default function Book() {
           {bookButtons}
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -242,7 +242,6 @@ div.heading {
 }
 div.page-heading {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid var(--roman-gold);
 }
@@ -293,7 +292,7 @@ button.btn-dark,
 
 button.btn-delete {
     background-color: var(--roman-burgundy-light);
-    color: var(--color-white);
+    color: var(--roman-cream);
     border-color: var(--roman-burgundy-light);
 }
 
@@ -500,6 +499,9 @@ div.flex-col {
     flex-direction: column;
     gap: 5px;
 }
+div.space-between {
+    justify-content: space-between;
+}
 
 
 /* ============================================
@@ -532,11 +534,11 @@ div.currently-reading {
     gap: 1.5rem;
 }
 
-div.currently-reading > div {
+div.card-red {
     padding: 0;
 }
 
-div.currently-reading > div > div:nth-of-type(1) {
+div.card-red > div:nth-of-type(1) {
     background-color: var(--roman-burgundy);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -545,17 +547,13 @@ div.currently-reading > div > div:nth-of-type(1) {
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
 }
 
-div.currently-reading > div > div:nth-of-type(2) {
+div.card-red > div:nth-of-type(2) {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
 }
 
 div.no-items-container {
     margin-block: 2rem;
-}
-
-div.currently-reading .card {
-    padding-bottom: 2rem;
 }
 
 div.no-items-container > button {
@@ -582,7 +580,7 @@ div.modal-overlay {
 }
 
 div.add-book-modal {
-  background-color: var(--color-white);
+  background-color: var(--roman-cream);
   padding: 30px;
   border-radius: 12px;
   max-width: 400px;
@@ -666,6 +664,12 @@ label.pill {
    BOOK
    ============================================ */
 
+.flex-row > .book-image {
+    width: 200px;
+    height: 300px;
+    border-radius: 10px;
+}
+
 div.book-filters {
     align-items: center;
     gap: 10px;
@@ -678,6 +682,14 @@ div.book-filters > button {
 div.book {
     padding: 0;
     width: 250px;
+}
+
+div.book-info {
+    width: 100%;
+}
+
+div.progress {
+    max-width: 500px;
 }
 
 div.book-image {
@@ -854,9 +866,6 @@ div.log-header {
 
 div.log-header > h1 {
     margin-bottom: 10px;
-}
-
-.form {
 }
 
 .form > .form-header {

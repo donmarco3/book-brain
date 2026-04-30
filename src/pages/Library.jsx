@@ -5,6 +5,7 @@ import AddBook from "../components/AddBook";
 import { FaAngleLeft, FaAngleRight, FaPenNib, FaPlus } from "react-icons/fa";
 import Pill from "../components/Pill";
 import ProgressBar from "../components/ProgressBar";
+import { calculateProgress } from "../utils";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -28,7 +29,7 @@ export default function Library() {
     return (
       <>
         <Link
-          to={`/book/${book.id}`}
+          to={`/library/book/${book.id}`}
           state={{ from: "/library" }}
           className="link"
           key={book.id}
@@ -48,7 +49,9 @@ export default function Library() {
                 <Pill colour="red">
                   {book.status === "read" ? "Read" : "Reading"}
                 </Pill>
-                <ProgressBar progress={book.progress} />
+                <ProgressBar
+                  progress={calculateProgress(book.progress, book.pages)}
+                />
                 <Pill colour="gold">
                   <div className="icon-pill">
                     <FaPenNib />
@@ -103,7 +106,7 @@ export default function Library() {
 
   return (
     <div className="margin-inline">
-      <div className="page-heading">
+      <div className="page-heading space-between">
         <h1>Library</h1>
         <button onClick={() => setShowModal(true)}>
           <div className="icon-pill">
