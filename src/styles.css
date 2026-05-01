@@ -162,6 +162,17 @@ p {
 .gold {
     color: var(--roman-gold);
 }
+.white {
+    color: var(--roman-cream);
+}
+.brown {
+    color: var(--roman-ink);
+}
+
+.align-right {
+    text-align: right;
+    margin-bottom: 0;
+}
 
 /* ============================================
    LAYOUT
@@ -258,6 +269,12 @@ div.page-heading {
 .padding-block {
     padding-block: 2rem;
 }
+.margin-top {
+    margin-top: 1rem;
+}
+.margin-bottom {
+    margin-bottom: 2rem;
+}
 
 .border {
     border-bottom: 1px solid var(--roman-border);
@@ -265,6 +282,7 @@ div.page-heading {
 }
 
 button, select, a.link-btn {
+    font-family: var(--font-body);
     font-size: clamp(.8rem, calc(1vw + .1rem), 1rem);
     padding-block: clamp(.4rem, calc(1vw + .1rem), .6rem);
     padding-inline: clamp(.5rem, calc(1vw + .1rem), 1rem);
@@ -290,10 +308,11 @@ button.btn-dark,
     color: var(--color-white);
 }
 
-button.btn-delete {
-    background-color: var(--roman-burgundy-light);
+button.btn-red,
+a.btn-red {
+    background-color: var(--roman-burgundy);
+    border: 1px solid var(--roman-cream);
     color: var(--roman-cream);
-    border-color: var(--roman-burgundy-light);
 }
 
 button.btn-transparent {
@@ -318,10 +337,6 @@ a.link-btn-dark {
     border-color: var(--color-accent);
     background-color: var(--color-accent);
     color: var(--color-cream);
-}
-
-a.link {
-    color: var(--color-warm-brown);
 }
 
 .pill {
@@ -352,6 +367,12 @@ a.link {
 .pill-gold {
     background-color: rgba(201, 168, 76, 0.1);
     color: var(--roman-gold)
+}
+
+.filter-pill {
+    border-radius: 20px;
+    font-family: var(--font-body);
+    padding: .25rem 1rem;
 }
 
 .selected {
@@ -502,6 +523,12 @@ div.flex-col {
 div.space-between {
     justify-content: space-between;
 }
+div.align-center {
+    align-items: center;
+}
+div.gap-lg {
+    gap: 10px;
+}
 
 
 /* ============================================
@@ -543,11 +570,6 @@ div.card-red > div:nth-of-type(1) {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     color: var(--roman-gold);
-    padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
-    padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
-}
-
-div.card-red > div:nth-of-type(2) {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
 }
@@ -670,11 +692,6 @@ label.pill {
     border-radius: 10px;
 }
 
-div.book-filters {
-    align-items: center;
-    gap: 10px;
-}
-
 div.book-filters > button {
     border-radius: 20px;
 }
@@ -708,6 +725,11 @@ div.books {
     flex-wrap: wrap;
     gap: 1.5rem;
     margin-top: 1rem;
+}
+
+.book-notes > div:last-of-type {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 div.book-info {
@@ -769,14 +791,6 @@ aside > .heading {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-}
-
-div.filter-options {
-    padding: 20px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
 }
 
 input[type="checkbox"] {
@@ -1075,25 +1089,3 @@ button.reset-password-btn {
 /* ============================================
    SYNTHESES
    ============================================ */
-
-div.syntheses-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 1.5rem;
-}
-
-div.synthesis-generation {
-    margin-block: 1.5rem;
-}
-
-div.synthesis-generation p.text-sm {
-    margin-top: 1rem;
-}
-
-div.synthesis-generation > div > p {
-    margin-bottom: 1.5rem;
-}
-
-div.book-synthesis {
-    width: 100%;
-}

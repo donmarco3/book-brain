@@ -22,8 +22,6 @@ DASHBOARD
 - reading streak feature
 - roman numeral date
 
-LIBRARY
+BOOK
 
-- filter pills (all, reading, read)
-- progress bar
-- search for book
+- book progress is slightly buggy

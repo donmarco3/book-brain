@@ -567,27 +567,25 @@ export default function Notes() {
               ) : (
                 <div className="form">
                   {errorMessage && <p className="red">{errorMessage}</p>}
-                  <div className="form-header">
-                    <div>
-                      <label htmlFor="note-title" className="gold">
-                        Note Title
-                      </label>
-                      <input
-                        id="note-title"
-                        defaultValue={activeNote.note_title}
-                        onChange={(e) => setNoteTitle(e.currentTarget.value)}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="page" className="gold">
-                        Page
-                      </label>
-                      <input
-                        id="page"
-                        defaultValue={activeNote.page}
-                        onChange={(e) => setPage(e.currentTarget.value)}
-                      />
-                    </div>
+                  <div>
+                    <label htmlFor="note-title" className="gold">
+                      Note Title
+                    </label>
+                    <input
+                      id="note-title"
+                      defaultValue={activeNote.note_title}
+                      onChange={(e) => setNoteTitle(e.currentTarget.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="page" className="gold">
+                      Page
+                    </label>
+                    <input
+                      id="page"
+                      defaultValue={activeNote.page}
+                      onChange={(e) => setPage(e.currentTarget.value)}
+                    />
                   </div>
                   <label htmlFor="context" className="gold">
                     Context

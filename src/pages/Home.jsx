@@ -137,7 +137,7 @@ export default function Home() {
       <Link
         to={`/note/${notes[randomIndex].id}`}
         state={{ from: "/" }}
-        className="link"
+        className="brown"
       >
         <div className="card main-card" key={notes[randomIndex].id}>
           <div className="icon-pill gold">
@@ -204,7 +204,9 @@ export default function Home() {
           <div>
             <h3>Currently Reading</h3>
           </div>
-          <div>{getCurrentlyReading()}</div>
+          <div className="padding-inline padding-block">
+            {getCurrentlyReading()}
+          </div>
         </div>
         <div className="card card-red">
           <div>

@@ -138,8 +138,8 @@ export async function addBook(bookTitle, bookAuthor, pages) {
         })
 }
 
-export async function updateBookStatus(id, currentStatus) {
-    const newStatus = currentStatus === "reading" ? "read" : "reading" 
+export async function updateBookStatus(id, status) {
+    const newStatus = status === "reading" ? "read" : "reading" 
     try {
         await supabase
             .from('books')
@@ -220,21 +220,30 @@ export async function getBook(id) {
             notes ( * ),
             syntheses ( * )
         `)
+        .order('created_at', { referencedTable: 'notes', ascending: false })
         .eq('id', id)
     // console.log(data)
     // console.log(error)
     return data[0]
 }
 
-export async function updateBook(id, title, author) {
-    const { error } = await supabase
-        .from('books')
-        .update({
-            title,
-            author
-        })
-        .eq('id', id)
-    console.log(error)
+export async function updateBook(id, title, author, pages, progress) {
+    try {
+        const { data, error } = await supabase
+            .from('books')
+            .update({
+                title,
+                author,
+                pages,
+                progress
+            })
+            .eq('id', id)
+            .select()
+        // console.log(data)
+        // console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
 }
 
 // NOTES

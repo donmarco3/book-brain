@@ -31,7 +31,7 @@ export default function Library() {
         <Link
           to={`/library/book/${book.id}`}
           state={{ from: "/library" }}
-          className="link"
+          className="brown"
           key={book.id}
         >
           <div className="card book">
@@ -70,9 +70,9 @@ export default function Library() {
     return (
       <>
         <Link
-          to={`/book/${book.id}`}
+          to={`/library/book/${book.id}`}
           state={{ from: "/library" }}
-          className="link"
+          className="brown"
           key={book.id}
         >
           <div className="card book">
@@ -120,10 +120,12 @@ export default function Library() {
         />
       </div>
 
-      <div className="container book-filters flex-row">
-        <h3>Filter:</h3>
+      <div className="container flex-row gap-lg align-center">
+        <p>Filter:</p>
         <button
-          className={selectedValue === "all" && "selected"}
+          className={
+            selectedValue === "all" ? "selected filter-pill" : "filter-pill"
+          }
           type="button"
           name="filter"
           value="all"
@@ -132,7 +134,9 @@ export default function Library() {
           All ({allBooks.length})
         </button>
         <button
-          className={selectedValue === "reading" && "selected"}
+          className={
+            selectedValue === "reading" ? "selected filter-pill" : "filter-pill"
+          }
           type="button"
           name="filter"
           value="reading"
@@ -141,7 +145,9 @@ export default function Library() {
           Reading ({readingBookElements.length})
         </button>
         <button
-          className={selectedValue === "read" && "selected"}
+          className={
+            selectedValue === "read" ? "selected filter-pill" : "filter-pill"
+          }
           type="button"
           name="filter"
           value="read"

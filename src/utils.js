@@ -48,5 +48,9 @@ export function splitOnNewLine(string) {
 }
 
 export function calculateProgress(progress, totalPages) {
-    return progress / totalPages
+    if (progress === totalPages) {
+        return 100
+    } else {
+        return Math.floor((progress / totalPages) * 100)
+    }
 }
