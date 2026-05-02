@@ -562,6 +562,19 @@ export async function getSynthesis(id) {
     }
 }
 
+export async function deleteSynthesis(id) {
+    try {
+        const { data, error } = await supabase
+            .from('syntheses')
+            .delete()
+            .eq('id', id)
+        console.log(data)
+        console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
+}
+
 
 // VERCEL
 

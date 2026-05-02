@@ -257,6 +257,9 @@ div.page-heading {
     border-bottom: 2px solid var(--roman-gold);
 }
 
+.margin-none {
+    margin: 0;
+}
 .margin-inline {
     margin-inline: 2rem;
 }
@@ -271,6 +274,9 @@ div.page-heading {
 }
 .margin-top {
     margin-top: 1rem;
+}
+.padding-top {
+    padding-top: 2rem;
 }
 .margin-bottom {
     margin-bottom: 2rem;
@@ -526,10 +532,16 @@ div.space-between {
 div.align-center {
     align-items: center;
 }
+div.align-left {
+    align-items: flex-start;
+}
 div.gap-lg {
     gap: 10px;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
 
 /* ============================================
    HOME
@@ -846,7 +858,6 @@ div.notes-col {
     width: 50%;
     border-right: 1px solid var(--roman-border);
 }
-
 
 div.notes > div {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);

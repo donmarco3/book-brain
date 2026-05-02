@@ -21,7 +21,3 @@ DASHBOARD
 - currently reading feature
 - reading streak feature
 - roman numeral date
-
-BOOK
-
-- book progress is slightly buggy

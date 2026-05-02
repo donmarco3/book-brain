@@ -1,8 +1,14 @@
 import React from "react";
 import { Link, useLoaderData, useSearchParams } from "react-router";
-import { getBook, getSyntheses } from "../api";
-import { sliceString } from "../utils";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { deleteSynthesis, getBook, getSyntheses } from "../api";
+import { sliceString, splitOnNewLine } from "../utils";
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaArrowDown,
+  FaArrowRight,
+  FaArrowUp,
+} from "react-icons/fa";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -17,6 +23,18 @@ export async function loader({ params, request }) {
 export default function Syntheses() {
   const { syntheses, book } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [activeSynthesis, setActiveSynthesis] = React.useState(syntheses[0]);
+
+  React.useEffect(() => {
+    window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+    return () =>
+      window.removeEventListener("resize", () =>
+        setWindowWidth(window.innerWidth),
+      );
+  }, []);
 
   const defaultPage = searchParams.get("page") ?? "1";
   const currentPage = Number(defaultPage);
@@ -44,80 +62,188 @@ export default function Syntheses() {
     }
   }
 
-  const creationDate = new Date(book.created_at).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  function handleDeletion() {
+    if (window.confirm("Are you sure you want to delete this synthesis?")) {
+      deleteSynthesis(card.id);
+      revalidator.revalidate();
+    }
+  }
+
+  // const creationDate = new Date(book.created_at).toLocaleDateString("en-US", {
+  //   year: "numeric",
+  //   month: "long",
+  //   day: "numeric",
+  // });
 
   const synthesesElements = syntheses.map((synthesis) => {
-    return (
-      <Link
-        to={`/synthesis/${synthesis.id}`}
-        state={{ from: `/syntheses/${synthesis.book_id}` }}
-        className="link"
-        key={synthesis.id}
-      >
-        <div className="card main-card">
-          <div className="main-card-header">
-            <p>Synthesis {synthesis.id}</p>
-            <p className="text-sm">
+    if (isExpanded && activeSynthesis === synthesis) {
+      return (
+        <div
+          key={synthesis.id}
+          className="card card-red margin-block cursor-pointer"
+          onClick={() => {
+            setActiveSynthesis(synthesis);
+            setIsExpanded((prev) => !prev);
+          }}
+        >
+          <div className="flex-row space-between align-center">
+            <p>
+              {synthesis.type} &middot;{" "}
               {new Date(synthesis.created_at).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
-              })}
+              })}{" "}
             </p>
           </div>
-          <p>{sliceString(synthesis.synthesis)}</p>
+          <div className="padding-inline padding-top">
+            {windowWidth <= 1500 ? (
+              <>
+                <div className="border"></div>
+                {splitOnNewLine(synthesis.synthesis).map((section) => (
+                  <p key={section} className="margin-top">
+                    {section}
+                  </p>
+                ))}
+              </>
+            ) : (
+              <p>{sliceString(synthesis.synthesis)}</p>
+            )}
+            <div className="flex-row space-between margin-top">
+              <p className="italic">From {book.notes.length} notes</p>
+              {windowWidth <= 1500 ? (
+                <p className="italic">
+                  Collapse <FaArrowUp />
+                </p>
+              ) : (
+                <p className="italic">
+                  Expand <FaArrowRight />
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="note-buttons margin-inline margin-bottom">
+            <button onClick={handleDeletion} className="btn-red">
+              Delete
+            </button>
+          </div>
         </div>
-      </Link>
+      );
+    }
+    return (
+      <div
+        key={synthesis.id}
+        className="card card-red margin-block cursor-pointer"
+        onClick={() => {
+          setActiveSynthesis(synthesis);
+          setIsExpanded(true);
+        }}
+      >
+        <div className="flex-row space-between align-center">
+          <p>
+            {synthesis.type} &middot;{" "}
+            {new Date(synthesis.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}{" "}
+          </p>
+        </div>
+        <div className="padding-inline padding-block">
+          <p>{sliceString(synthesis.synthesis)}</p>
+          <div className="flex-row space-between margin-top">
+            <p className="italic">From {book.notes.length} notes</p>
+            <p className="italic">
+              Expand {windowWidth >= 1500 ? <FaArrowRight /> : <FaArrowDown />}
+            </p>
+          </div>
+        </div>
+      </div>
     );
   });
 
   return (
     <>
-      <div className="log-header">
-        <Link to={`/book/${book.id}`} className="link-btn">
-          &larr; Back to Book
-        </Link>
-        <h1>Syntheses</h1>
-        <p className="text-sm">
-          {book.title} by {book.author}
-        </p>
+      <div className="page-heading flex-col align-left margin-inline">
+        <div className="flex-row align-center padding-top">
+          <Link to={`/library/book/${book.id}`} className="link-btn">
+            &larr; {book.title}
+          </Link>
+          <FaAngleRight />
+          <p className="italic">Syntheses</p>
+        </div>
+        <div className="margin-bottom margin-top">
+          <h1 className="margin-none">Syntheses</h1>
+          <p>
+            {book.title} &middot; {book.author} &middot; {book.syntheses.length}{" "}
+            syntheses
+          </p>
+        </div>
       </div>
-      <div className="library-subheader">
-        <select onChange={(e) => updateSort(e.target.value)}>
-          <option value="newest">Sort by: Newest</option>
-          <option value="oldest">Sort by: Oldest</option>
-        </select>
-      </div>
-      {syntheses.length > 0 ? (
-        synthesesElements
+
+      {windowWidth <= 1500 ? (
+        <div className="padding-inline">
+          {syntheses.length > 0 ? (
+            <div>{synthesesElements}</div>
+          ) : (
+            <div className="no-items-container">
+              {currentPage === 1 ? (
+                <p>You have no syntheses for this book.</p>
+              ) : null}
+            </div>
+          )}
+          <div className="pagination">
+            <button
+              className="btn-transparent"
+              onClick={() => updatePage("left")}
+              disabled={currentPage === 1}
+            >
+              <FaAngleLeft />
+            </button>
+            <p>Page {currentPage}</p>
+            <button
+              className="btn-transparent"
+              onClick={() => updatePage("right")}
+              disabled={book.syntheses.length <= currentPage * 5}
+            >
+              <FaAngleRight />
+            </button>
+          </div>
+        </div>
       ) : (
-        <div className="no-items-container">
-          {currentPage === 1 ? (
-            <p>You have no syntheses for this book.</p>
-          ) : null}
+        <div className="flex-row">
+          <div className="notes-col padding-inline">{synthesesElements}</div>
+          <div className="notes-col padding-inline">
+            <div className="heading">
+              <p className="gold">
+                {activeSynthesis.type} &middot;{" "}
+                {new Date(activeSynthesis.created_at).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  },
+                )}{" "}
+              </p>
+              <p className="italic">
+                From {book.syntheses.length} notes &middot; {book.title}{" "}
+                &middot; {book.author}
+              </p>
+            </div>
+            {splitOnNewLine(activeSynthesis.synthesis).map((section) => (
+              <p key={section} className="margin-top">
+                {section}
+              </p>
+            ))}
+            <div className="note-buttons">
+              <button onClick={handleDeletion} className="btn-red">
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
-      <div className="pagination">
-        <button
-          className="btn-transparent"
-          onClick={() => updatePage("left")}
-          disabled={currentPage === 1}
-        >
-          <FaAngleLeft />
-        </button>
-        <p>Page {currentPage}</p>
-        <button
-          className="btn-transparent"
-          onClick={() => updatePage("right")}
-          disabled={book.syntheses.length <= currentPage * 5}
-        >
-          <FaAngleRight />
-        </button>
-      </div>
     </>
   );
 }

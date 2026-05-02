@@ -14,9 +14,9 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         let paragraphLength
-        if (req.body.type === "short") {
+        if (req.body.type === "Short") {
             paragraphLength = "short, 1 paragraph, 2-4 sentences"
-        } else if (req.body.type === "detailed") {
+        } else if (req.body.type === "Detailed") {
             paragraphLength = "detailed, 5 paragraphs"
         } else {
             paragraphLength = "medium-length, 3 paragraphs"

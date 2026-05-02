@@ -355,7 +355,7 @@ export default function Notes() {
         </button>
       ) : null}
       {!isEditing ? (
-        <button onClick={handleDeletion} className="btn-delete">
+        <button onClick={handleDeletion} className="btn-red">
           Delete
         </button>
       ) : null}

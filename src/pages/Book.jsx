@@ -28,11 +28,9 @@ export default function Book() {
   const [bookAuthor, setBookAuthor] = React.useState(book?.author);
   const [bookPages, setBookPages] = React.useState(book?.pages);
   const [bookProgress, setBookProgress] = React.useState(book?.progress);
-  const [selectedValue, setSelectedValue] = React.useState("standard");
+  const [selectedValue, setSelectedValue] = React.useState("Standard");
   const [isLoading, setIsLoading] = React.useState(false);
-  const [synthesis, setSynthesis] = React.useState(
-    book?.syntheses[0].synthesis,
-  );
+  const [synthesis, setSynthesis] = React.useState();
   const [errorMessage, setErrorMessage] = React.useState();
   const [saveSynthesisMessage, setSaveSynthesisMessage] = React.useState();
 
@@ -124,8 +122,8 @@ export default function Book() {
 
   return (
     <div className="margin-inline">
-      <div className="page-heading flex-row">
-        <Link to={`/library`} className="link-btn margin-block">
+      <div className="page-heading flex-row padding-block">
+        <Link to={`/library`} className="link-btn">
           &larr; Library
         </Link>
         <FaAngleRight />
@@ -199,28 +197,29 @@ export default function Book() {
                 </button>
                 {book.syntheses.length > 0 && (
                   <Link
-                    to={`/syntheses/${book.id}?page=1&sort=newest`}
+                    to={`/syntheses/${book.id}`}
                     className="link-btn btn-red"
                   >
-                    View all syntheses <FaAngleRight />
+                    View all syntheses
+                    <FaAngleRight />
                   </Link>
                 )}
               </div>
             </div>
 
-            <div className="padding-inline padding-block">
-              {book.notes.length > 0 && (
+            {book.notes.length > 0 && (
+              <div className="padding-inline padding-block">
                 <div className="flex-row gap-lg align-center">
                   <p>Length:</p>
                   <button
                     className={
-                      selectedValue === "short"
+                      selectedValue === "Short"
                         ? "selected filter-pill"
                         : "filter-pill"
                     }
                     type="button"
                     name="filter"
-                    value="short"
+                    value="Short"
                     onClick={(e) => setSelectedValue(e.currentTarget.value)}
                     disabled={isLoading}
                   >
@@ -228,13 +227,13 @@ export default function Book() {
                   </button>
                   <button
                     className={
-                      selectedValue === "standard"
+                      selectedValue === "Standard"
                         ? "selected filter-pill"
                         : "filter-pill"
                     }
                     type="button"
                     name="filter"
-                    value="standard"
+                    value="Standard"
                     onClick={(e) => setSelectedValue(e.currentTarget.value)}
                     disabled={isLoading}
                   >
@@ -242,25 +241,25 @@ export default function Book() {
                   </button>
                   <button
                     className={
-                      selectedValue === "detailed"
+                      selectedValue === "Detailed"
                         ? "selected filter-pill"
                         : "filter-pill"
                     }
                     type="button"
                     name="filter"
-                    value="detailed"
+                    value="Detailed"
                     onClick={(e) => setSelectedValue(e.currentTarget.value)}
                     disabled={isLoading}
                   >
                     Detailed
                   </button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {isLoading && <Loading text="Generating synthesis..." />}
             {!isLoading && (
-              <div className="synthesis-generation padding-inline">
+              <div className="padding-inline">
                 {synthesis ? (
                   <div>
                     <p className="gold">
@@ -296,16 +295,17 @@ export default function Book() {
                     </div>
                   </div>
                 ) : (
-                  <>
+                  <div className="margin-block">
                     {book.notes.length > 0 ? (
                       <p>
-                        No synthesis generated yet. Hit Generate to create a
-                        personalised summary based on your notes for this book.
+                        No synthesis generated yet. Hit Generate Synthesis to
+                        create a personalised summary based on your notes for
+                        this book.
                       </p>
                     ) : (
                       <p>Add notes for this book to generate a synthesis.</p>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             )}

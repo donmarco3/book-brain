@@ -27,80 +27,76 @@ export default function Library() {
 
   const readingBookElements = booksObject.reading.map((book) => {
     return (
-      <>
-        <Link
-          to={`/library/book/${book.id}`}
-          state={{ from: "/library" }}
-          className="brown"
-          key={book.id}
-        >
-          <div className="card book">
-            <div className="book-image">
-              <p>{book.title}</p>
+      <Link
+        to={`/library/book/${book.id}`}
+        state={{ from: "/library" }}
+        className="brown"
+        key={book.id}
+      >
+        <div className="card book">
+          <div className="book-image">
+            <p>{book.title}</p>
+          </div>
+
+          <div className="book-info">
+            <div className="container-sm">
+              <h3>{book.title}</h3>
+              <p>{book.author}</p>
             </div>
 
-            <div className="book-info">
-              <div className="container-sm">
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
-              </div>
-
-              <div className="container-sm flex-col">
-                <Pill colour="red">
-                  {book.status === "read" ? "Read" : "Reading"}
-                </Pill>
-                <ProgressBar
-                  progress={calculateProgress(book.progress, book.pages)}
-                />
-                <Pill colour="gold">
-                  <div className="icon-pill">
-                    <FaPenNib />
-                    {book.notes.length} notes
-                  </div>
-                </Pill>
-              </div>
+            <div className="container-sm flex-col">
+              <Pill colour="red">
+                {book.status === "read" ? "Read" : "Reading"}
+              </Pill>
+              <ProgressBar
+                progress={calculateProgress(book.progress, book.pages)}
+              />
+              <Pill colour="gold">
+                <div className="icon-pill">
+                  <FaPenNib />
+                  {book.notes.length} notes
+                </div>
+              </Pill>
             </div>
           </div>
-        </Link>
-      </>
+        </div>
+      </Link>
     );
   });
 
   const readBookElements = booksObject.read.map((book) => {
     return (
-      <>
-        <Link
-          to={`/library/book/${book.id}`}
-          state={{ from: "/library" }}
-          className="brown"
-          key={book.id}
-        >
-          <div className="card book">
-            <div className="book-image">
-              <p>{book.title}</p>
+      <Link
+        to={`/library/book/${book.id}`}
+        state={{ from: "/library" }}
+        className="brown"
+        key={book.id}
+      >
+        <div className="card book">
+          <div className="book-image">
+            <p>{book.title}</p>
+          </div>
+
+          <div className="book-info">
+            <div className="container-sm">
+              <h3>{book.title}</h3>
+              <p>{book.author}</p>
             </div>
 
-            <div className="book-info">
-              <div className="container-sm">
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
-              </div>
-
-              <div className="container-sm flex-row">
-                <Pill colour="brown">
-                  {book.status === "read" ? "Read" : "Reading"}
-                </Pill>
-                <Pill colour="gold">
-                  <div className="icon-pill">
-                    <FaPenNib />
-                    {book.notes.length} notes
-                  </div>
-                </Pill>
-              </div>
+            <div className="container-sm flex-row">
+              <Pill colour="brown">
+                {book.status === "read" ? "Read" : "Reading"}
+              </Pill>
+              <Pill colour="gold">
+                <div className="icon-pill">
+                  <FaPenNib />
+                  {book.notes.length} notes
+                </div>
+              </Pill>
             </div>
           </div>
-        </Link>
-      </>
+        </div>
+      </Link>
     );
   });
 
