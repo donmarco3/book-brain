@@ -10,7 +10,7 @@ import {
 import { Link, useLoaderData, useRevalidator } from "react-router";
 import { calculateProgress, sliceString, splitOnNewLine } from "../utils";
 import Loading from "../components/Loading";
-import { FaAngleRight, FaCog, FaPenNib } from "react-icons/fa";
+import { FaCog } from "react-icons/fa";
 import ProgressBar from "../components/ProgressBar";
 import Pill from "../components/Pill";
 
@@ -122,11 +122,11 @@ export default function Book() {
 
   return (
     <div className="margin-inline">
-      <div className="page-heading flex-row padding-block">
+      <div className="page-heading flex-row gap-lg padding-block">
         <Link to={`/library`} className="link-btn">
           &larr; Library
         </Link>
-        <FaAngleRight />
+        &gt;
         <p className="italic">{book.title}</p>
       </div>
 
@@ -169,7 +169,7 @@ export default function Book() {
             <div className="flex-row space-between align-center">
               <h3>Notes</h3>
               <Link to={`/notes?book=${book.id}`} className="link-btn btn-red">
-                View all notes <FaAngleRight />
+                View all notes &gt;
               </Link>
             </div>
             <div className="padding-inline padding-block">
@@ -200,8 +200,7 @@ export default function Book() {
                     to={`/syntheses/${book.id}`}
                     className="link-btn btn-red"
                   >
-                    View all syntheses
-                    <FaAngleRight />
+                    View all syntheses &gt;
                   </Link>
                 )}
               </div>

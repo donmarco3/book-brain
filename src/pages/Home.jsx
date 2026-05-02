@@ -1,9 +1,10 @@
 import React from "react";
 import { getAllBooks, getAllNotes } from "../api";
 import { Link, useLoaderData } from "react-router";
-import { sliceString } from "../utils";
+import { calculateProgress, sliceString } from "../utils";
 import { FaPenNib } from "react-icons/fa";
 import Pill from "../components/Pill";
+import ProgressBar from "../components/ProgressBar";
 
 export async function loader() {
   const books = await getAllBooks();
@@ -70,7 +71,7 @@ export default function Home() {
   }
 
   function getCurrentlyReading() {
-    if (books.every((book) => book.status === "finished")) {
+    if (books.every((book) => book.status === "read")) {
       return (
         <div className="no-items-container">
           <div>
@@ -103,13 +104,28 @@ export default function Home() {
         </div>
       );
     } else {
-      return books.map((book) => {
+      const booksArr = books.filter((book) => book.status === "reading");
+      return booksArr.slice(0, 3).map((book) => {
         if (book.status === "reading") {
           return (
-            <div key={book.id}>
-              <div>
-                <h3 className="card-title">{book.title}</h3>
-                <p className="text-sm italic">{book.author}</p>
+            <div key={book.id} className="flex-row margin-block">
+              <div className="book-image-sm"></div>
+
+              <div className="padding-inline book-info">
+                <div className="flex-col">
+                  <p>{book.title}</p>
+                  <p className="italic">{book.author}</p>
+                </div>
+                <div className="flex-col progress">
+                  <p>Progress</p>
+                  <ProgressBar
+                    progress={calculateProgress(book.progress, book.pages)}
+                  />
+                  <p>
+                    {calculateProgress(book.progress, book.pages)}% &middot; p.{" "}
+                    {book.progress} of {book.pages}
+                  </p>
+                </div>
               </div>
             </div>
           );
@@ -125,11 +141,6 @@ export default function Home() {
     }
 
     const randomIndex = sum % notes.length;
-    const bucketElements = notes[randomIndex].buckets.map((bucket) => (
-      <p key={bucket.id} className="pill">
-        {bucket.name}
-      </p>
-    ));
 
     const book = books.find((book) => book.id === notes[randomIndex].book_id);
 
@@ -155,7 +166,7 @@ export default function Home() {
             <div>
               <p>{sliceString(notes[randomIndex].spark)}</p>
             </div>
-            <p>
+            <p className="italic">
               {book.title} &middot; {book.author} &middot; logged 3 days ago
             </p>
           </div>
@@ -176,7 +187,7 @@ export default function Home() {
           })}
         </p>
       </div>
-      <div className="home-stats container">
+      <div className="home-stats margin-block">
         <div className="card">
           <h3>Books Read</h3>
           <p className="number">{books.length}</p>
@@ -199,14 +210,12 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="currently-reading container">
+      <div className="currently-reading flex-row gap-lg margin-block">
         <div className="card card-red">
           <div>
             <h3>Currently Reading</h3>
           </div>
-          <div className="padding-inline padding-block">
-            {getCurrentlyReading()}
-          </div>
+          <div className="padding-inline">{getCurrentlyReading()}</div>
         </div>
         <div className="card card-red">
           <div>
@@ -216,7 +225,7 @@ export default function Home() {
       </div>
 
       {notes.length > 0 ? (
-        <div className="container">{getRandomNote()}</div>
+        <div className="margin-block">{getRandomNote()}</div>
       ) : null}
     </div>
   );

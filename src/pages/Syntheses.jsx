@@ -2,13 +2,6 @@ import React from "react";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { deleteSynthesis, getBook, getSyntheses } from "../api";
 import { sliceString, splitOnNewLine } from "../utils";
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaArrowDown,
-  FaArrowRight,
-  FaArrowUp,
-} from "react-icons/fa";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -96,7 +89,7 @@ export default function Syntheses() {
               })}{" "}
             </p>
           </div>
-          <div className="padding-inline padding-top">
+          <div className="padding-inline padding-block">
             {windowWidth <= 1500 ? (
               <>
                 <div className="border"></div>
@@ -112,21 +105,19 @@ export default function Syntheses() {
             <div className="flex-row space-between margin-top">
               <p className="italic">From {book.notes.length} notes</p>
               {windowWidth <= 1500 ? (
-                <p className="italic">
-                  Collapse <FaArrowUp />
-                </p>
+                <p className="italic">Collapse &uarr;</p>
               ) : (
-                <p className="italic">
-                  Expand <FaArrowRight />
-                </p>
+                <p className="italic">Expand &rarr;</p>
               )}
             </div>
           </div>
-          <div className="note-buttons margin-inline margin-bottom">
-            <button onClick={handleDeletion} className="btn-red">
-              Delete
-            </button>
-          </div>
+          {windowWidth <= 1500 && (
+            <div className="note-buttons margin-inline margin-bottom">
+              <button onClick={handleDeletion} className="btn-red">
+                Delete
+              </button>
+            </div>
+          )}
         </div>
       );
     }
@@ -154,7 +145,8 @@ export default function Syntheses() {
           <div className="flex-row space-between margin-top">
             <p className="italic">From {book.notes.length} notes</p>
             <p className="italic">
-              Expand {windowWidth >= 1500 ? <FaArrowRight /> : <FaArrowDown />}
+              Expand{" "}
+              {windowWidth >= 1500 ? <span>&rarr;</span> : <span>&darr;</span>}
             </p>
           </div>
         </div>
@@ -165,11 +157,11 @@ export default function Syntheses() {
   return (
     <>
       <div className="page-heading flex-col align-left margin-inline">
-        <div className="flex-row align-center padding-top">
+        <div className="flex-row gap-lg align-center padding-top">
           <Link to={`/library/book/${book.id}`} className="link-btn">
             &larr; {book.title}
           </Link>
-          <FaAngleRight />
+          &gt;
           <p className="italic">Syntheses</p>
         </div>
         <div className="margin-bottom margin-top">
@@ -198,7 +190,7 @@ export default function Syntheses() {
               onClick={() => updatePage("left")}
               disabled={currentPage === 1}
             >
-              <FaAngleLeft />
+              &larr;
             </button>
             <p>Page {currentPage}</p>
             <button
@@ -206,7 +198,7 @@ export default function Syntheses() {
               onClick={() => updatePage("right")}
               disabled={book.syntheses.length <= currentPage * 5}
             >
-              <FaAngleRight />
+              &rarr;
             </button>
           </div>
         </div>

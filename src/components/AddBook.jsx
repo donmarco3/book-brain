@@ -83,7 +83,7 @@ export default function AddBook({ action, showModal, setShowModal }) {
                 />
               </div>
 
-              <div className="add-book-modal-buttons">
+              <div className="note-buttons">
                 <button
                   type="button"
                   onClick={() => {

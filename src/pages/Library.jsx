@@ -1,8 +1,8 @@
 import React from "react";
 import { useLoaderData, Link, useSearchParams } from "react-router-dom";
-import { getBooks, getAllBooks } from "../api";
+import { getAllBooks } from "../api";
 import AddBook from "../components/AddBook";
-import { FaAngleLeft, FaAngleRight, FaPenNib, FaPlus } from "react-icons/fa";
+import { FaPenNib } from "react-icons/fa";
 import Pill from "../components/Pill";
 import ProgressBar from "../components/ProgressBar";
 import { calculateProgress } from "../utils";
@@ -105,9 +105,7 @@ export default function Library() {
       <div className="page-heading space-between">
         <h1>Library</h1>
         <button onClick={() => setShowModal(true)}>
-          <div className="icon-pill">
-            <FaPlus /> Add Book
-          </div>
+          <div className="icon-pill">&#43; Add Book</div>
         </button>
         <AddBook
           action={"/library"}

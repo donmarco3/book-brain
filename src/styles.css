@@ -309,9 +309,9 @@ a.link-btn-dark:hover {
 
 button.btn-dark,
 .link-btn-dark {
-    border-color: var(--color-accent);
-    background-color: var(--color-accent);
-    color: var(--color-white);
+    border-color: var(--roman-border);
+    background-color: var(--roman-gold);
+    color: var(--roman-cream);
 }
 
 button.btn-red,
@@ -568,9 +568,8 @@ div.home-stats > .card > div {
     margin-bottom: .5rem;
 }
 
-div.currently-reading {
-    display: flex;
-    gap: 1.5rem;
+div.currently-reading > div {
+    width: 50%;
 }
 
 div.card-red {
@@ -633,13 +632,6 @@ div.add-book-modal-inputs {
 
 div.add-book-modal-inputs > label {
     margin: 10px 0 5px;
-}
-
-div.add-book-modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
 }
 
 
@@ -727,6 +719,16 @@ div.book-image {
     height: 150px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    padding: .3rem .7rem;
+    display: flex;
+    align-items: flex-end;
+}
+div.book-image-sm {
+    background-color: var(--roman-ink-muted);
+    color: var(--roman-cream);
+    height: 120px;
+    width: 100px;
+    border-radius: 10px;
     padding: .3rem .7rem;
     display: flex;
     align-items: flex-end;

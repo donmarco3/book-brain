@@ -15,16 +15,7 @@ import {
 } from "react-router";
 import { sliceString, validatePageRange } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaBookOpen,
-  FaFilter,
-  FaMinus,
-  FaPenNib,
-  FaPlus,
-  FaTimes,
-} from "react-icons/fa";
+import { FaBookOpen, FaFilter } from "react-icons/fa";
 import Pill from "../components/Pill";
 
 export async function loader({ request }) {
@@ -411,9 +402,7 @@ export default function Notes() {
             <aside ref={sidebarRef}>
               <div className="heading">
                 <h2>Filter Notes</h2>
-                <button onClick={() => setShowFilters(false)}>
-                  <FaTimes />
-                </button>
+                <button onClick={() => setShowFilters(false)}>&times;</button>
               </div>
 
               <div className="filter-option-container">
@@ -425,7 +414,7 @@ export default function Notes() {
                     Books{" "}
                     {selectedBooks.length > 0 && `(${selectedBooks.length})`}
                   </p>
-                  <p>{!bookFilter ? <FaPlus /> : <FaMinus />}</p>
+                  <p>{!bookFilter ? <span>&#43;</span> : <span>&#45;</span>}</p>
                 </div>
                 {bookFilter && (
                   <div className="filter-options">{bookButtonElements}</div>
@@ -442,7 +431,9 @@ export default function Notes() {
                     {selectedBuckets.length > 0 &&
                       `(${selectedBuckets.length})`}
                   </p>
-                  <p>{!bucketFilter ? <FaPlus /> : <FaMinus />}</p>
+                  <p>
+                    {!bucketFilter ? <span>&#43;</span> : <span>&#45;</span>}
+                  </p>
                 </div>
                 {bucketFilter && (
                   <div className="filter-options">{bucketButtonElements}</div>
@@ -503,7 +494,7 @@ export default function Notes() {
                 onClick={() => updatePage("left")}
                 disabled={currentPage === 1}
               >
-                <FaAngleLeft />
+                &larr;
               </button>
               <p>Page {currentPage}</p>
               <button
@@ -511,7 +502,7 @@ export default function Notes() {
                 onClick={() => updatePage("right")}
                 disabled={noteElements ? noteElements.length !== 5 : true}
               >
-                <FaAngleRight />
+                &rarr;
               </button>
             </div>
           )}
@@ -633,8 +624,7 @@ export default function Notes() {
                           border="border"
                           onClick={() => setShowBucketInput(true)}
                         >
-                          <FaPlus />
-                          New bucket
+                          &#43; New bucket
                         </Pill>
                       ) : (
                         <input
