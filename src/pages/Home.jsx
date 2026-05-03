@@ -115,7 +115,11 @@ export default function Home() {
       return booksArr.slice(0, 3).map((book) => {
         if (book.status === "reading") {
           return (
-            <div key={book.id} className="flex-row margin-block">
+            <Link
+              to={`/library/book/${book.id}`}
+              key={book.id}
+              className="flex-row margin-block"
+            >
               <div className="book-image-sm"></div>
 
               <div className="padding-inline book-info">
@@ -134,7 +138,7 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         }
       });
@@ -149,22 +153,27 @@ export default function Home() {
       let newDate = new Date(today);
       newDate.setDate(today.getDate() - i);
 
-      if (!readingActivity[i]) {
-        squareElements.push(
-          <div key={i} className="square square-white"></div>,
-        );
-      } else if (
-        new Date(readingActivity[i].created_at).toDateString() ===
-        today.toDateString()
-      ) {
+      if (i === 0) {
         squareElements.push(<div key={i} className="square square-gold"></div>);
-      } else if (
-        new Date(readingActivity[i].created_at).toDateString() ===
-        newDate.toDateString()
-      ) {
-        squareElements.push(<div key={i} className="square square-red"></div>);
+      } else {
+        if (
+          readingActivity.some(
+            (row) =>
+              new Date(row.created_at).toDateString() !==
+              newDate.toDateString(),
+          )
+        ) {
+          squareElements.push(
+            <div key={i} className="square square-white"></div>,
+          );
+        } else {
+          squareElements.push(
+            <div key={i} className="square square-red"></div>,
+          );
+        }
       }
     }
+    console.log(squareElements);
     return squareElements;
   }
 
@@ -219,7 +228,9 @@ export default function Home() {
       <div className="home-stats margin-block">
         <div className="card">
           <h3>Books Read</h3>
-          <p className="number">{books.length}</p>
+          <p className="number">
+            {books.filter((book) => book.status === "read").length}
+          </p>
           <p className="italic">this year</p>
         </div>
         <div className="card">

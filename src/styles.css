@@ -109,6 +109,7 @@ h2 {
 
 a {
     text-decoration: none;
+    color: var(--roman-ink);
 }
 
 p {
@@ -516,29 +517,29 @@ div.icon-pill {
     gap: 5px;
 }
 
-div.flex-row {
+.flex-row {
     display: flex;
     flex-direction: row;
     gap: 5px;
 }
-div.flex-col {
+.flex-col {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-div.wrap {
+.wrap {
     flex-wrap: wrap;
 }
-div.space-between {
+.space-between {
     justify-content: space-between;
 }
-div.align-center {
+.align-center {
     align-items: center;
 }
-div.align-left {
+.align-left {
     align-items: flex-start;
 }
-div.gap-lg {
+.gap-lg {
     gap: 10px;
 }
 
