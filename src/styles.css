@@ -526,6 +526,9 @@ div.flex-col {
     flex-direction: column;
     gap: 5px;
 }
+div.wrap {
+    flex-wrap: wrap;
+}
 div.space-between {
     justify-content: space-between;
 }
@@ -592,6 +595,29 @@ div.no-items-container {
 div.no-items-container > button {
     margin-top: 10px;
 }
+
+div.square {
+    width: 50px;
+    height: 50px;
+    border: 1px solid var(--roman-border);
+    border-radius: 5px;
+}
+div.square-sm {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--roman-border);
+    border-radius: 5px;
+}
+div.square-white {
+    background-color: var(--roman-cream);
+}
+div.square-red {
+    background-color: var(--roman-burgundy);
+}
+div.square-gold {
+    background-color: var(--roman-gold);
+}
+
 
 
 

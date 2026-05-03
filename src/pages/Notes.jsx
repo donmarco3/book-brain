@@ -13,7 +13,7 @@ import {
   useRevalidator,
   useSearchParams,
 } from "react-router";
-import { sliceString, validatePageRange } from "../utils";
+import { getDaysAgo, sliceString, validatePageRange } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
 import { FaBookOpen, FaFilter } from "react-icons/fa";
 import Pill from "../components/Pill";
@@ -285,12 +285,7 @@ export default function Notes() {
           <h3>{note.note_title}</h3>
           <p className="italic capture">{sliceString(note.capture)}</p>
           <p>
-            {new Date(note.created_at).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}{" "}
-            &middot; p. {note.page}
+            {getDaysAgo(note.created_at)} &middot; p. {note.page}
           </p>
         </div>
       );

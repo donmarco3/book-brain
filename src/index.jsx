@@ -9,6 +9,9 @@ import { createRoot } from "react-dom/client";
 import Home, { loader as homeLoader } from "./pages/Home";
 import Layout from "./components/Layout";
 import AddBook, { action as addBookAction } from "./components/AddBook";
+import UpdateProgress, {
+  action as updateProgressAction,
+} from "./components/UpdateProgress";
 import Error from "./components/Error";
 import Library, { loader as libraryLoader } from "./pages/Library";
 import Log, { loader as logLoader, action as logAction } from "./pages/Log";
@@ -68,8 +71,11 @@ const router = createBrowserRouter(
           path="library/book/:id"
           element={<Book />}
           loader={bookLoader}
+          action={updateProgressAction}
+          errorElement={<Error />}
           hydrateFallbackElement={<Loading text="Loading book..." />}
         />
+        <Route element={<UpdateProgress />} action={updatePasswordAction} />
         <Route
           path="notes"
           element={<Notes />}

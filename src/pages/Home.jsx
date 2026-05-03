@@ -1,21 +1,26 @@
 import React from "react";
-import { getAllBooks, getAllNotes } from "../api";
+import { getAllBooks, getAllNotes, getReadingActivity } from "../api";
 import { Link, useLoaderData } from "react-router";
-import { calculateProgress, sliceString } from "../utils";
+import {
+  calculateProgress,
+  formatDateToRoman,
+  getDaysAgo,
+  sliceString,
+} from "../utils";
 import { FaPenNib } from "react-icons/fa";
-import Pill from "../components/Pill";
 import ProgressBar from "../components/ProgressBar";
 
 export async function loader() {
   const books = await getAllBooks();
   const notes = await getAllNotes();
-  return { books, notes };
+  const readingActivity = await getReadingActivity();
+  return { books, notes, readingActivity };
 }
 
 export default function Home() {
-  const { books, notes } = useLoaderData();
+  const { books, notes, readingActivity } = useLoaderData();
 
-  const [selectedPeriod, setSelectedPeriod] = React.useState("Month");
+  console.log(readingActivity);
 
   let streak = 0;
 
@@ -52,20 +57,22 @@ export default function Home() {
     return streak;
   }
 
-  function getNumberOfNotes() {
+  function getNumberOfNotesMonth() {
     const now = new Date();
     let cutoffDate;
 
-    if (selectedPeriod === "Week") {
-      cutoffDate = new Date(now);
-      cutoffDate.setDate(now.getDate() - 7);
-    } else if (selectedPeriod === "Month") {
-      cutoffDate = new Date(now);
-      cutoffDate.setDate(now.getDate() - 30);
-    } else if (selectedPeriod === "Year") {
-      cutoffDate = new Date(now);
-      cutoffDate.setDate(now.getDate() - 365);
-    }
+    cutoffDate = new Date(now);
+    cutoffDate.setDate(now.getDate() - 30);
+    return notes.filter((note) => new Date(note.created_at) >= cutoffDate)
+      .length;
+  }
+
+  function getNumberOfNotesWeek() {
+    const now = new Date();
+    let cutoffDate;
+
+    cutoffDate = new Date(now);
+    cutoffDate.setDate(now.getDate() - 7);
     return notes.filter((note) => new Date(note.created_at) >= cutoffDate)
       .length;
   }
@@ -134,6 +141,33 @@ export default function Home() {
     }
   }
 
+  function getReadingStreak() {
+    const squareElements = [];
+    const today = new Date();
+
+    for (let i = 29; i >= 0; i--) {
+      let newDate = new Date(today);
+      newDate.setDate(today.getDate() - i);
+
+      if (!readingActivity[i]) {
+        squareElements.push(
+          <div key={i} className="square square-white"></div>,
+        );
+      } else if (
+        new Date(readingActivity[i].created_at).toDateString() ===
+        today.toDateString()
+      ) {
+        squareElements.push(<div key={i} className="square square-gold"></div>);
+      } else if (
+        new Date(readingActivity[i].created_at).toDateString() ===
+        newDate.toDateString()
+      ) {
+        squareElements.push(<div key={i} className="square square-red"></div>);
+      }
+    }
+    return squareElements;
+  }
+
   function getRandomNote() {
     let sum = 0;
     for (let i = 0; i < formattedDate.length; i++) {
@@ -167,7 +201,8 @@ export default function Home() {
               <p>{sliceString(notes[randomIndex].spark)}</p>
             </div>
             <p className="italic">
-              {book.title} &middot; {book.author} &middot; logged 3 days ago
+              {book.title} &middot; {book.author} &middot; logged{" "}
+              {getDaysAgo(notes[randomIndex].created_at)}
             </p>
           </div>
         </div>
@@ -179,13 +214,7 @@ export default function Home() {
     <div className="margin-inline">
       <div className="page-heading space-between">
         <h1>Dashboard</h1>
-        <p>
-          {new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
+        <span>{formatDateToRoman()}</span>
       </div>
       <div className="home-stats margin-block">
         <div className="card">
@@ -196,11 +225,11 @@ export default function Home() {
         <div className="card">
           <h3>Notes Logged</h3>
           <p className="number">{notes.length}</p>
-          <p className="italic">{getNumberOfNotes()} this month</p>
+          <p className="italic">{getNumberOfNotesMonth()} this month</p>
         </div>
         <div className="card">
           <h3>This Week</h3>
-          <p className="number">{getNumberOfNotes()}</p>
+          <p className="number">{getNumberOfNotesWeek()}</p>
           <p className="italic">notes logged</p>
         </div>
         <div className="card">
@@ -220,6 +249,26 @@ export default function Home() {
         <div className="card card-red">
           <div>
             <h3>Reading Streak</h3>
+          </div>
+          <div className="padding-inline padding-block">
+            <p>Past 30 days</p>
+            <div className="flex-row gap-lg wrap margin-block">
+              {getReadingStreak()}
+            </div>
+            <div className="flex-row gap-lg">
+              <div className="flex-row gap-lg align-center">
+                <div className="square-sm square-red"></div>
+                <p>Read</p>
+              </div>
+              <div className="flex-row gap-lg align-center">
+                <div className="square-sm square-gold"></div>
+                <p>Today</p>
+              </div>
+              <div className="flex-row gap-lg align-center">
+                <div className="square-sm square-white"></div>
+                <p>Missed</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

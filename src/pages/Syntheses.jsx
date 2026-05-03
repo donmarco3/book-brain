@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { deleteSynthesis, getBook, getSyntheses } from "../api";
-import { sliceString, splitOnNewLine } from "../utils";
+import { getDaysAgo, sliceString, splitOnNewLine } from "../utils";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -81,12 +81,8 @@ export default function Syntheses() {
         >
           <div className="flex-row space-between align-center">
             <p>
-              {synthesis.type} &middot;{" "}
-              {new Date(synthesis.created_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}{" "}
+              {synthesis.type} &middot; Generated {""}
+              {getDaysAgo(synthesis.created_at)}
             </p>
           </div>
           <div className="padding-inline padding-block">
@@ -132,12 +128,8 @@ export default function Syntheses() {
       >
         <div className="flex-row space-between align-center">
           <p>
-            {synthesis.type} &middot;{" "}
-            {new Date(synthesis.created_at).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}{" "}
+            {synthesis.type} &middot; Generated {""}
+            {getDaysAgo(synthesis.created_at)}
           </p>
         </div>
         <div className="padding-inline padding-block">

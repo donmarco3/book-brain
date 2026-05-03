@@ -54,3 +54,44 @@ export function calculateProgress(progress, totalPages) {
         return Math.floor((progress / totalPages) * 100)
     }
 }
+
+function toRoman(num) {
+  const map = {
+    M: 1000, CM: 900, D: 500, CD: 400,
+    C: 100, XC: 90, L: 50, XL: 40,
+    X: 10, IX: 9, V: 5, IV: 4, I: 1
+  };
+  let result = '';
+  for (let key in map) {
+    const repeatCount = Math.floor(num / map[key]);
+    if (repeatCount > 0) {
+      result += key.repeat(repeatCount);
+      num %= map[key];
+    }
+  }
+  return result;
+}
+
+export function formatDateToRoman(date = new Date()) {
+    const day = toRoman(date.getDate())
+    const month = toRoman(date.getMonth() + 1)
+    const year = toRoman(date.getFullYear())
+
+    return `${day} \u{00B7} ${month} \u{00B7} ${year}`
+}
+
+export function getDaysAgo(date) {
+    const pastDate = new Date(date)
+    const today = new Date()
+
+    const diffTime = today - pastDate
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 1) {
+        return `${diffDays} day ago`
+    } else if (diffDays === 0) {
+        return `today`
+    } else {
+        return `${diffDays} days ago`
+    }
+}

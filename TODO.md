@@ -16,8 +16,8 @@ For Book Brain to be complete:
 - update the UI to be much more appealing to the eye
 - user security
 
-DASHBOARD
+BOOK
 
-- currently reading feature
-- reading streak feature
-- roman numeral date
+- update progress button (add to reading activity)
+
+- fix log page + add log note button to book page and notes

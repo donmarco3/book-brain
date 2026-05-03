@@ -5,6 +5,7 @@ import {
   getBook,
   updateBook,
   updateBookStatus,
+  updateReadingActivity,
   vercelFunction,
 } from "../api";
 import { Link, useLoaderData, useRevalidator } from "react-router";
@@ -13,6 +14,7 @@ import Loading from "../components/Loading";
 import { FaCog } from "react-icons/fa";
 import ProgressBar from "../components/ProgressBar";
 import Pill from "../components/Pill";
+import UpdateProgress from "../components/UpdateProgress";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
@@ -33,6 +35,7 @@ export default function Book() {
   const [synthesis, setSynthesis] = React.useState();
   const [errorMessage, setErrorMessage] = React.useState();
   const [saveSynthesisMessage, setSaveSynthesisMessage] = React.useState();
+  const [showModal, setShowModal] = React.useState(false);
 
   function handleClick() {
     if (!bookTitle) {
@@ -148,7 +151,15 @@ export default function Book() {
                 <button onClick={changeBookStatus}>
                   Mark as {book.status === "reading" ? "read" : "reading"}
                 </button>
-                <button>Update progress</button>
+                <button onClick={() => setShowModal(true)}>
+                  Update progress
+                </button>
+                <UpdateProgress
+                  // action={`/library/book/${book.id}`}
+                  showModal={showModal}
+                  setShowModal={setShowModal}
+                  book={book}
+                />
               </div>
               <div className="flex-col progress">
                 <p>Progress</p>

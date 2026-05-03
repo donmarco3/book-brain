@@ -354,72 +354,72 @@ export async function getAllNotes() {
             // console.log(data)
             // console.log(error)
             return data
-        } catch(error) {
-            console.log(error)
-        }
+    } catch(error) {
+        console.log(error)
     }
+}
     
-    export async function getNote(id) {
-        try {
-            const { data, error } = await supabase
-                .from('notes')
-                .select()
-                .eq('id', id)
-            // console.log(data)
-            // console.log(error)
-            return data[0]
-        } catch(error) {
-            console.log(error)
-        }
+export async function getNote(id) {
+    try {
+        const { data, error } = await supabase
+            .from('notes')
+            .select()
+            .eq('id', id)
+        // console.log(data)
+        // console.log(error)
+        return data[0]
+    } catch(error) {
+        console.log(error)
     }
+}
     
-    export async function updateNote(id, note_title, page, context, capture, spark, buckets) {
-        try {
-            const { data: noteData, error } = await supabase
-                .from('notes')
-                .update({
-                    note_title,
-                    page,
-                    context,
-                    capture,
-                    spark,
-                })
-                .eq('id', id)
-                .select()
-            // console.log(noteData)
-            // console.log(error)
+export async function updateNote(id, note_title, page, context, capture, spark, buckets) {
+    try {
+        const { data: noteData, error } = await supabase
+            .from('notes')
+            .update({
+                note_title,
+                page,
+                context,
+                capture,
+                spark,
+            })
+            .eq('id', id)
+            .select()
+        // console.log(noteData)
+        // console.log(error)
 
-            await Promise.all(
-                buckets.map(async (bucket) => {
-                    const { data: bucketData, error: upsertError } = await supabase
-                        .from('buckets')
-                        .upsert({
-                            name: bucket,
-                            user_id: noteData[0].user_id
-                        }, {
-                            onConflict: 'name,user_id'
-                        })
-                        .select()
-                    // console.log(bucketData)
-                    // console.log(upsertError)
+        await Promise.all(
+            buckets.map(async (bucket) => {
+                const { data: bucketData, error: upsertError } = await supabase
+                    .from('buckets')
+                    .upsert({
+                        name: bucket,
+                        user_id: noteData[0].user_id
+                    }, {
+                        onConflict: 'name,user_id'
+                    })
+                    .select()
+                // console.log(bucketData)
+                // console.log(upsertError)
 
-                    const { data: noteBucketData, error: noteBucketError } = await supabase
-                        .from('note_buckets')
-                        .upsert({
-                            note_id: noteData[0].id,
-                            bucket_id: bucketData[0].id
-                        }, {
-                            onConflict: 'note_id,bucket_id'
-                        })
-                        .select()
-                    // console.log(noteBucketData)
-                    // console.log(noteBucketError)
-                })
-            )
-        } catch(error) {
-            console.log(error)
-        }
+                const { data: noteBucketData, error: noteBucketError } = await supabase
+                    .from('note_buckets')
+                    .upsert({
+                        note_id: noteData[0].id,
+                        bucket_id: bucketData[0].id
+                    }, {
+                        onConflict: 'note_id,bucket_id'
+                    })
+                    .select()
+                // console.log(noteBucketData)
+                // console.log(noteBucketError)
+            })
+        )
+    } catch(error) {
+        console.log(error)
     }
+}
     
     export async function deleteNote(id) {
         const response = await supabase
@@ -570,6 +570,55 @@ export async function deleteSynthesis(id) {
             .eq('id', id)
         console.log(data)
         console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+// READING ACTIVITY
+
+export async function getReadingActivity() {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
+
+    const now = new Date();
+    const startDate = new Date(now)
+    startDate.setDate(now.getDate() - 30)
+    const endDate = now
+
+    try {
+        const { data, error } = await supabase
+            .from('reading_activity')
+            .select()
+            .gte('created_at', startDate.toISOString())
+            .lte('created_at', endDate.toISOString())
+            .eq('user_id', currentUser.data.user.id)
+        // console.log(data)
+        // console.log(error)
+        return data
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+export async function updateReadingActivity(id, action) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
+    try {
+        const { data, error } = await supabase
+            .from('reading_activity')
+            .insert({
+                book_id: id,
+                action_type: action,
+                user_id: currentUser.data.user.id
+            })
+            .select()
+        // console.log(data)
+        // console.log(error)
     } catch(error) {
         console.log(error)
     }

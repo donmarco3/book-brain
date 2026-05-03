@@ -108,7 +108,7 @@ export default function Library() {
           <div className="icon-pill">&#43; Add Book</div>
         </button>
         <AddBook
-          action={"/library"}
+          // action={"/library"}
           showModal={showModal}
           setShowModal={setShowModal}
         />
