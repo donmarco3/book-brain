@@ -3,18 +3,18 @@ import {
   addSynthesis,
   deleteBook,
   getBook,
+  openAiFunction,
   updateBook,
   updateBookStatus,
-  updateReadingActivity,
-  vercelFunction,
 } from "../api";
-import { Link, useLoaderData, useRevalidator } from "react-router";
+import { Link, useLoaderData, useNavigate, useRevalidator } from "react-router";
 import { calculateProgress, sliceString, splitOnNewLine } from "../utils";
 import Loading from "../components/Loading";
 import { FaCog } from "react-icons/fa";
 import ProgressBar from "../components/ProgressBar";
 import Pill from "../components/Pill";
 import UpdateProgress from "../components/UpdateProgress";
+import BookCover from "../components/BookCover";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
@@ -24,6 +24,7 @@ export async function loader({ params }) {
 export default function Book() {
   const { book } = useLoaderData();
   const revalidator = useRevalidator();
+  const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [bookTitle, setBookTitle] = React.useState(book?.title);
@@ -85,14 +86,14 @@ export default function Book() {
         "Are you sure you want to delete this book? Deleting this book will also delete any associated notes. Do you wish to continue?",
       )
     ) {
-      deleteBook(book.id);
+      deleteBook(book.id).then(() => revalidator.revalidate());
       return navigate("/library");
     }
   }
 
   async function generateSynthesis() {
     setIsLoading(true);
-    vercelFunction(book.notes, selectedValue).then((response) => {
+    openAiFunction(book.notes, selectedValue).then((response) => {
       setSynthesis(response);
       setIsLoading(false);
     });
@@ -107,12 +108,6 @@ export default function Book() {
     }
     revalidator.revalidate();
   }
-
-  // const creationDate = new Date(book.created_at).toLocaleDateString("en-US", {
-  //   year: "numeric",
-  //   month: "long",
-  //   day: "numeric",
-  // });
 
   const recentNoteElements = book.notes.slice(0, 3).map((note) => {
     return (
@@ -136,7 +131,7 @@ export default function Book() {
       {!isEditing ? (
         <>
           <div className="flex-row margin-block">
-            <div className="book-image"></div>
+            <BookCover image={book.image} size="lg" />
 
             <div className="padding-inline book-info">
               <div className="flex-col">
@@ -155,7 +150,6 @@ export default function Book() {
                   Update progress
                 </button>
                 <UpdateProgress
-                  // action={`/library/book/${book.id}`}
                   showModal={showModal}
                   setShowModal={setShowModal}
                   book={book}

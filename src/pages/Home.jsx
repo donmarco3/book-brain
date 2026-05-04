@@ -9,6 +9,7 @@ import {
 } from "../utils";
 import { FaPenNib } from "react-icons/fa";
 import ProgressBar from "../components/ProgressBar";
+import BookCover from "../components/BookCover";
 
 export async function loader() {
   const books = await getAllBooks();
@@ -120,7 +121,7 @@ export default function Home() {
               key={book.id}
               className="flex-row margin-block"
             >
-              <div className="book-image-sm"></div>
+              <BookCover image={book.image} size="sm" />
 
               <div className="padding-inline book-info">
                 <div className="flex-col">
@@ -173,7 +174,6 @@ export default function Home() {
         }
       }
     }
-    console.log(squareElements);
     return squareElements;
   }
 

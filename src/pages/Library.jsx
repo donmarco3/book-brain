@@ -6,6 +6,7 @@ import { FaPenNib } from "react-icons/fa";
 import Pill from "../components/Pill";
 import ProgressBar from "../components/ProgressBar";
 import { calculateProgress } from "../utils";
+import BookCover from "../components/BookCover";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -34,9 +35,7 @@ export default function Library() {
         key={book.id}
       >
         <div className="card book">
-          <div className="book-image">
-            <p>{book.title}</p>
-          </div>
+          <BookCover image={book.image} size="std" />
 
           <div className="book-info">
             <div className="container-sm">
@@ -73,9 +72,7 @@ export default function Library() {
         key={book.id}
       >
         <div className="card book">
-          <div className="book-image">
-            <p>{book.title}</p>
-          </div>
+          <BookCover image={book.image} size="std" />
 
           <div className="book-info">
             <div className="container-sm">

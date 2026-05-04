@@ -126,16 +126,37 @@ export async function updateUserProfile(newName, newEmail) {
 
 // BOOKS
 
-export async function addBook(bookTitle, bookAuthor, pages) {
+export async function addBook(title, author, pages) {
     const currentUser = await getCurrentUser()
-    const { error } = await supabase
-        .from('books')
-        .insert({
-            title: bookTitle,
-            author: bookAuthor,
-            pages,
-            user_id: currentUser.data.user.id
+    if (!currentUser) {
+        return
+    }
+
+    try {
+        const response = await fetch('/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ title, author })
         })
+        const image = await response.text()
+        console.log(image)
+        
+        const { data, error } = await supabase
+            .from('books')
+            .insert({
+                title,
+                author,
+                pages,
+                image,
+                user_id: currentUser.data.user.id
+            })
+            .select()
+        console.log(data)
+        console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
+
 }
 
 export async function updateBookStatus(id, status) {
@@ -245,6 +266,7 @@ export async function updateBook(id, title, author, pages, progress) {
         console.log(error)
     }
 }
+
 
 // NOTES
 
@@ -627,7 +649,7 @@ export async function updateReadingActivity(id, action) {
 
 // VERCEL
 
-export async function vercelFunction(cards, type) {
+export async function openAiFunction(cards, type) {
     try {
         const response = await fetch('/api', {
             method: 'POST',
