@@ -120,7 +120,7 @@ export default function Book() {
 
   return (
     <div className="margin-inline">
-      <div className="page-heading flex-row gap-lg padding-block">
+      <div className="page-heading gap-lg padding-block align-center">
         <Link to={`/library`} className="link-btn">
           &larr; Library
         </Link>
@@ -173,9 +173,21 @@ export default function Book() {
           <div className="card card-red margin-block">
             <div className="flex-row space-between align-center">
               <h3>Notes</h3>
-              <Link to={`/notes?book=${book.id}`} className="link-btn btn-red">
-                View all notes &gt;
-              </Link>
+              <div className="flex-row gap-lg">
+                <Link
+                  to={"/log"}
+                  state={{ from: `/library/book/${book.id}`, book }}
+                  className="link-btn btn-red"
+                >
+                  Log Note
+                </Link>
+                <Link
+                  to={`/notes?book=${book.id}`}
+                  className="link-btn btn-red"
+                >
+                  View all notes &gt;
+                </Link>
+              </div>
             </div>
             <div className="padding-inline padding-block">
               <p className="number">{book.notes.length}</p>

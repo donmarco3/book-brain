@@ -254,13 +254,6 @@ export default function Notes() {
     return matchesSearch;
   });
 
-  // const isFiltered =
-  //   bookParam.length === 0 &&
-  //   bucketParam.length === 0 &&
-  //   searchQuery.length === 0
-  //     ? false
-  //     : true;
-
   React.useEffect(() => {
     if (!isClicked) {
       setActiveNote(filteredNotes[0]);
@@ -363,8 +356,15 @@ export default function Notes() {
 
   return (
     <>
-      <div className="page-heading margin-inline">
+      <div className="page-heading margin-inline align-center space-between">
         <h1>Notes</h1>
+        <Link
+          to={"/log"}
+          state={{ from: "/notes", book: null }}
+          className="link-btn"
+        >
+          Log Note
+        </Link>
       </div>
 
       <div className="notes-header padding-inline">
@@ -601,13 +601,6 @@ export default function Notes() {
                   <div className="buckets">
                     <div className="buckets-header">
                       <p className="gold">Buckets</p>
-                      <Link
-                        to="/manage-buckets"
-                        state={{ from: `/notes` }}
-                        className="gold"
-                      >
-                        Manage Buckets
-                      </Link>
                     </div>
 
                     <div className="bucket-buttons">{allBucketElements}</div>

@@ -7,26 +7,28 @@ import {
   useLoaderData,
   useLocation,
 } from "react-router";
-import { addNote, getBook, getBuckets } from "../api";
+import { addNote, getAllBooks, getBook, getBuckets } from "../api";
 import { validatePageRange } from "../utils";
+import Pill from "../components/Pill";
+import useClickOutside from "../components/hooks/useClickOutside";
 
-export async function loader({ params }) {
-  const book = await getBook(params.id);
+export async function loader() {
+  const books = await getAllBooks();
   const buckets = await getBuckets();
-  return { book, buckets };
+  return { books, buckets };
 }
 
-export async function action({ request, params }) {
+export async function action({ request }) {
   const formData = await request.formData();
-  const book = await getBook(params.id);
-  const title = formData.get("note-title");
+  const note_title = formData.get("note-title");
   const page = formData.get("book-page");
   const context = formData.get("note-context");
   const capture = formData.get("note-capture");
   const spark = formData.get("note-spark");
+  const book = formData.get("book");
   const buckets = formData.getAll("buckets");
 
-  if (!title) {
+  if (!note_title) {
     return { error: "Title is required" };
   }
   if (!page) {
@@ -35,10 +37,24 @@ export async function action({ request, params }) {
   if (!context && !capture && !spark) {
     return { error: "At least one of context, capture, or spark is required" };
   }
+  if (!book) {
+    return { error: "Must select a book" };
+  }
+  if (buckets.length === 0) {
+    return { error: "At least one bucket must be selected" };
+  }
 
   try {
     await validatePageRange(page);
-    await addNote({ title, page, context, capture, spark }, book, buckets);
+    await addNote(
+      note_title,
+      book.book_id,
+      page,
+      context,
+      capture,
+      spark,
+      buckets,
+    );
     return redirect(`/library`);
   } catch (error) {
     return { error: error.message };
@@ -46,15 +62,21 @@ export async function action({ request, params }) {
 }
 
 export default function Log() {
-  const { book, buckets } = useLoaderData();
+  const { books, buckets } = useLoaderData();
   const actionData = useActionData();
   const location = useLocation();
+  const addBucketRef = React.useRef(null);
+
+  const pathName = location.state ? location.state.from : "/library";
+  const book = location.state && location.state.book;
 
   const [userBucket, setUserBucket] = React.useState("");
   const [allBuckets, setAllBuckets] = React.useState(buckets);
   const [selectedBuckets, setSelectedBuckets] = React.useState([]);
-  const [showBuckets, setShowBuckets] = React.useState(false);
+  const [selectedBook, setSelectedBook] = React.useState(book);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [bucketErrorMessage, setBucketErrorMessage] = React.useState("");
+  const [showBucketInput, setShowBucketInput] = React.useState(false);
 
   React.useEffect(() => {
     if (actionData?.error) {
@@ -62,17 +84,31 @@ export default function Log() {
     }
   }, [actionData]);
 
+  useClickOutside(addBucketRef, () => updateSelectedNoteBuckets());
+
+  let pathNameText;
+  if (pathName === "/library") {
+    pathNameText = "Library";
+  } else if (pathName === "/notes") {
+    pathNameText = "Notes";
+  } else {
+    pathNameText = "Home";
+  }
+
   function updateUserBucket(event) {
     setUserBucket(event.currentTarget.value);
   }
 
-  function updateSelectedBuckets() {
+  function updateSelectedNoteBuckets() {
     if (userBucket !== "") {
       setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
       setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
+      setUserBucket("");
+      setShowBucketInput(false);
+      setBucketErrorMessage("");
       revalidator.revalidate();
     } else {
-      setErrorMessage("Bucket must have a name");
+      setBucketErrorMessage("Bucket must have a name");
     }
   }
 
@@ -84,64 +120,82 @@ export default function Log() {
     }
   }
 
-  const pathName = location.state ? location.state.from : "/library";
-
-  let pathNameText;
-  if (pathName === "/library") {
-    pathNameText = "Library";
-  } else {
-    pathNameText = "Home";
-  }
-
   const bucketElements = allBuckets.map((bucket) => {
     return (
-      <button
-        className={
-          selectedBuckets.includes(bucket) ? "bucket btn-dark" : "bucket"
-        }
+      <Pill
+        colour={selectedBuckets.includes(bucket) ? "gold" : "std"}
+        border="border"
         key={bucket}
         onClick={() => toggleBucket(bucket)}
-        type="button"
       >
         {bucket}
-      </button>
+      </Pill>
+    );
+  });
+
+  const bookElements = books.map((book) => {
+    return (
+      <option value={book.title} key={book.id}>
+        {book.title}
+      </option>
     );
   });
 
   return (
-    <>
-      <div className="log-header">
-        <Link to={pathName} className="link-btn">
-          &larr; Back to {pathNameText}
-        </Link>
-        <h1>Log Note</h1>
-        <p>
-          {book.title} by {book.author}
-        </p>
+    <div className="margin-inline">
+      <div className="page-heading flex-col">
+        <div className="flex-row gap-lg align-center padding-top">
+          <Link to={pathName} className="link-btn">
+            &larr; {pathNameText}
+          </Link>
+          &gt;
+          <p className="italic">Log Note</p>
+        </div>
+        <div className="margin-bottom margin-top">
+          <h1 className="margin-none">Log Note</h1>
+          <p className="gold margin-top">Book</p>
+          {book ? (
+            <div className="book-container">
+              <p>{book.title}</p>
+              <p className="italic">{book.author}</p>
+            </div>
+          ) : (
+            <select
+              onChange={(e) => setSelectedBook(e.target.value)}
+              className="book-container"
+            >
+              <option>Select a book...</option>
+              {bookElements}
+            </select>
+          )}
+        </div>
       </div>
 
-      <Form method="post" className="form" replace>
-        <h2>New Note</h2>
-        {errorMessage && <p className="red error">{errorMessage}</p>}
-        <div className="form-header">
-          <div>
-            <label htmlFor="note-title" className="bold">
-              Title <span className="required-field">*</span>
-            </label>
-            <input id="note-title" name="note-title" placeholder="Note title" />
-          </div>
-          <div>
-            <label htmlFor="book-page" className="bold">
-              Page <span className="required-field">*</span>
-            </label>
-            <input
-              id="book-page"
-              name="book-page"
-              placeholder="Page or page range"
-            />
-          </div>
+      <Form method="post" className="form margin-block" replace>
+        {errorMessage && (
+          <p className="red error margin-bottom">{errorMessage}</p>
+        )}
+        <div>
+          <label htmlFor="note-title" className="gold">
+            Title
+          </label>
+          <input
+            id="note-title"
+            name="note-title"
+            placeholder="Note title..."
+          />
         </div>
-        <label htmlFor="note-context" className="bold">
+        <div>
+          <label htmlFor="book-page" className="gold">
+            Page
+          </label>
+          <input
+            id="book-page"
+            name="book-page"
+            placeholder="Page or page range..."
+          />
+        </div>
+        <label htmlFor="note-context" className="gold">
           Context
         </label>
         <textarea
@@ -150,7 +204,7 @@ export default function Log() {
           placeholder="Summarise the key idea in your own words..."
           rows={3}
         ></textarea>
-        <label htmlFor="note-capture" className="bold">
+        <label htmlFor="note-capture" className="gold">
           Capture (passage from the book){" "}
         </label>
         <textarea
@@ -159,7 +213,7 @@ export default function Log() {
           placeholder="Copy a quote or passage from the book..."
           rows={3}
         ></textarea>
-        <label htmlFor="note-spark" className="bold">
+        <label htmlFor="note-spark" className="gold">
           Spark (your thought/reaction){" "}
         </label>
         <textarea
@@ -176,42 +230,39 @@ export default function Log() {
             value={bucket}
           ></input>
         ))}
+        <input type="hidden" name="book" value={selectedBook} />
 
         <div className="buckets">
           <div className="buckets-header">
-            <button
-              onClick={() => setShowBuckets(!showBuckets)}
-              className="btn-dark"
-              type="button"
-            >
-              Select Buckets
-            </button>
-            <Link
-              to="/manage-buckets"
-              state={{
-                from: `/book/${book.id}/log`,
-              }}
-              className="link-btn"
-            >
-              Manage Buckets
-            </Link>
+            <p className="gold">Buckets</p>
           </div>
 
-          {showBuckets && (
-            <div className="buckets-expanded">
-              <div className="bucket-buttons">{bucketElements}</div>
-              <div className="add-bucket">
-                <input onChange={updateUserBucket} placeholder="e.g. Mindset" />
-                <button
-                  className="btn-dark "
-                  onClick={updateSelectedBuckets}
-                  type="button"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="bucket-buttons">{bucketElements}</div>
+          <div className="add-bucket">
+            {!showBucketInput ? (
+              <Pill
+                colour="std"
+                className="icon-pill"
+                border="border"
+                onClick={() => setShowBucketInput(true)}
+              >
+                &#43; New bucket
+              </Pill>
+            ) : (
+              <input
+                ref={addBucketRef}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    updateSelectedNoteBuckets();
+                  }
+                }}
+                onChange={updateUserBucket}
+                placeholder="Bucket name..."
+                value={userBucket}
+              />
+            )}
+          </div>
+          {bucketErrorMessage && <p className="red">{bucketErrorMessage}</p>}
         </div>
 
         <div className="note-buttons">
@@ -220,6 +271,6 @@ export default function Log() {
           </button>
         </div>
       </Form>
-    </>
+    </div>
   );
 }

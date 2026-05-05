@@ -99,16 +99,12 @@ export default function Library() {
 
   return (
     <div className="margin-inline">
-      <div className="page-heading space-between">
+      <div className="page-heading space-between align-center">
         <h1>Library</h1>
         <button onClick={() => setShowModal(true)}>
           <div className="icon-pill">&#43; Add Book</div>
         </button>
-        <AddBook
-          // action={"/library"}
-          showModal={showModal}
-          setShowModal={setShowModal}
-        />
+        <AddBook showModal={showModal} setShowModal={setShowModal} />
       </div>
 
       <div className="container flex-row gap-lg align-center">

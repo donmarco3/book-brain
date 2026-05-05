@@ -7,17 +7,13 @@ export async function action({ request }) {
   const formData = await request.formData();
   const title = formData.get("book-title");
   const author = formData.get("book-author");
-  const pages = formData.get("book-pages");
 
   if (!title || !author) {
     return { error: "Must include title and author" };
   }
-  if (pages < 1) {
-    return { error: "Pages must be greater than 0" };
-  }
 
   try {
-    await addBook(title, author, pages);
+    await addBook(title, author);
     return { success: true };
   } catch (error) {
     return { error: error.message };
@@ -71,15 +67,6 @@ export default function AddBook({ action, showModal, setShowModal }) {
                   name="book-author"
                   placeholder="Author name..."
                   type="text"
-                />
-                <label htmlFor="book-author" className="gold">
-                  Pages
-                </label>
-                <input
-                  id="book-pages"
-                  name="book-pages"
-                  placeholder="Total number of pages..."
-                  type="number"
                 />
               </div>
 

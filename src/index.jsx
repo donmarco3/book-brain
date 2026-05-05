@@ -27,7 +27,7 @@ import Register, { action as registerAction } from "./pages/Register";
 import UpdatePassword, {
   action as updatePasswordAction,
 } from "./pages/UpdatePassword";
-import Settings, { loader as settingsLoader } from "./pages/Settings";
+import Account, { loader as accountLoader } from "./pages/Account";
 import AuthRequired from "./components/AuthRequired";
 import Book, { loader as bookLoader } from "./pages/Book";
 import Syntheses, { loader as synthesesLoader } from "./pages/Syntheses";
@@ -53,10 +53,11 @@ const router = createBrowserRouter(
           hydrateFallbackElement={<Loading text="Loading home..." />}
         />
         <Route
-          path="/settings"
-          element={<Settings />}
-          loader={settingsLoader}
-          hydrateFallbackElement={<Loading text="Loading settings..." />}
+          path="/account"
+          element={<Account />}
+          loader={accountLoader}
+          errorElement={<Error />}
+          hydrateFallbackElement={<Loading text="Loading account..." />}
         />
         <Route
           path="library"
@@ -89,12 +90,12 @@ const router = createBrowserRouter(
           hydrateFallbackElement={<Loading text="Loading buckets..." />}
         />
         <Route
-          path="book/:id/log"
+          path="/log"
           element={<Log />}
           loader={logLoader}
           action={logAction}
           errorElement={<Error />}
-          hydrateFallbackElement={<Loading text="Loading book..." />}
+          hydrateFallbackElement={<Loading text="Loading form..." />}
         />
         <Route
           path="note/:id"

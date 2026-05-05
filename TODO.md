@@ -15,9 +15,3 @@ For Book Brain to be complete:
 - refactor the app (is the notes process neccesary?) - brainstorm with claude
 - update the UI to be much more appealing to the eye
 - user security
-
-BOOK
-
-- update progress button (add to reading activity)
-
-- fix log page + add log note button to book page and notes

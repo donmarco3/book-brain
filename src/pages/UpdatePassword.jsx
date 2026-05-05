@@ -39,8 +39,8 @@ export default function UpdatePassword() {
   const classes = clasnames("pill", "bold", strengthColour);
 
   return (
-    <>
-      <div className="log-header">
+    <div className="margin-inline">
+      <div className="page-heading">
         <h1>Update Password</h1>
         <Form method="post" className="login-form" replace>
           {errorMessage && <p className="red error">{errorMessage}</p>}
@@ -65,6 +65,6 @@ export default function UpdatePassword() {
           </div>
         </Form>
       </div>
-    </>
+    </div>
   );
 }

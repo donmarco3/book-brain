@@ -21,8 +21,6 @@ export async function loader() {
 export default function Home() {
   const { books, notes, readingActivity } = useLoaderData();
 
-  console.log(readingActivity);
-
   let streak = 0;
 
   const currentDate = new Date();
@@ -157,20 +155,26 @@ export default function Home() {
       if (i === 0) {
         squareElements.push(<div key={i} className="square square-gold"></div>);
       } else {
-        if (
-          readingActivity.some(
-            (row) =>
-              new Date(row.created_at).toDateString() !==
-              newDate.toDateString(),
-          )
-        ) {
+        if (readingActivity.length === 0) {
           squareElements.push(
             <div key={i} className="square square-white"></div>,
           );
         } else {
-          squareElements.push(
-            <div key={i} className="square square-red"></div>,
-          );
+          if (
+            readingActivity.some(
+              (row) =>
+                new Date(row.created_at).toDateString() !==
+                newDate.toDateString(),
+            )
+          ) {
+            squareElements.push(
+              <div key={i} className="square square-white"></div>,
+            );
+          } else {
+            squareElements.push(
+              <div key={i} className="square square-red"></div>,
+            );
+          }
         }
       }
     }
@@ -188,40 +192,34 @@ export default function Home() {
     const book = books.find((book) => book.id === notes[randomIndex].book_id);
 
     return (
-      <Link
-        to={`/note/${notes[randomIndex].id}`}
-        state={{ from: "/" }}
-        className="brown"
-      >
-        <div className="card main-card" key={notes[randomIndex].id}>
-          <div className="icon-pill gold">
-            <FaPenNib />
-            <h3>Note from your library</h3>
-          </div>
-          <div className="main-card-header">
-            <h3 className="card-title">{notes[randomIndex].note_title}</h3>
-          </div>
-
-          <div className="main-card-text">
-            <p className="italic capture">
-              "{sliceString(notes[randomIndex].capture)}"
-            </p>
-            <div>
-              <p>{sliceString(notes[randomIndex].spark)}</p>
-            </div>
-            <p className="italic">
-              {book.title} &middot; {book.author} &middot; logged{" "}
-              {getDaysAgo(notes[randomIndex].created_at)}
-            </p>
-          </div>
+      <div className="card main-card" key={notes[randomIndex].id}>
+        <div className="icon-pill gold">
+          <FaPenNib />
+          <h3>Note from your library</h3>
         </div>
-      </Link>
+        <div className="main-card-header">
+          <h3 className="card-title">{notes[randomIndex].note_title}</h3>
+        </div>
+
+        <div className="main-card-text">
+          <p className="italic capture">
+            "{sliceString(notes[randomIndex].capture)}"
+          </p>
+          <div>
+            <p>{sliceString(notes[randomIndex].spark)}</p>
+          </div>
+          <p className="italic">
+            {book.title} &middot; {book.author} &middot; logged{" "}
+            {getDaysAgo(notes[randomIndex].created_at)}
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="margin-inline">
-      <div className="page-heading space-between">
+      <div className="page-heading space-between align-center">
         <h1>Dashboard</h1>
         <span>{formatDateToRoman()}</span>
       </div>

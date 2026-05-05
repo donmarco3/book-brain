@@ -88,7 +88,7 @@ export default async function handler(req, res) {
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${title}+inauthor:${author}&key=${booksApi}`)
             const data = await response.json()
 
-            res.status(200).send(data.items[0].volumeInfo.imageLinks.thumbnail)
+            res.status(200).json({ image: data.items[0].volumeInfo.imageLinks.thumbnail, pages: data.items[0].volumeInfo.pageCount })
          }
 
     } else {

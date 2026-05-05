@@ -56,7 +56,7 @@ export default function Login() {
   }
 
   return (
-    <>
+    <div className="margin-inline">
       <div className="log-header">
         <h1>Login</h1>
         <Form method="post" className="form" replace>
@@ -106,6 +106,6 @@ export default function Login() {
           </Link>
         </div>
       </div>
-    </>
+    </div>
   );
 }

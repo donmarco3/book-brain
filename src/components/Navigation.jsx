@@ -42,12 +42,12 @@ export default function Header() {
           </div>
         </NavLink>
         <NavLink
-          to={user ? "settings" : "login"}
+          to={user ? "account" : "login"}
           className={({ isActive }) => (isActive ? "active" : null)}
         >
           <div className="icon-pill">
             <FaCog />
-            {user ? "Settings" : "Login"}
+            {user ? "Account" : "Login"}
           </div>
         </NavLink>
       </nav>

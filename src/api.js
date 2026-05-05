@@ -126,7 +126,7 @@ export async function updateUserProfile(newName, newEmail) {
 
 // BOOKS
 
-export async function addBook(title, author, pages) {
+export async function addBook(title, author) {
     const currentUser = await getCurrentUser()
     if (!currentUser) {
         return
@@ -138,8 +138,9 @@ export async function addBook(title, author, pages) {
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ title, author })
         })
-        const image = await response.text()
+        const { image, pages } = await response.json()
         console.log(image)
+        console.log(pages)
         
         const { data, error } = await supabase
             .from('books')
@@ -270,7 +271,7 @@ export async function updateBook(id, title, author, pages, progress) {
 
 // NOTES
 
-export async function addNote(note, book, buckets) {
+export async function addNote(note_title, book_id, page, context, capture, spark, buckets) {
     const currentUser = await getCurrentUser()
     if (!currentUser) {
         return
@@ -280,12 +281,12 @@ export async function addNote(note, book, buckets) {
         const { data: noteData, error } = await supabase
             .from('notes')
             .insert({
-                note_title: note.title,
-                book_id: book.id,
-                page: note.page,
-                context: note.context,
-                capture: note.capture,
-                spark: note.spark,
+                note_title,
+                book_id,
+                page,
+                context,
+                capture,
+                spark,
                 user_id: currentUser.data.user.id
             })
             .select()
@@ -452,11 +453,31 @@ export async function updateNote(id, note_title, page, context, capture, spark, 
 
 
 // BUCKETS
+
+export async function addBucket(bucket) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
+    try {
+        const { data, error } = await supabase
+            .from('buckets')
+            .insert({
+                name: bucket,
+                user_id: currentUser.data.user.id
+            })
+            .select()
+        console.log(data)
+        console.log(error)
+    } catch(error) {
+        console.log(error)
+    }
+}
     
-    export async function getBuckets() {
-        const currentUser = await getCurrentUser()
-        if (!currentUser) {
-            return
+export async function getBuckets() {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
     }
     try {
         const { data, error } = await supabase
@@ -492,6 +513,29 @@ export async function getNoteBuckets(id) {
         })
         const bucketsArr = await Promise.all(buckets)
         return bucketsArr.flat()
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+export async function updateBucket(oldName, newName) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+        return
+    }
+    console.log(oldName)
+    console.log(newName)
+    try {
+        const { data, error } = supabase
+            .from('buckets')
+            .update({
+                name: newName
+            })
+            .eq('user_id', currentUser.data.user.id)
+            .eq('name', oldName)
+            .select()
+        console.log(data)
+        console.log(error)
     } catch(error) {
         console.log(error)
     }
