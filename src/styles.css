@@ -182,37 +182,36 @@ p {
 div.wrapper {
     box-sizing: border-box;
     min-height: 100vh;
-    display: flex;
 }
 
-header {
+header.sidebar-nav {
     display: flex;
     flex-direction: column;
     width: 300px;
     background-color: var(--roman-burgundy-dark);
 }
 
-header > div {
+header.sidebar-nav > div {
     padding: 1rem 2rem;
     width: 100%;
     border-bottom: 1px solid var(--roman-border);
 }
 
-header > div > .site-logo {
+header.sidebar-nav > div > .site-logo {
     font-size: 2rem;
     font-family: var(--font-heading);
     color: var(--roman-gold);
     font-weight: 900;
 }
 
-header > nav {
+header.sidebar-nav > nav {
     margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-header > nav > a {
+header.sidebar-nav > nav > a {
     color: var(--roman-nav-text);
     font-weight: 600;
     font-size: 1.125rem;
@@ -222,18 +221,69 @@ header > nav > a {
     padding-inline: 2rem;
 }
 
-header > nav div.icon-pill {
+header.sidebar-nav > nav div.icon-pill {
     gap: 20px;
 }
 
-header > nav > a:hover {
+header.sidebar-nav > nav > a:hover {
     color: var(--roman-nav-text-hover);
 }
 
-header > nav > a.active {
+header.sidebar-nav > nav > a.active {
     background-color: var(--roman-nav-active-bg);
     color: var(--roman-gold);
-    border-left: 3px solid var(--roman-gold);
+    border-left: 5px solid var(--roman-gold);
+}
+
+header.bottom-nav {
+    display: flex;
+    width: 100vw;
+    background-color: var(--roman-burgundy-dark);
+    position: sticky;
+    bottom: 0;
+}
+
+.header {
+    background-color: var(--roman-burgundy-dark);
+    position: sticky;
+    top: 0;
+}
+
+.header .site-logo {
+    font-size: 2rem;
+    font-family: var(--font-heading);
+    color: var(--roman-gold);
+    font-weight: 900;
+}
+
+header.bottom-nav > nav {
+    display: flex;
+    width: 100%;
+}
+
+header.bottom-nav > nav > a {
+    color: var(--roman-nav-text);
+    font-weight: 600;
+    font-size: 1.125rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .75rem 2rem;
+    width: 25%;
+}
+
+header.bottom-nav > nav div.icon-pill {
+    flex-direction: column;
+}
+
+header.bottom-nav > nav > a:hover {
+    color: var(--roman-nav-text-hover);
+}
+
+header.bottom-nav > nav > a.active {
+    background-color: var(--roman-nav-active-bg);
+    color: var(--roman-gold);
+    border-top: 5px solid var(--roman-gold);
 }
 
 main {
@@ -556,6 +606,9 @@ div.icon-pill {
 
 .width-100 {
     width: 100%;
+}
+.width-50 {
+    width: 50vw;
 }
 .width-3rd {
     width: 33%;
@@ -1144,10 +1197,16 @@ div.avatar {
     align-items: center;
     margin-bottom: 30px;
 }
-
 div.avatar > div {
     color: var(--roman-gold);
     font-size: 2em;
+}
+div.avatar-sm {
+    width: 50px;
+    height: 50px;
+}
+div.avatar-sm > div {
+    font-size: 1em;
 }
 
 button.reset-password-btn {

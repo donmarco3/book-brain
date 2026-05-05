@@ -3,16 +3,18 @@ import { Link, NavLink } from "react-router-dom";
 import { UserContext } from "..";
 import { FaBookOpen, FaThLarge, FaPenNib, FaCog } from "react-icons/fa";
 
-export default function Header() {
+export default function Navigation({ size }) {
   const { user } = React.useContext(UserContext);
 
   return (
-    <header>
-      <div>
-        <Link to="/" className="site-logo">
-          Book Brain
-        </Link>
-      </div>
+    <header className={size === "large" ? "sidebar-nav" : "bottom-nav"}>
+      {size === "large" && (
+        <div>
+          <Link to="/" className="site-logo">
+            Book Brain
+          </Link>
+        </div>
+      )}
       <nav>
         <NavLink
           to="/"

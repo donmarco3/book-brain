@@ -488,7 +488,7 @@ export async function getBuckets() {
         // console.log(data)
         // console.log(error)
         const buckets = data.map(bucket => bucket.name)
-        return buckets
+        return { buckets, data }
     } catch(error) {
         console.log(error)
     }
@@ -518,24 +518,22 @@ export async function getNoteBuckets(id) {
     }
 }
 
-export async function updateBucket(oldName, newName) {
+export async function updateBucket(id, name) {
     const currentUser = await getCurrentUser()
     if (!currentUser) {
         return
     }
-    console.log(oldName)
-    console.log(newName)
     try {
-        const { data, error } = supabase
+        const { data, error } = await supabase
             .from('buckets')
             .update({
-                name: newName
+                name
             })
             .eq('user_id', currentUser.data.user.id)
-            .eq('name', oldName)
+            .eq('id', id)
             .select()
-        console.log(data)
-        console.log(error)
+        // console.log(data)
+        // console.log(error)
     } catch(error) {
         console.log(error)
     }

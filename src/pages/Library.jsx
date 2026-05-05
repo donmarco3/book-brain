@@ -13,7 +13,6 @@ export async function loader({ request }) {
   const page = url.searchParams.get("page") ?? "1";
   const sort = url.searchParams.get("sort") ?? "newest";
 
-  // const books = await getBooks(page, sort);
   const allBooks = await getAllBooks();
   return { allBooks };
 }

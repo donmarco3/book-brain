@@ -4,18 +4,34 @@ import { Link, useLoaderData, useRevalidator } from "react-router";
 import Pill from "../components/Pill";
 
 export async function loader() {
-  const buckets = await getBuckets();
-  return { buckets };
+  const { buckets, data } = await getBuckets();
+  return { buckets, data };
 }
 
 export default function ManageBuckets() {
-  const { buckets } = useLoaderData();
+  const { buckets, data } = useLoaderData();
   const revalidator = useRevalidator();
+  const bucketInputRef = React.useRef(null);
 
   const [userBucket, setUserBucket] = React.useState("");
   const [bucketErrorMessage, setBucketErrorMessage] = React.useState("");
   const [showBucketInput, setShowBucketInput] = React.useState(false);
   const [activeBucket, setActiveBucket] = React.useState();
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  React.useEffect(() => {
+    window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+    return () =>
+      window.removeEventListener("resize", () =>
+        setWindowWidth(window.innerWidth),
+      );
+  }, []);
+
+  React.useEffect(() => {
+    if (bucketInputRef.current) {
+      bucketInputRef.current.focus();
+    }
+  }, [showBucketInput]);
 
   function handleAddBucket() {
     if (userBucket !== "") {
@@ -28,11 +44,11 @@ export default function ManageBuckets() {
   }
 
   function handleUpdateBucket(bucket) {
-    setUserBucket(bucket);
-    setActiveBucket(bucket);
+    setUserBucket(bucket.name);
+    setActiveBucket(bucket.name);
     setShowBucketInput(true);
-    if (activeBucket === bucket && showBucketInput) {
-      updateBucket(bucket, userBucket).then(() => revalidator.revalidate());
+    if (activeBucket === bucket.name && showBucketInput) {
+      updateBucket(bucket.id, userBucket).then(() => revalidator.revalidate());
     }
   }
 
@@ -46,31 +62,37 @@ export default function ManageBuckets() {
     }
   }
 
-  const bucketElements = buckets.map((bucket) => {
+  const bucketElements = data.map((bucket) => {
     return (
       <div
-        key={bucket}
+        key={bucket.id}
         className="flex-row space-between padding-inline padding-block border"
       >
-        {activeBucket === bucket ? (
+        {activeBucket === bucket.name ? (
           <>
             {!showBucketInput ? (
-              <p>{bucket}</p>
+              <p>{bucket.name}</p>
             ) : (
               <input
                 onChange={(e) => setUserBucket(e.currentTarget.value)}
                 defaultValue={userBucket}
+                ref={bucketInputRef}
               />
             )}
           </>
         ) : (
-          <p>{bucket}</p>
+          <p>{bucket.name}</p>
         )}
         <div className="flex-row gap-lg">
           <button onClick={() => handleUpdateBucket(bucket)}>
-            {showBucketInput && activeBucket === bucket ? "Confirm" : "Rename"}
+            {showBucketInput && activeBucket === bucket.name
+              ? "Confirm"
+              : "Rename"}
           </button>
-          <button className="btn-red" onClick={() => handleDeletion(bucket)}>
+          <button
+            className="btn-red"
+            onClick={() => handleDeletion(bucket.name)}
+          >
             Delete
           </button>
         </div>
@@ -93,23 +115,24 @@ export default function ManageBuckets() {
           <p>Organise your notes into themed categories</p>
         </div>
       </div>
-
-      {bucketErrorMessage && (
-        <p className="red margin-top">{bucketErrorMessage}</p>
-      )}
-      <div className="flex-row gap-lg margin-block">
-        <input
-          onChange={(e) => setUserBucket(e.currentTarget.value)}
-          placeholder="New bucket name..."
-        />
-        <button onClick={handleAddBucket}>Add bucket</button>
-      </div>
-      <div className="card card-red">
-        <div className="flex-row space-between">
-          <p>Your Buckets</p>
-          <p>{buckets.length} buckets</p>
+      <div className={windowWidth >= 1500 ? "width-50" : ""}>
+        {bucketErrorMessage && (
+          <p className="red margin-top">{bucketErrorMessage}</p>
+        )}
+        <div className="flex-row gap-lg margin-block">
+          <input
+            onChange={(e) => setUserBucket(e.currentTarget.value)}
+            placeholder="New bucket name..."
+          />
+          <button onClick={handleAddBucket}>Add bucket</button>
         </div>
-        <div className="manage-buckets">{bucketElements}</div>
+        <div className="card card-red">
+          <div className="flex-row space-between">
+            <p>Your Buckets</p>
+            <p>{buckets.length} buckets</p>
+          </div>
+          <div className="manage-buckets">{bucketElements}</div>
+        </div>
       </div>
     </div>
   );

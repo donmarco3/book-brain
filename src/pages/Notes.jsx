@@ -27,7 +27,7 @@ export async function loader({ request }) {
 
   const response = await getNotes(page, sort, bookParam, bucketParam);
   const allNotes = await getAllNotes();
-  const buckets = await getBuckets();
+  const { buckets } = await getBuckets();
   const books = await getAllBooks();
   return {
     notes: response.data,
