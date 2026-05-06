@@ -91,7 +91,7 @@ export default function Account() {
       {!isEditing ? (
         <>
           <div className="card flex-row align-center margin-block">
-            <Avatar name={userProfile.name} />
+            <Avatar />
             <div className="padding-inline">
               <h2>{userProfile.name}</h2>
               <p>{userProfile.email}</p>

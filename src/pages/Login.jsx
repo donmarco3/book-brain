@@ -16,7 +16,6 @@ export async function action({ request }) {
 
   try {
     const data = await signInUser(email, password);
-    console.log(data.data);
     if (!data.data.user) {
       return { error: data.error.message };
     }

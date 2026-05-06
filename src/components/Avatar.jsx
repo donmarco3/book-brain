@@ -3,13 +3,13 @@ import React from "react";
 import { UserContext } from "..";
 
 export default function Avatar({ size }) {
-  const { user, isLoading } = React.useContext(UserContext);
+  const { userProfile, isLoading } = React.useContext(UserContext);
 
   let username;
-  if (isLoading) {
+  if (!isLoading && userProfile) {
+    username = userProfile.name;
+  } else {
     username = "";
-  } else if (!isLoading && user) {
-    username = user.userInfo.name;
   }
 
   const sizeClass = size && `avatar-${size}`;

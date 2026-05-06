@@ -36,7 +36,7 @@ import Loading from "./components/Loading";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Layout />}>
+    <Route path="/" element={<Layout />} errorElement={<Error />}>
       <Route path="/login" element={<Login />} action={loginAction} />
       <Route path="/register" element={<Register />} action={registerAction} />
       <Route
@@ -81,12 +81,14 @@ const router = createBrowserRouter(
           path="notes"
           element={<Notes />}
           loader={notesLoader}
+          errorElement={<Error />}
           hydrateFallbackElement={<Loading text="Loading notes..." />}
         />
         <Route
           path="manage-buckets"
           element={<ManageBuckets />}
           loader={manageBucketsLoader}
+          errorElement={<Error />}
           hydrateFallbackElement={<Loading text="Loading buckets..." />}
         />
         <Route
@@ -129,21 +131,24 @@ const UserContext = React.createContext();
 function App() {
   const [user, setUser] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
+  const [userProfile, setUserProfile] = React.useState();
 
   React.useEffect(() => {
     setIsLoading(true);
     getUser().then((res) => {
       if (!res) {
         setUser(undefined);
+        setUserProfile(undefined);
       } else {
-        setUser({ user: res.user.data.user, userInfo: res.userInfo });
+        setUser(res.user.data.user);
+        setUserProfile(res.userInfo);
       }
       setIsLoading(false);
     });
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, isLoading }}>
+    <UserContext.Provider value={{ user, setUser, userProfile, isLoading }}>
       <RouterProvider router={router} />
     </UserContext.Provider>
   );
