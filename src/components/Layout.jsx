@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, ScrollRestoration } from "react-router-dom";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 import Avatar from "./Avatar";
@@ -53,6 +53,7 @@ export default function Layout() {
           <Navigation size="small" />
         </div>
       )}
+      <ScrollRestoration />
     </SizeContext.Provider>
   );
 }
