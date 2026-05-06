@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { deleteSynthesis, getBook, getSyntheses } from "../api";
 import { getDaysAgo, sliceString, splitOnNewLine } from "../utils";
+import { SizeContext } from "../components/Layout";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -16,18 +17,10 @@ export async function loader({ params, request }) {
 export default function Syntheses() {
   const { syntheses, book } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
+  const size = React.useContext(SizeContext);
 
-  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [activeSynthesis, setActiveSynthesis] = React.useState(syntheses[0]);
-
-  React.useEffect(() => {
-    window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
-    return () =>
-      window.removeEventListener("resize", () =>
-        setWindowWidth(window.innerWidth),
-      );
-  }, []);
 
   const defaultPage = searchParams.get("page") ?? "1";
   const currentPage = Number(defaultPage);
@@ -86,7 +79,7 @@ export default function Syntheses() {
             </p>
           </div>
           <div className="padding-inline padding-block">
-            {windowWidth <= 1500 ? (
+            {size === "small" ? (
               <>
                 <div className="border"></div>
                 {splitOnNewLine(synthesis.synthesis).map((section) => (
@@ -100,14 +93,14 @@ export default function Syntheses() {
             )}
             <div className="flex-row space-between margin-top">
               <p className="italic">From {book.notes.length} notes</p>
-              {windowWidth <= 1500 ? (
+              {size === "small" ? (
                 <p className="italic">Collapse &uarr;</p>
               ) : (
                 <p className="italic">Expand &rarr;</p>
               )}
             </div>
           </div>
-          {windowWidth <= 1500 && (
+          {size === "small" && (
             <div className="note-buttons margin-inline margin-bottom">
               <button onClick={handleDeletion} className="btn-red">
                 Delete
@@ -138,7 +131,7 @@ export default function Syntheses() {
             <p className="italic">From {book.notes.length} notes</p>
             <p className="italic">
               Expand{" "}
-              {windowWidth >= 1500 ? <span>&rarr;</span> : <span>&darr;</span>}
+              {size === "large" ? <span>&rarr;</span> : <span>&darr;</span>}
             </p>
           </div>
         </div>
@@ -165,7 +158,7 @@ export default function Syntheses() {
         </div>
       </div>
 
-      {windowWidth <= 1500 ? (
+      {size === "small" ? (
         <div className="padding-inline">
           {syntheses.length > 0 ? (
             <div>{synthesesElements}</div>

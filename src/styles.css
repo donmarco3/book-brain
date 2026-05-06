@@ -182,6 +182,7 @@ p {
 div.wrapper {
     box-sizing: border-box;
     min-height: 100vh;
+    gap: 0;
 }
 
 header.sidebar-nav {
@@ -241,15 +242,20 @@ header.bottom-nav {
     background-color: var(--roman-burgundy-dark);
     position: sticky;
     bottom: 0;
+    padding-inline: 1rem;
 }
 
 .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
     background-color: var(--roman-burgundy-dark);
     position: sticky;
     top: 0;
 }
-
 .header .site-logo {
+    margin: 0;
     font-size: 2rem;
     font-family: var(--font-heading);
     color: var(--roman-gold);
@@ -313,14 +319,23 @@ div.page-heading {
 .margin-inline {
     margin-inline: 2rem;
 }
+.margin-inline-sm {
+    margin-inline: 1rem;
+}
 .padding-inline {
     padding-inline: 2rem;
+}
+.padding-inline-sm {
+    padding-inline: 1rem;
 }
 .margin-block {
     margin-block: 2rem;
 }
 .padding-block {
     padding-block: 2rem;
+}
+.padding-block-sm {
+    padding-block: 1rem;
 }
 .margin-top {
     margin-top: 1rem;
@@ -427,6 +442,10 @@ a.link-btn-dark {
 .pill-gold {
     background-color: rgba(201, 168, 76, 0.1);
     color: var(--roman-gold)
+}
+.pill-green {
+    background-color: rgba(52, 92, 48, 0.12);
+    color: #345C30;
 }
 
 .filter-pill {
@@ -668,6 +687,10 @@ div.no-items-container > button {
     margin-top: 10px;
 }
 
+div.reading-streak {
+    margin-block: 2rem;
+}
+
 div.square {
     width: 50px;
     height: 50px;
@@ -737,49 +760,6 @@ div.add-book-modal-inputs > label {
    LIBRARY
    ============================================ */
 
-
-div.bookshelf-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-block: 20px;
-}
-
-div.books-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-div.books-list > .card {
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-    justify-content: center;
-    width: 48.5%;
-    padding-top: 20px;
-}
-
-.card > .book-card-header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.card > .book-card-links {
-    display: flex;
-    gap: 5px;
-    padding-top: 20px;
-}
-
-div.book-card > .book-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0 10px;
-}
-
 label.pill {
     background-color: var(--roman-parchment);
 }
@@ -844,7 +824,7 @@ div.books {
     margin-top: 1rem;
 }
 
-.book-notes > div:last-of-type {
+.book-notes > a:last-of-type > div {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
@@ -964,14 +944,15 @@ div.notes-col {
     border-right: 1px solid var(--roman-border);
 }
 
-div.notes > div {
+div.notes div {
     padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
     padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
     background-color: var(--roman-parchment);
     border-top: 1px solid var(--roman-border);
     cursor: pointer;
 }
-div.notes > div:last-of-type {
+div.notes > div:last-of-type,
+div.notes > a:last-of-type > div {
     border-bottom: 1px solid var(--roman-border);
 }
 
@@ -1195,7 +1176,6 @@ div.avatar {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
 }
 div.avatar > div {
     color: var(--roman-gold);
@@ -1219,4 +1199,61 @@ button.reset-password-btn {
 
 .manage-buckets > div:last-of-type {
     border: none;
+}
+
+@media (max-width: 750px) {
+    main {
+        width: 100%;
+    }
+    /* HOME */
+    div.home-stats > .card {
+        width: 46%;
+        padding: 1rem 1.5rem;
+    }
+    div.currently-reading {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    div.currently-reading > div {
+        width: 100%;
+    }
+    div.reading-streak {
+        margin: .5rem 0 1rem;
+        gap: 5px;
+    }
+    div.square {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* LIBRARY */
+    div.book {
+        width: 150px;
+    }
+
+    /* NOTES */
+    div.notes-col {
+        width: 100%;
+        padding: 0;
+        border: none;
+    }
+    div.notes > div:nth-of-type(1) {
+        padding-block: clamp(1.25rem, calc(1vw + .1rem), 1.5rem);
+        padding-inline: clamp(1.75rem, calc(1vw + .1rem), 2.25rem);
+        background-color: var(--roman-parchment);
+        border-top: 1px solid var(--roman-border);
+        cursor: pointer;
+    }
+    div.notes > div:last-of-type {
+        border-bottom: 1px solid var(--roman-border);
+    }
+
+    div.notes > div.active-note {
+        background-color: rgba(107, 30, 46, 0.07);;
+        border-left: 3px solid var(--roman-burgundy);
+    }
+
+    div.tinted {
+        background-color: rgba(44, 36, 22, 0.4) !important;
+    }
 }

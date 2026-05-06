@@ -22,7 +22,7 @@ import ManageBuckets, {
   loader as manageBucketsLoader,
 } from "./pages/ManageBuckets";
 import Login, { action as loginAction } from "./pages/Login";
-import { getCurrentUser } from "./api";
+import { getCurrentUser, getUser } from "./api";
 import Register, { action as registerAction } from "./pages/Register";
 import UpdatePassword, {
   action as updatePasswordAction,
@@ -98,7 +98,7 @@ const router = createBrowserRouter(
           hydrateFallbackElement={<Loading text="Loading form..." />}
         />
         <Route
-          path="note/:id"
+          path="notes/:id"
           element={<Note />}
           loader={noteLoader}
           errorElement={<Error />}
@@ -132,11 +132,11 @@ function App() {
 
   React.useEffect(() => {
     setIsLoading(true);
-    getCurrentUser().then((data) => {
-      if (!data) {
+    getUser().then((res) => {
+      if (!res) {
         setUser(undefined);
       } else {
-        setUser(data.data.user);
+        setUser({ user: res.user.data.user, userInfo: res.userInfo });
       }
       setIsLoading(false);
     });

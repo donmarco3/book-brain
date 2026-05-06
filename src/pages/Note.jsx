@@ -6,9 +6,13 @@ import {
   getNoteBuckets,
   getBuckets,
   updateNote,
+  deleteNoteBucket,
 } from "../api";
-import { Link, useLoaderData, useRevalidator } from "react-router";
+import { Link, useLoaderData, useNavigate, useRevalidator } from "react-router";
 import { validatePageRange } from "../utils";
+import { FaBookOpen } from "react-icons/fa";
+import Pill from "../components/Pill";
+import useClickOutside from "../components/hooks/useClickOutside";
 
 export async function loader({ params }) {
   const note = await getNote(params.id);
@@ -16,15 +20,17 @@ export async function loader({ params }) {
     return { note: null, buckets: [] };
   }
 
-  const book = await getBook(note.book_id);
-  const noteBuckets = await getNoteBuckets(note.id);
-  const userBuckets = await getBuckets();
-  return { note, noteBuckets, userBuckets, book };
+  const { buckets } = await getBuckets();
+  return { note, buckets };
 }
 
 export default function Note() {
-  const { note, noteBuckets, userBuckets, book } = useLoaderData();
+  const { note, buckets } = useLoaderData();
   const revalidator = useRevalidator();
+  const addBucketRef = React.useRef(null);
+  const navigate = useNavigate();
+
+  const noteBuckets = note?.buckets.map((bucket) => bucket.name);
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [noteTitle, setNoteTitle] = React.useState(note?.note_title);
@@ -33,11 +39,15 @@ export default function Note() {
   const [capture, setCapture] = React.useState(note?.capture);
   const [spark, setSpark] = React.useState(note?.spark);
   const [userBucket, setUserBucket] = React.useState("");
-  const [allBuckets, setAllBuckets] = React.useState(userBuckets);
+  const [allBuckets, setAllBuckets] = React.useState(buckets);
   const [selectedBuckets, setSelectedBuckets] = React.useState(
     noteBuckets || [],
   );
+  const [showBucketInput, setShowBucketInput] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [bucketErrorMessage, setBucketErrorMessage] = React.useState("");
+
+  useClickOutside(addBucketRef, () => updateSelectedNoteBuckets());
 
   if (!note) {
     return (
@@ -51,20 +61,32 @@ export default function Note() {
   }
 
   function handleClick() {
-    if (!noteTitle) {
-      setErrorMessage("Title is required");
-      return;
-    }
-    if (!page) {
-      setErrorMessage("Page is required");
-      return;
-    }
-    if (!context && !capture && !spark) {
-      setErrorMessage("At least one of context, capture, or spark is required");
-      return;
-    }
+    if (isEditing) {
+      if (!noteTitle) {
+        setErrorMessage("Title is required");
+        return;
+      }
+      if (!page) {
+        setErrorMessage("Page is required");
+        return;
+      }
+      if (!context && !capture && !spark) {
+        setErrorMessage(
+          "At least one of context, capture, or spark is required",
+        );
+        return;
+      }
+      if (selectedBuckets.length === 0 && isEditing) {
+        setErrorMessage("At least one bucket is required");
+        return;
+      }
 
-    try {
+      note.buckets.map((bucket) => {
+        if (!selectedBuckets.includes(bucket.name)) {
+          deleteNoteBucket(bucket.name);
+        }
+      });
+
       validatePageRange(page);
       updateNote(
         note.id,
@@ -74,24 +96,28 @@ export default function Note() {
         capture,
         spark,
         selectedBuckets,
-      );
-      setIsEditing((prev) => !prev);
-      revalidator.revalidate();
-    } catch (error) {
-      setErrorMessage(error.message);
-      return;
+      ).then(() => revalidator.revalidate());
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
     }
   }
 
-  function updateSelectedBuckets() {
+  function updateSelectedNoteBuckets() {
     if (userBucket !== "") {
       setAllBuckets((prevBuckets) => [...prevBuckets, userBucket]);
       setSelectedBuckets((prevBuckets) => [...prevBuckets, userBucket]);
       setUserBucket("");
+      setShowBucketInput(false);
+      setBucketErrorMessage("");
       revalidator.revalidate();
     } else {
-      setErrorMessage("Bucket must have a name");
+      setBucketErrorMessage("Bucket must have a name");
     }
+  }
+
+  function updateUserBucket(event) {
+    setUserBucket(event.currentTarget.value);
   }
 
   function toggleBucket(name) {
@@ -105,20 +131,26 @@ export default function Note() {
   function handleDeletion() {
     if (window.confirm("Are you sure you want to delete this note?")) {
       deleteNote(note.id);
-      return navigate(`/bookshelf`);
+      return navigate(`/notes`);
     }
   }
 
   const noteButtons = (
     <div className="note-buttons">
-      <button onClick={handleClick} className="btn-dark">
-        {isEditing ? "Save" : "Edit"}
-      </button>
+      <button onClick={handleClick}>{isEditing ? "Save" : "Edit"}</button>
       {isEditing ? (
-        <button onClick={() => setIsEditing(false)}>Cancel</button>
+        <button
+          onClick={() => {
+            setIsEditing(false);
+            setShowBucketInput(false);
+            setBucketErrorMessage("");
+          }}
+        >
+          Cancel
+        </button>
       ) : null}
       {!isEditing ? (
-        <button onClick={handleDeletion} className="btn-delete">
+        <button onClick={handleDeletion} className="btn-red">
           Delete
         </button>
       ) : null}
@@ -127,151 +159,156 @@ export default function Note() {
 
   const allBucketElements = allBuckets.map((bucket) => {
     return (
-      <button
-        className={
-          selectedBuckets.includes(bucket) ? "bucket btn-dark" : "bucket"
-        }
+      <Pill
+        colour={selectedBuckets.includes(bucket) ? "gold" : "std"}
+        border="border"
         key={bucket}
         onClick={() => toggleBucket(bucket)}
       >
         {bucket}
-      </button>
+      </Pill>
     );
   });
 
-  const search = location.state ? location.state.search : "";
-  const pathName = location.state ? location.state.from : "/notes";
-
-  let pathNameText;
-  if (pathName === "/notes") {
-    pathNameText = "Notes";
-  } else {
-    pathNameText = "Home";
-  }
-
   return (
-    <>
-      <div className="log-header">
-        <Link
-          to={pathName === "/notes" ? `/notes${search}` : "/"}
-          className="link-btn"
-        >
-          &larr; Back to {pathNameText}
-        </Link>
-        <h1>{note.note_title}</h1>
+    <div className="padding-inline">
+      <div className="page-heading flex-col align-left">
+        <div className="flex-row gap-lg align-center padding-top">
+          <Link to={navigate(-1)} className="link-btn">
+            &larr; Notes
+          </Link>
+          &gt;
+          <p className="italic">{note.note_title}</p>
+        </div>
+        <div className="margin-bottom margin-top">
+          <div className="icon-pill gold">
+            <FaBookOpen />
+            <p>{note.books.title}</p>
+          </div>
+          <h3>{note.note_title}</h3>
+          <p>
+            p. {note.page} &middot; logged on {""}
+            {new Date(note.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}{" "}
+          </p>
+        </div>
       </div>
 
       {!isEditing ? (
-        <div className="card main-card">
-          <div className="main-card-header">
-            <p className="nice-font card-title">{note.note_title}</p>
-            <div>
-              <p>{book.title}</p>
-              <p>p. {note.page}</p>
-            </div>
+        <>
+          <div className="margin-block flex-row">
+            {note.buckets.map((bucket) => (
+              <Pill key={bucket.id} colour="gold">
+                {bucket.name}
+              </Pill>
+            ))}
           </div>
 
-          <div className="main-card-text">
-            {note.context && (
-              <p>
-                <span className="bold">Context:</span> {note.context}
-              </p>
-            )}
-            {note.capture && <p className="italic capture">{note.capture}</p>}
-            <div className="pill">
-              <p>{note.spark}</p>
+          <div className="card main-card" key={note.id}>
+            <div className="flex-col">
+              {note.context && (
+                <>
+                  <p>{note.context}</p>
+                  <div className="border margin-block"></div>
+                </>
+              )}
+              <p className="italic capture">"{note.capture}"</p>
+              {note.spark && (
+                <>
+                  <div className="border margin-block"></div>
+                  <p>{note.spark}</p>
+                </>
+              )}
             </div>
           </div>
           {noteButtons}
-        </div>
+        </>
       ) : (
         <div className="form">
-          <p>
-            <span className="bold">Book:</span>{" "}
-            <span className="nice-font">{book.title}</span>
-          </p>
           {errorMessage && <p className="red">{errorMessage}</p>}
-          <div className="form-header">
-            <div>
-              <label htmlFor="note-note-title" className="bold">
-                Note Title <span className="required-field">*</span>
-              </label>
-              <input
-                id="note-note-title"
-                defaultValue={note.note_title}
-                onChange={(e) => setNoteTitle(e.currentTarget.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="note-page" className="bold">
-                Page <span className="required-field">*</span>
-              </label>
-              <input
-                id="note-page"
-                defaultValue={note.page}
-                onChange={(e) => setPage(e.currentTarget.value)}
-              />
-            </div>
+          <div>
+            <label htmlFor="note-title" className="gold">
+              Note Title
+            </label>
+            <input
+              id="note-title"
+              defaultValue={note.note_title}
+              onChange={(e) => setNoteTitle(e.currentTarget.value)}
+            />
           </div>
-          <label htmlFor="note-context" className="bold">
+          <div>
+            <label htmlFor="page" className="gold">
+              Page
+            </label>
+            <input
+              id="page"
+              defaultValue={note.page}
+              onChange={(e) => setPage(e.currentTarget.value)}
+            />
+          </div>
+          <label htmlFor="context" className="gold">
             Context
           </label>
           <textarea
-            id="note-context"
+            id="context"
             defaultValue={note.context}
             onChange={(e) => setContext(e.currentTarget.value)}
-            rows={3}
           ></textarea>
-          <label htmlFor="note-capture" className="bold">
+          <label htmlFor="capture" className="gold">
             Capture (passage from the book){" "}
           </label>
           <textarea
-            id="note-capture"
+            id="capture"
             defaultValue={note.capture}
             onChange={(e) => setCapture(e.currentTarget.value)}
-            rows={3}
           ></textarea>
-          <label htmlFor="note-spark" className="bold">
+          <label htmlFor="spark" className="gold">
             Spark (your thought/reaction){" "}
           </label>
           <textarea
-            id="note-spark"
+            id="spark"
             defaultValue={note.spark}
             onChange={(e) => setSpark(e.currentTarget.value)}
-            rows={3}
           ></textarea>
 
           <div className="buckets">
             <div className="buckets-header">
-              <p className="bold">
-                Select Buckets <span className="required-field">*</span>
-              </p>
-              <Link
-                to="/manage-buckets"
-                state={{ from: `/note/${note.id}` }}
-                className="link-btn"
-              >
-                Manage Buckets
-              </Link>
+              <p className="gold">Buckets</p>
             </div>
-            <div className="buckets-expanded">
-              <div className="bucket-buttons">{allBucketElements}</div>
-              <div className="add-bucket">
+
+            <div className="bucket-buttons">{allBucketElements}</div>
+            <div className="add-bucket">
+              {!showBucketInput ? (
+                <Pill
+                  colour="std"
+                  className="icon-pill"
+                  border="border"
+                  onClick={() => setShowBucketInput(true)}
+                >
+                  &#43; New bucket
+                </Pill>
+              ) : (
                 <input
-                  onChange={(e) => setUserBucket(e.currentTarget.value)}
-                  placeholder="e.g. Mindset"
+                  ref={addBucketRef}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      updateSelectedNoteBuckets();
+                    }
+                  }}
+                  onChange={updateUserBucket}
+                  placeholder="Bucket name..."
                   value={userBucket}
                 />
-                <button className="btn-dark" onClick={updateSelectedBuckets}>
-                  Add
-                </button>
-              </div>
+              )}
             </div>
+            {bucketErrorMessage && <p className="red">{bucketErrorMessage}</p>}
           </div>
-
           {noteButtons}
         </div>
       )}
-    </>
+    </div>
   );
 }

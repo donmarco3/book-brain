@@ -7,6 +7,7 @@ import Pill from "../components/Pill";
 import ProgressBar from "../components/ProgressBar";
 import { calculateProgress } from "../utils";
 import BookCover from "../components/BookCover";
+import { SizeContext } from "../components/Layout";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -19,6 +20,7 @@ export async function loader({ request }) {
 
 export default function Library() {
   const { allBooks } = useLoaderData();
+  const size = React.useContext(SizeContext);
 
   const [showModal, setShowModal] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("all");
@@ -37,10 +39,12 @@ export default function Library() {
           <BookCover image={book.image} size="std" />
 
           <div className="book-info">
-            <div className="container-sm">
-              <h3>{book.title}</h3>
-              <p>{book.author}</p>
-            </div>
+            {size === "large" && (
+              <div className="container-sm">
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+              </div>
+            )}
 
             <div className="container-sm flex-col">
               <Pill colour="red">
@@ -74,12 +78,14 @@ export default function Library() {
           <BookCover image={book.image} size="std" />
 
           <div className="book-info">
-            <div className="container-sm">
-              <h3>{book.title}</h3>
-              <p>{book.author}</p>
-            </div>
+            {size === "large" && (
+              <div className="container-sm">
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+              </div>
+            )}
 
-            <div className="container-sm flex-row">
+            <div className="container-sm flex-row wrap">
               <Pill colour="brown">
                 {book.status === "read" ? "Read" : "Reading"}
               </Pill>
@@ -97,7 +103,7 @@ export default function Library() {
   });
 
   return (
-    <div className="margin-inline">
+    <div className={size === "large" ? "margin-inline" : "margin-inline-sm"}>
       <div className="page-heading space-between align-center">
         <h1>Library</h1>
         <button onClick={() => setShowModal(true)}>

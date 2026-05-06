@@ -10,17 +10,19 @@ import {
 import { Link, useLoaderData, useNavigate } from "react-router";
 import { UserContext } from "..";
 import Avatar from "../components/Avatar";
+import { SizeContext } from "../components/Layout";
 
 export async function loader() {
-  const userProfile = await getUser();
+  const { userInfo } = await getUser();
   const books = await getAllBooks();
   const notes = await getAllNotes();
-  return { userProfile, books, notes };
+  return { userProfile: userInfo, books, notes };
 }
 
 export default function Account() {
   const { userProfile, books, notes } = useLoaderData();
   const { setUser } = React.useContext(UserContext);
+  const size = React.useContext(SizeContext);
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -82,7 +84,7 @@ export default function Account() {
   );
 
   return (
-    <div className="margin-inline">
+    <div className={size === "large" ? "margin-inline" : "margin-inline-sm"}>
       <div className="page-heading">
         <h1>Account</h1>
       </div>

@@ -15,6 +15,7 @@ import ProgressBar from "../components/ProgressBar";
 import Pill from "../components/Pill";
 import UpdateProgress from "../components/UpdateProgress";
 import BookCover from "../components/BookCover";
+import { SizeContext } from "../components/Layout";
 
 export async function loader({ params }) {
   const book = await getBook(params.id);
@@ -23,6 +24,7 @@ export async function loader({ params }) {
 
 export default function Book() {
   const { book } = useLoaderData();
+  const size = React.useContext(SizeContext);
   const revalidator = useRevalidator();
   const navigate = useNavigate();
 
@@ -111,15 +113,17 @@ export default function Book() {
 
   const recentNoteElements = book.notes.slice(0, 3).map((note) => {
     return (
-      <div key={note.id}>
-        <h3>{note.note_title}</h3>
-        <p className="italic capture">"{sliceString(note.capture)}"</p>
-      </div>
+      <Link to={`/notes/${note.id}`} key={note.id}>
+        <div>
+          <h3>{note.note_title}</h3>
+          <p className="italic capture">"{sliceString(note.capture)}"</p>
+        </div>
+      </Link>
     );
   });
 
   return (
-    <div className="margin-inline">
+    <div className={size === "large" ? "margin-inline" : "margin-inline-sm"}>
       <div className="page-heading gap-lg padding-block align-center">
         <Link to={`/library`} className="link-btn">
           &larr; Library

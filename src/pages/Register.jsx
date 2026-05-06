@@ -1,10 +1,12 @@
 import React from "react";
-import { Form, redirect, useActionData, useNavigate } from "react-router";
+import { Form, Link, redirect, useActionData, useNavigate } from "react-router";
 import { createNewUser } from "../api";
 import { passwordStrength } from "check-password-strength";
 import clasnames from "classnames";
 import { UserContext } from "..";
 import { FaEye } from "react-icons/fa";
+import { SizeContext } from "../components/Layout";
+import Pill from "../components/Pill";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -39,6 +41,7 @@ export async function action({ request }) {
 export default function Register() {
   const actionData = useActionData();
   const { setUser } = React.useContext(UserContext);
+  const size = React.useContext(SizeContext);
   const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = React.useState();
@@ -58,59 +61,65 @@ export default function Register() {
 
   let strengthColour;
   if (strength === "Too weak" || strength === "Weak") {
-    strengthColour = "red";
+    strengthColour = "pill-red";
   } else if (strength === "Medium") {
-    strengthColour = "yellow";
+    strengthColour = "pill-gold";
   } else {
-    strengthColour = "green";
+    strengthColour = "pill-green";
   }
-  const classes = clasnames("pill", "bold", strengthColour);
+  const classes = clasnames("pill", strengthColour);
 
   return (
-    <>
-      <>
-        <h1>Register</h1>
-        <Form method="post" className="form" replace>
-          {errorMessage && <p className="red error">{errorMessage}</p>}
-          <label htmlFor="user-name" className="bold">
-            Name <span className="required-field">*</span>
-          </label>
-          <input id="user-name" name="name" placeholder="John" />
-          <label htmlFor="user-email" className="bold">
-            Email <span className="required-field">*</span>
-          </label>
+    <div className={size === "large" ? "margin-inline" : "margin-inline-sm"}>
+      <h1>Register</h1>
+      <Form method="post" className="form" replace>
+        {errorMessage && <p className="red error">{errorMessage}</p>}
+        <label htmlFor="user-name" className="gold">
+          Name
+        </label>
+        <input id="user-name" name="name" placeholder="John" />
+        <label htmlFor="user-email" className="gold">
+          Email
+        </label>
+        <input
+          id="user-email"
+          name="email"
+          type="email"
+          placeholder="name@example.com"
+        />
+        <label htmlFor="user-password" className="gold flex-row gap-lg">
+          Password
+          {strength && <Pill className={classes}>{strength}</Pill>}
+        </label>
+        <div className="password-input">
           <input
-            id="user-email"
-            name="email"
-            type="email"
-            placeholder="name@example.com"
+            id="user-password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            onChange={(e) => {
+              setPassword(e.currentTarget.value);
+              setStrength(passwordStrength(password).value);
+            }}
           />
-          <label htmlFor="user-password" className="bold">
-            Password <span className="required-field">*</span>
-            {strength && <span className={classes}>{strength}</span>}
-          </label>
-          <div className="password-input">
-            <input
-              id="user-password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              onChange={(e) => {
-                setPassword(e.currentTarget.value);
-                setStrength(passwordStrength(password).value);
-              }}
-            />
-            <button
-              onClick={() => setShowPassword((prev) => !prev)}
-              type="button"
-            >
-              <FaEye />
-            </button>
-          </div>
-          <div className="note-buttons">
-            <button className="btn-dark ">Create Account</button>
-          </div>
-        </Form>
-      </>
-    </>
+          <button
+            onClick={() => setShowPassword((prev) => !prev)}
+            type="button"
+          >
+            <FaEye />
+          </button>
+        </div>
+        <div className="note-buttons">
+          <button className="btn-dark ">Create Account</button>
+        </div>
+      </Form>
+      <div className="register-container">
+        <p className="text-sm register-message">
+          If you already have an account, log in here.
+        </p>
+        <Link to="/login" className="link-btn">
+          Login
+        </Link>
+      </div>
+    </div>
   );
 }

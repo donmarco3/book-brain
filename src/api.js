@@ -84,17 +84,19 @@ export async function updateUserPassword(newPassword) {
 }
 
 export async function getUser() {
-    const currentUser = await getCurrentUser()
-    if (!currentUser) {
-        return
+    const user = await supabase.auth.getUser()
+    if (user.data.user) {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select()
+            .eq('id', user.data.user.id)
+        // console.log(user)
+        // console.log(data)
+        // console.log(error)
+        return { user, userInfo: data[0] }
+    } else {
+        return null
     }
-    const { data, error } = await supabase
-        .from('profiles')
-        .select()
-        .eq('id', currentUser.data.user.id)
-    console.log(data)
-    console.log(error)
-    return data[0]
 }
 
 export async function updateUserProfile(newName, newEmail) {
@@ -386,7 +388,11 @@ export async function getNote(id) {
     try {
         const { data, error } = await supabase
             .from('notes')
-            .select()
+            .select(`
+                *,
+                buckets ( * ),
+                books ( * ) 
+            `)
             .eq('id', id)
         // console.log(data)
         // console.log(error)

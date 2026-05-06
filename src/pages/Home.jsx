@@ -1,6 +1,6 @@
 import React from "react";
 import { getAllBooks, getAllNotes, getReadingActivity } from "../api";
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useOutletContext } from "react-router";
 import {
   calculateProgress,
   formatDateToRoman,
@@ -10,6 +10,7 @@ import {
 import { FaPenNib } from "react-icons/fa";
 import ProgressBar from "../components/ProgressBar";
 import BookCover from "../components/BookCover";
+import { SizeContext } from "../components/Layout";
 
 export async function loader() {
   const books = await getAllBooks();
@@ -20,6 +21,7 @@ export async function loader() {
 
 export default function Home() {
   const { books, notes, readingActivity } = useLoaderData();
+  const size = React.useContext(SizeContext);
 
   let streak = 0;
 
@@ -218,7 +220,7 @@ export default function Home() {
   }
 
   return (
-    <div className="margin-inline">
+    <div className={size === "large" ? "margin-inline" : "margin-inline-sm"}>
       <div className="page-heading space-between align-center">
         <h1>Dashboard</h1>
         <span>{formatDateToRoman()}</span>
@@ -242,7 +244,7 @@ export default function Home() {
           <p className="italic">notes logged</p>
         </div>
         <div className="card">
-          <h3>Current Streak</h3>
+          <h3>Streak</h3>
           <p className="number gold">{getStreak()}</p>
           <p className="italic">days</p>
         </div>
@@ -256,12 +258,13 @@ export default function Home() {
           <div className="padding-inline">{getCurrentlyReading()}</div>
         </div>
         <div className="card card-red">
-          <div>
+          <div className="flex-row">
             <h3>Reading Streak</h3>
+            {size === "small" && <p>&mdash; past 30 days</p>}
           </div>
           <div className="padding-inline padding-block">
-            <p>Past 30 days</p>
-            <div className="flex-row gap-lg wrap margin-block">
+            {size === "large" && <p>Past 30 days</p>}
+            <div className="reading-streak flex-row gap-lg wrap">
               {getReadingStreak()}
             </div>
             <div className="flex-row gap-lg">

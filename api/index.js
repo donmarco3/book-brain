@@ -14,8 +14,6 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-         console.log(req.body)
-
          if (!req.body.title && !req.body.author) {
              let paragraphLength
              if (req.body.type === "Short") {

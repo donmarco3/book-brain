@@ -17,6 +17,7 @@ import { getDaysAgo, sliceString, validatePageRange } from "../utils";
 import useClickOutside from "../components/hooks/useClickOutside";
 import { FaBookOpen, FaFilter } from "react-icons/fa";
 import Pill from "../components/Pill";
+import { SizeContext } from "../components/Layout";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -46,6 +47,7 @@ export default function Notes() {
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = React.useRef(null);
   const addBucketRef = React.useRef(null);
+  const size = React.useContext(SizeContext);
   const revalidator = useRevalidator();
 
   const initialBooks = bookParam ? [bookParam] : [];
@@ -265,22 +267,37 @@ export default function Notes() {
 
     if (activeNote) {
       return (
-        <div
-          key={note.id}
-          className={note.id === activeNote.id ? "active-note" : undefined}
-          onClick={() => {
-            setActiveNote(note);
-            setIsEditing(false);
-            setIsClicked(true);
-          }}
-        >
-          <p className="gold">{book.title}</p>
-          <h3>{note.note_title}</h3>
-          <p className="italic capture">{sliceString(note.capture)}</p>
-          <p>
-            {getDaysAgo(note.created_at)} &middot; p. {note.page}
-          </p>
-        </div>
+        <>
+          {size === "small" ? (
+            <Link to={`/notes/${note.id}`} key={note.id}>
+              <div>
+                <p className="gold">{book.title}</p>
+                <h3>{note.note_title}</h3>
+                <p className="italic capture">{sliceString(note.capture)}</p>
+                <p>
+                  {getDaysAgo(note.created_at)} &middot; p. {note.page}
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div
+              key={note.id}
+              className={note.id === activeNote.id ? "active-note" : ""}
+              onClick={() => {
+                setActiveNote(note);
+                setIsEditing(false);
+                setIsClicked(true);
+              }}
+            >
+              <p className="gold">{book.title}</p>
+              <h3>{note.note_title}</h3>
+              <p className="italic capture">{sliceString(note.capture)}</p>
+              <p>
+                {getDaysAgo(note.created_at)} &middot; p. {note.page}
+              </p>
+            </div>
+          )}
+        </>
       );
     } else {
       setActiveNote(notes[0]);
@@ -356,7 +373,13 @@ export default function Notes() {
 
   return (
     <>
-      <div className="page-heading margin-inline align-center space-between">
+      <div
+        className={
+          size === "small"
+            ? "page-heading margin-inline-sm align-center space-between"
+            : "page-heading margin-inline align-center space-between"
+        }
+      >
         <h1>Notes</h1>
         <Link
           to={"/log"}
@@ -367,7 +390,13 @@ export default function Notes() {
         </Link>
       </div>
 
-      <div className="notes-header padding-inline">
+      <div
+        className={
+          size === "small"
+            ? "notes-header padding-inline-sm"
+            : "notes-header padding-inline"
+        }
+      >
         <input
           name="search-query"
           placeholder="Search notes..."
@@ -412,7 +441,9 @@ export default function Notes() {
                   <p>{!bookFilter ? <span>&#43;</span> : <span>&#45;</span>}</p>
                 </div>
                 {bookFilter && (
-                  <div className="filter-options">{bookButtonElements}</div>
+                  <div className="filter-options padding-block-sm">
+                    {bookButtonElements}
+                  </div>
                 )}
               </div>
 
@@ -431,13 +462,15 @@ export default function Notes() {
                   </p>
                 </div>
                 {bucketFilter && (
-                  <div className="filter-options">{bucketButtonElements}</div>
+                  <div className="filter-options padding-block-sm">
+                    {bucketButtonElements}
+                  </div>
                 )}
               </div>
 
               <div className="filter-option-container">
                 <p className="gold">Sort By</p>
-                <div className="filter-options">
+                <div className="filter-options padding-block-sm">
                   <input
                     type="checkbox"
                     checked={currentSort === "newest"}
@@ -503,7 +536,7 @@ export default function Notes() {
           )}
         </div>
 
-        {activeNote && (
+        {activeNote && size === "large" && (
           <>
             <div className="padding-inline notes-col">
               <div className="heading">
@@ -513,12 +546,12 @@ export default function Notes() {
                 </div>
                 <h3>{activeNote.note_title}</h3>
                 <p>
+                  p. {activeNote.page} &middot; logged on {""}
                   {new Date(activeNote.created_at).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   })}{" "}
-                  &middot; p. {activeNote.page}
                 </p>
               </div>
               {!isEditing ? (
